@@ -4,6 +4,7 @@ import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
+import { Stars } from "./Stars";
 
 interface EarthProps {
   hotdogs: Hotdog[];
@@ -14,8 +15,8 @@ interface EarthProps {
 function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load bright cartoonish Earth texture in equirectangular projection
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-cartoon-equirect.jpg');
+  // Load Earth texture with proper equirectangular projection
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-equirect-clean.jpg');
 
   useFrame(() => {
     if (groupRef.current && !isInteracting) {
@@ -25,21 +26,33 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
 
   return (
     <group ref={groupRef}>
-      {/* Main Earth sphere with cartoonish texture */}
+      {/* Main Earth sphere */}
       <Sphere args={[2, 64, 64]}>
         <meshStandardMaterial
           map={colorMap}
-          roughness={0.3}
+          roughness={0.4}
           metalness={0.0}
+          emissive="#4FC3F7"
+          emissiveIntensity={0.1}
         />
       </Sphere>
       
-      {/* Brighter atmosphere glow effect */}
-      <Sphere args={[2.05, 64, 64]}>
+      {/* Inner glow layer */}
+      <Sphere args={[2.08, 64, 64]}>
+        <meshBasicMaterial
+          color="#4FC3F7"
+          transparent
+          opacity={0.3}
+          side={THREE.BackSide}
+        />
+      </Sphere>
+      
+      {/* Outer atmosphere glow */}
+      <Sphere args={[2.15, 64, 64]}>
         <meshBasicMaterial
           color="#87CEEB"
           transparent
-          opacity={0.2}
+          opacity={0.15}
           side={THREE.BackSide}
         />
       </Sphere>
@@ -88,21 +101,22 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         camera={{ position: [0, 0, 6], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
       >
-        <color attach="background" args={["#E8F4F8"]} />
+        {/* Dark starry background like the reference */}
+        <color attach="background" args={["#1a2332"]} />
+        <fog attach="fog" args={["#1a2332", 10, 20]} />
         
-        {/* Bright, cheerful lighting for cartoonish globe */}
-        <ambientLight intensity={1.2} />
+        {/* Lighting setup for glowing globe effect */}
+        <ambientLight intensity={0.8} />
         <directionalLight 
           position={[5, 3, 5]} 
-          intensity={1.5}
+          intensity={2.0}
           color="#ffffff"
         />
-        <hemisphereLight
-          color="#ffffff"
-          groundColor="#87CEEB"
-          intensity={1.0}
-        />
-        <pointLight position={[-5, -3, -5]} intensity={0.5} color="#FFD700" />
+        <pointLight position={[0, 0, 4]} intensity={1.5} color="#4FC3F7" />
+        <pointLight position={[-5, -3, -5]} intensity={0.8} color="#9CCC65" />
+        
+        {/* Starfield background */}
+        <Stars />
         
         <Earth hotdogs={hotdogs} onHotdogClick={onHotdogClick} isInteracting={isInteracting} />
         
