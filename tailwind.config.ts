@@ -19,6 +19,11 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        mustard: "hsl(var(--mustard-yellow))",
+        relish: "hsl(var(--relish-green))",
+        poppy: "hsl(var(--poppy-seed))",
+        tomato: "hsl(var(--tomato-red))",
+        bun: "hsl(var(--bun-cream))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -66,6 +71,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         heading: ['Poppins', 'system-ui', 'sans-serif'],
+        display: ['Bebas Neue', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {

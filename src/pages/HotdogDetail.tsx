@@ -3,7 +3,10 @@ import { useHotdogs } from "@/hooks/useHotdogs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, MapPin, ChefHat, Sparkles, BookOpen, Globe as GlobeIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon } from "lucide-react";
+import { useState } from "react";
 
 const HotdogDetail = () => {
   const { id } = useParams();
@@ -11,6 +14,9 @@ const HotdogDetail = () => {
   const { data: hotdogs = [] } = useHotdogs();
   
   const hotdog = hotdogs.find((h) => h.id === id);
+  
+  const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
+  const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
 
   if (!hotdog) {
     return (
@@ -108,47 +114,109 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
       <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
         
         {/* Recipe Section */}
-        <Card className="p-8 shadow-xl border-4 border-primary/10 bg-white">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-orange-400 to-red-500 rounded-full">
-              <ChefHat className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="font-heading text-3xl font-bold text-primary">Recipe</h2>
+        <Card className="relative p-10 md:p-12 shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-bun overflow-hidden">
+          {/* Location Flag Badge - Stamp Style */}
+          <div className="absolute -top-3 -right-3 rotate-12 bg-tomato text-white px-4 py-2 rounded-lg shadow-lg font-display text-sm tracking-wider">
+            {hotdog.city.toUpperCase()}
           </div>
           
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-heading text-xl font-semibold mb-4 text-accent">
-                🛒 Ingredients
-              </h3>
-              <ul className="space-y-2">
-                {ingredients.map((ingredient, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-sm flex items-center justify-center font-bold">
-                      {index + 1}
-                    </span>
-                    <span className="text-foreground/80">{ingredient}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-heading text-xl font-semibold mb-4 text-accent">
-                👨‍🍳 Instructions
-              </h3>
-              <ol className="space-y-3">
-                {instructions.map((step, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 text-white text-sm flex items-center justify-center font-bold">
-                      {index + 1}
-                    </span>
-                    <span className="text-foreground/80 pt-1">{step}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
+          {/* Recipe Label - Compact Stamp Style */}
+          <div className="inline-block mb-8 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+            RECIPE
           </div>
+          
+          <TooltipProvider>
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+              {/* Ingredients Column */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <ShoppingBasket className="h-6 w-6 text-mustard" />
+                  <h3 className="font-display text-3xl tracking-wide text-poppy">
+                    INGREDIENTS
+                  </h3>
+                </div>
+                
+                <ul className="space-y-3">
+                  {ingredients.map((ingredient, index) => {
+                    const needsTooltip = ingredient.toLowerCase().includes('sport pepper');
+                    const ingredientItem = (
+                      <li key={index} className="flex items-start gap-4 group">
+                        <Checkbox
+                          id={`ingredient-${index}`}
+                          checked={checkedIngredients[index] || false}
+                          onCheckedChange={(checked) => 
+                            setCheckedIngredients(prev => ({ ...prev, [index]: checked as boolean }))
+                          }
+                          className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                        />
+                        <label
+                          htmlFor={`ingredient-${index}`}
+                          className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                            checkedIngredients[index] 
+                              ? 'line-through opacity-50' 
+                              : 'text-poppy/90 group-hover:text-poppy'
+                          }`}
+                        >
+                          {ingredient}
+                        </label>
+                      </li>
+                    );
+
+                    if (needsTooltip) {
+                      return (
+                        <Tooltip key={index}>
+                          <TooltipTrigger asChild>
+                            {ingredientItem}
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="text-sm">Small pickled peppers commonly used in Chicago-style hot dogs</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    }
+
+                    return ingredientItem;
+                  })}
+                </ul>
+              </div>
+
+              {/* Instructions Column */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <Utensils className="h-6 w-6 text-relish" />
+                  <h3 className="font-display text-3xl tracking-wide text-poppy">
+                    INSTRUCTIONS
+                  </h3>
+                </div>
+                
+                <ol className="space-y-4">
+                  {instructions.map((step, index) => (
+                    <li key={index} className="flex items-start gap-4 group">
+                      <Checkbox
+                        id={`step-${index}`}
+                        checked={checkedSteps[index] || false}
+                        onCheckedChange={(checked) => 
+                          setCheckedSteps(prev => ({ ...prev, [index]: checked as boolean }))
+                        }
+                        className="mt-1 data-[state=checked]:bg-relish data-[state=checked]:border-relish"
+                      />
+                      <label
+                        htmlFor={`step-${index}`}
+                        className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                          checkedSteps[index] 
+                            ? 'line-through opacity-50' 
+                            : 'text-poppy/90 group-hover:text-poppy'
+                        }`}
+                      >
+                        <span className="font-semibold text-relish mr-2">{index + 1}.</span>
+                        {step}
+                      </label>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </TooltipProvider>
         </Card>
 
         {/* Fun Facts Section */}
