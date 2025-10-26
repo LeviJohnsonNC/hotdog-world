@@ -11,12 +11,14 @@ export function HotdogModel({ hovered, imageUrl }: HotdogModelProps) {
   const scale = hovered ? 0.16 : 0.12;
   
   return (
-    <sprite scale={[scale, scale, 1]}>
+    <sprite scale={[scale, scale, 1]} renderOrder={1}>
       <spriteMaterial 
         map={texture} 
         transparent 
         opacity={1}
         sizeAttenuation={true}
+        depthTest={true}
+        depthWrite={false}
       />
     </sprite>
   );

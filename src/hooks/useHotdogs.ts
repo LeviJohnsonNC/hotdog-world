@@ -4,7 +4,7 @@ import { Hotdog } from "@/types/hotdog";
 
 // Standard spherical to Cartesian coordinate conversion
 // Works with Three.js SphereGeometry default UV mapping
-const latLngToVector3 = (lat: number, lng: number, radius: number = 2.0): [number, number, number] => {
+const latLngToVector3 = (lat: number, lng: number, radius: number = 2.15): [number, number, number] => {
   // Convert lat/lng to spherical coordinates (phi, theta)
   const phi = (90 - lat) * (Math.PI / 180);      // 0 at north pole, π at south pole
   const theta = (lng + 180) * (Math.PI / 180);   // 0 to 2π around equator
