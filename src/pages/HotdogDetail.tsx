@@ -323,7 +323,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         {/* Origin Story Section - Timeline Narrative */}
         <Card 
           id="origin-story"
-          className="relative p-8 shadow-xl border-4 border-primary/10 overflow-hidden"
+          className="relative p-6 md:p-8 shadow-xl border-4 border-primary/10 overflow-hidden"
           style={{
             background: "linear-gradient(135deg, hsl(var(--bun)) 0%, hsl(var(--background)) 100%)",
           }}
@@ -337,11 +337,8 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
           />
           
           <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-3 bg-gradient-to-br from-poppy to-tomato rounded-full">
-                <BookOpen className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="font-heading text-3xl font-bold text-primary">Origin Story</h2>
+            <div className="inline-block mb-8 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+              ORIGIN STORY
             </div>
 
             {/* Timeline */}
@@ -423,12 +420,9 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         </Card>
 
         {/* Explore More Section */}
-        <Card className="p-8 shadow-xl border-4 border-accent/10 bg-white">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full">
-              <GlobeIcon className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="font-heading text-3xl font-bold text-primary">Explore More</h2>
+        <Card className="p-6 md:p-8 shadow-xl border-4 border-accent/10 bg-white">
+          <div className="inline-block mb-6 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+            EXPLORE MORE
           </div>
           
           <div className="grid md:grid-cols-2 gap-4">
