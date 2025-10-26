@@ -2,15 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
 
-// Helper to convert lat/lng to 3D sphere coordinates
-// Adjusted to match the rotated globe (rotation: [0, -Math.PI / 2, 0])
+// Standard spherical to Cartesian coordinate conversion
+// Works with Three.js SphereGeometry default UV mapping
 const latLngToVector3 = (lat: number, lng: number, radius: number = 2.0): [number, number, number] => {
-  const phi = (90 - lat) * (Math.PI / 180); // Polar angle from north pole
-  const theta = (lng) * (Math.PI / 180);     // Azimuthal angle (removed +180 offset)
+  // Convert lat/lng to spherical coordinates (phi, theta)
+  const phi = (90 - lat) * (Math.PI / 180);      // 0 at north pole, π at south pole
+  const theta = (lng + 180) * (Math.PI / 180);   // 0 to 2π around equator
   
-  const x = -(radius * Math.sin(phi) * Math.cos(theta));
-  const y = radius * Math.cos(phi);
+  // Standard spherical to Cartesian conversion
+  const x = -radius * Math.sin(phi) * Math.cos(theta);
   const z = radius * Math.sin(phi) * Math.sin(theta);
+  const y = radius * Math.cos(phi);
   
   return [x, y, z];
 };

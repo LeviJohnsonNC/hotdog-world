@@ -15,16 +15,13 @@ interface EarthProps {
 function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load REAL Earth texture - accurate equirectangular projection
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-equirect-clean.jpg');
+  // Load proper equirectangular Earth texture
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
   
-  // Configure texture for proper sphere mapping
+  // Standard texture configuration for equirectangular projection
   colorMap.wrapS = THREE.RepeatWrapping;
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
-  colorMap.minFilter = THREE.LinearFilter;
-  colorMap.magFilter = THREE.LinearFilter;
-  colorMap.flipY = false;
 
   useFrame(() => {
     if (groupRef.current && !isInteracting) {
@@ -34,34 +31,22 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
 
   return (
     <group ref={groupRef}>
-      {/* Main Earth sphere with accurate texture and cartoonish styling */}
-      <Sphere args={[2, 128, 128]} rotation={[0, -Math.PI / 2, 0]}>
+      {/* Main Earth sphere - standard Three.js sphere with equirectangular UV mapping */}
+      <Sphere args={[2, 64, 64]}>
         <meshStandardMaterial
           map={colorMap}
-          roughness={0.3}
-          metalness={0.1}
-          emissive="#00BCD4"
-          emissiveIntensity={0.15}
+          roughness={0.7}
+          metalness={0.0}
           toneMapped={false}
         />
       </Sphere>
       
-      {/* Inner glow layer */}
-      <Sphere args={[2.08, 64, 64]}>
-        <meshBasicMaterial
-          color="#4FC3F7"
-          transparent
-          opacity={0.3}
-          side={THREE.BackSide}
-        />
-      </Sphere>
-      
-      {/* Outer atmosphere glow */}
-      <Sphere args={[2.15, 64, 64]}>
+      {/* Subtle atmosphere glow */}
+      <Sphere args={[2.05, 32, 32]}>
         <meshBasicMaterial
           color="#87CEEB"
           transparent
-          opacity={0.15}
+          opacity={0.2}
           side={THREE.BackSide}
         />
       </Sphere>
@@ -114,20 +99,18 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         <color attach="background" args={["#1a2332"]} />
         <fog attach="fog" args={["#1a2332", 10, 20]} />
         
-        {/* Bright cartoonish lighting setup */}
-        <ambientLight intensity={1.2} />
+        {/* Bright lighting for cartoonish look */}
+        <ambientLight intensity={1.5} />
         <directionalLight 
           position={[5, 3, 5]} 
-          intensity={2.5}
+          intensity={1.5}
           color="#ffffff"
         />
         <directionalLight 
-          position={[-3, -2, -4]} 
-          intensity={1.0}
-          color="#87CEEB"
+          position={[-5, -3, -5]} 
+          intensity={0.8}
+          color="#ffffff"
         />
-        <pointLight position={[0, 0, 5]} intensity={2.0} color="#00BCD4" />
-        <pointLight position={[-5, 0, 0]} intensity={1.2} color="#9CCC65" />
         
         {/* Starfield background */}
         <Stars />
