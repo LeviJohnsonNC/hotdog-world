@@ -20,6 +20,14 @@ const getCardColor = (index: number): string => {
   return colors[index % colors.length];
 };
 
+const getTextSize = (text: string): string => {
+  const length = text.length;
+  if (length < 80) return "text-base"; // 16px
+  if (length < 120) return "text-sm"; // 14px
+  if (length < 160) return "text-xs"; // 12px
+  return "text-[11px]"; // 11px for very long text
+};
+
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(isRevealed);
   const [showSparkle, setShowSparkle] = useState(false);
@@ -88,7 +96,7 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
             <Badge variant="secondary" className="self-start mb-4 text-xs font-display tracking-wider">
               DID YOU KNOW?
             </Badge>
-            <p className="text-base text-foreground/90 leading-relaxed">
+            <p className={`${getTextSize(fact)} text-foreground/90 leading-relaxed`}>
               {fact}
             </p>
           </div>
