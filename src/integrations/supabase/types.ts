@@ -20,30 +20,45 @@ export type Database = {
           country: string
           created_at: string | null
           description: string
+          explore_links: Json | null
+          fun_facts: string[] | null
           id: string
+          ingredients: string[] | null
+          instructions: string[] | null
           latitude: number
           longitude: number
           name: string
+          origin_story: string | null
         }
         Insert: {
           city: string
           country: string
           created_at?: string | null
           description: string
+          explore_links?: Json | null
+          fun_facts?: string[] | null
           id?: string
+          ingredients?: string[] | null
+          instructions?: string[] | null
           latitude: number
           longitude: number
           name: string
+          origin_story?: string | null
         }
         Update: {
           city?: string
           country?: string
           created_at?: string | null
           description?: string
+          explore_links?: Json | null
+          fun_facts?: string[] | null
           id?: string
+          ingredients?: string[] | null
+          instructions?: string[] | null
           latitude?: number
           longitude?: number
           name?: string
+          origin_story?: string | null
         }
         Relationships: []
       }
