@@ -1,7 +1,5 @@
-import { useRef, useState, useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useState } from "react";
 import { Html } from "@react-three/drei";
-import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogModel } from "./HotdogModel";
 
@@ -12,49 +10,27 @@ interface HotdogPinProps {
 }
 
 export function HotdogPin({ position, onClick, hotdog }: HotdogPinProps) {
-  const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
-  // Calculate rotation to make hotdog perpendicular to Earth surface
-  const rotation = useMemo(() => {
-    const posVector = new THREE.Vector3(...position);
-    const up = new THREE.Vector3(0, 1, 0);
-    const quaternion = new THREE.Quaternion();
-    quaternion.setFromUnitVectors(up, posVector.clone().normalize());
-    return new THREE.Euler().setFromQuaternion(quaternion);
-  }, [position]);
-
-  useFrame((state) => {
-    if (groupRef.current && hovered) {
-      const baseY = position[1];
-      groupRef.current.position.y = baseY + Math.sin(state.clock.elapsedTime * 3) * 0.05;
-    } else if (groupRef.current) {
-      groupRef.current.position.y = position[1];
-    }
-  });
-
   return (
-    <group position={position}>
-      <group
-        ref={groupRef}
-        rotation={rotation}
-        onClick={(e) => {
-          e.stopPropagation();
-          onClick();
-        }}
-        onPointerOver={(e) => {
-          e.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={(e) => {
-          e.stopPropagation();
-          setHovered(false);
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <HotdogModel hovered={hovered} imageUrl={hotdog.image} />
-      </group>
+    <group 
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHovered(false);
+        document.body.style.cursor = "auto";
+      }}
+    >
+      <HotdogModel hovered={hovered} imageUrl={hotdog.image} />
       
       {hovered && (
         <Html
