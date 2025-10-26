@@ -78,6 +78,14 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
 
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[400px] bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
+        {/* Hero Image Background */}
+        {hotdog.image && (
+          <img 
+            src={hotdog.image} 
+            alt={hotdog.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white z-10 px-4">
             <Badge className="mb-4 text-lg px-6 py-2 bg-white/90 text-primary hover:bg-white">
@@ -87,12 +95,12 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             <h1 className="font-heading text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">
               {hotdog.name}
             </h1>
-            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
               🌭 {hotdog.description}
             </p>
           </div>
-          {/* Placeholder for hero image overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/40" />
         </div>
       </section>
 
