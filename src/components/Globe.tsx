@@ -16,7 +16,15 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
   // Load Earth texture with proper equirectangular projection
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-equirect-clean.jpg');
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-equirect-fixed.jpg');
+  
+  // Configure texture for proper sphere mapping
+  colorMap.wrapS = THREE.ClampToEdgeWrapping;
+  colorMap.wrapT = THREE.ClampToEdgeWrapping;
+  colorMap.colorSpace = THREE.SRGBColorSpace;
+  colorMap.minFilter = THREE.LinearFilter;
+  colorMap.magFilter = THREE.LinearFilter;
+  colorMap.flipY = false;
 
   useFrame(() => {
     if (groupRef.current && !isInteracting) {
@@ -26,8 +34,8 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
 
   return (
     <group ref={groupRef}>
-      {/* Main Earth sphere */}
-      <Sphere args={[2, 64, 64]}>
+      {/* Main Earth sphere with increased segments for smoother texture mapping */}
+      <Sphere args={[2, 128, 128]}>
         <meshStandardMaterial
           map={colorMap}
           roughness={0.4}
