@@ -16,7 +16,7 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
   // Load Earth texture with proper equirectangular projection
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-equirect-fixed.jpg');
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-cartoon-bright.jpg');
   
   // Configure texture for proper sphere mapping
   colorMap.wrapS = THREE.ClampToEdgeWrapping;
