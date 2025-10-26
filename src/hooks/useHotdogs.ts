@@ -25,14 +25,16 @@ export function useHotdogs() {
 
       if (error) throw error;
 
-      // Map city names to image files
+      // Use single hotdog pin image for all cities
+      const hotdogPinImage = '/src/assets/hotdog-pin.png';
+      
       const cityImageMap: Record<string, string> = {
-        'Chicago': '/src/assets/chicago-hotdog-transparent.png',
-        'New York': '/src/assets/newyork-hotdog-transparent.png',
-        'Tokyo': '/src/assets/tokyo-hotdog-transparent.png',
-        'Berlin': '/src/assets/berlin-hotdog-transparent.png',
-        'Copenhagen': '/src/assets/copenhagen-hotdog-transparent.png',
-        'São Paulo': '/src/assets/saopaulo-hotdog-transparent.png',
+        'Chicago': hotdogPinImage,
+        'New York': hotdogPinImage,
+        'Tokyo': hotdogPinImage,
+        'Berlin': hotdogPinImage,
+        'Copenhagen': hotdogPinImage,
+        'São Paulo': hotdogPinImage,
       };
 
       // Add 3D position and image to each hotdog
