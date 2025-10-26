@@ -41,7 +41,7 @@ export function useHotdogs() {
       return (data || []).map((hotdog) => ({
         ...hotdog,
         position: latLngToVector3(Number(hotdog.latitude), Number(hotdog.longitude)),
-        image: cityImageMap[hotdog.city] || '/src/assets/chicago-hotdog.jpg'
+        image: cityImageMap[hotdog.city] || hotdogPinImage
       })) as Hotdog[];
     },
   });
