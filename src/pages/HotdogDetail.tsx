@@ -285,23 +285,29 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
 
         {/* Fun Facts Section - Interactive Flip Cards */}
         <Card className="p-6 md:p-8 shadow-xl border-4 border-accent/10 bg-gradient-to-br from-bun to-mustard/10">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-mustard to-tomato rounded-full">
-                <Sparkles className="h-6 w-6 text-white" />
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-mustard to-tomato rounded-full">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="font-heading text-3xl font-bold text-primary">Fun Facts & Trivia</h2>
               </div>
-              <h2 className="font-heading text-3xl font-bold text-primary">Fun Facts & Trivia</h2>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  {revealedFacts.size} / {funFacts.length} discovered
+                </span>
+                <Progress 
+                  value={(revealedFacts.size / funFacts.length) * 100} 
+                  className="w-24 h-2"
+                />
+              </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">
-                {revealedFacts.size} / {funFacts.length} discovered
-              </span>
-              <Progress 
-                value={(revealedFacts.size / funFacts.length) * 100} 
-                className="w-24 h-2"
-              />
-            </div>
+            <p className="text-sm text-muted-foreground font-display tracking-wide">
+              Tap cards to reveal facts
+            </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
