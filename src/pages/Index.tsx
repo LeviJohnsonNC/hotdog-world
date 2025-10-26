@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Globe } from "@/components/Globe";
 import { HotdogDetail } from "@/components/HotdogDetail";
-import { hotdogs } from "@/data/hotdogs";
+import { useHotdogs } from "@/hooks/useHotdogs";
 import { Hotdog } from "@/types/hotdog";
 
 const Index = () => {
   const [selectedHotdog, setSelectedHotdog] = useState<Hotdog | null>(null);
+  const { data: hotdogs = [], isLoading } = useHotdogs();
 
   const handleHotdogClick = (hotdogId: string) => {
     const hotdog = hotdogs.find((h) => h.id === hotdogId);
@@ -32,7 +33,13 @@ const Index = () => {
 
       {/* Globe */}
       <div className="absolute inset-0 pt-24">
-        <Globe onHotdogClick={handleHotdogClick} />
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-muted-foreground">Loading hot dogs from around the world...</p>
+          </div>
+        ) : (
+          <Globe hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
+        )}
       </div>
 
       {/* Info Footer */}

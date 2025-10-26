@@ -14,7 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      hotdogs: {
+        Row: {
+          city: string
+          country: string
+          created_at: string | null
+          description: string
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+        }
+        Insert: {
+          city: string
+          country: string
+          created_at?: string | null
+          description: string
+          id?: string
+          latitude: number
+          longitude: number
+          name: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

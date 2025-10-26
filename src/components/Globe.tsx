@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
-import { hotdogs } from "@/data/hotdogs";
+import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 
 function Earth() {
@@ -47,10 +47,11 @@ function Earth() {
 }
 
 interface GlobeProps {
+  hotdogs: Hotdog[];
   onHotdogClick: (hotdogId: string) => void;
 }
 
-export function Globe({ onHotdogClick }: GlobeProps) {
+export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
   return (
     <div className="w-full h-full">
       <Canvas
