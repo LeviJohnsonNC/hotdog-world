@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
+import sparklesIcon from "@/assets/icons/sparkles-icon.png";
+import hotdogIcon from "@/assets/icons/hotdog-icon.png";
+import globeIcon from "@/assets/icons/globe-icon.png";
+import fireIcon from "@/assets/icons/fire-icon.png";
+import partyIcon from "@/assets/icons/party-icon.png";
 
 interface FactFlipCardProps {
   fact: string;
@@ -10,7 +15,7 @@ interface FactFlipCardProps {
 }
 
 const getFactIcon = (index: number): string => {
-  const icons = ["✨", "🌭", "🌎", "🔥", "🎉"];
+  const icons = [sparklesIcon, hotdogIcon, globeIcon, fireIcon, partyIcon];
   return icons[index % icons.length];
 };
 
@@ -78,19 +83,23 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
         {/* Front Side */}
         <div className={`flip-card-face flip-card-front ${getCardColor(index)} border-2 border-poppy/30`}>
           <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-            <div className="text-5xl mb-4">{getFactIcon(index)}</div>
-            <p className="text-sm font-medium text-foreground/70 mb-3">
+            <img 
+              src={getFactIcon(index)} 
+              alt="Fact icon" 
+              className="w-16 h-16 mb-4 object-contain"
+            />
+            <p className="text-sm font-display tracking-wide text-foreground/70 mb-3">
               {getFactTeaser(fact)}
             </p>
-            <span className="text-xs text-muted-foreground">Tap to reveal</span>
+            <span className="text-xs text-muted-foreground font-display">TAP TO REVEAL</span>
           </div>
         </div>
 
         {/* Back Side */}
         <div className="flip-card-face flip-card-back bg-white border-2 border-mustard/40">
           <div className="flex flex-col h-full p-6">
-            <Badge variant="secondary" className="self-start mb-3 text-xs">
-              Did You Know?
+            <Badge variant="secondary" className="self-start mb-3 text-xs font-display tracking-wide">
+              DID YOU KNOW?
             </Badge>
             <p className="text-sm text-foreground/90 leading-relaxed">
               {fact}
