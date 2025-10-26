@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Html } from "@react-three/drei";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
+import { HotdogModel } from "./HotdogModel";
 
 interface HotdogPinProps {
   position: [number, number, number];
@@ -11,21 +12,32 @@ interface HotdogPinProps {
 }
 
 export function HotdogPin({ position, onClick, hotdog }: HotdogPinProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
+  // Calculate rotation to make hotdog perpendicular to Earth surface
+  const rotation = useMemo(() => {
+    const posVector = new THREE.Vector3(...position);
+    const up = new THREE.Vector3(0, 1, 0);
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromUnitVectors(up, posVector.clone().normalize());
+    return new THREE.Euler().setFromQuaternion(quaternion);
+  }, [position]);
+
   useFrame((state) => {
-    if (meshRef.current && hovered) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2) * 0.1;
-    } else if (meshRef.current) {
-      meshRef.current.position.y = position[1];
+    if (groupRef.current && hovered) {
+      const baseY = position[1];
+      groupRef.current.position.y = baseY + Math.sin(state.clock.elapsedTime * 3) * 0.05;
+    } else if (groupRef.current) {
+      groupRef.current.position.y = position[1];
     }
   });
 
   return (
     <group position={position}>
-      <mesh
-        ref={meshRef}
+      <group
+        ref={groupRef}
+        rotation={rotation}
         onClick={(e) => {
           e.stopPropagation();
           onClick();
@@ -41,18 +53,12 @@ export function HotdogPin({ position, onClick, hotdog }: HotdogPinProps) {
           document.body.style.cursor = "auto";
         }}
       >
-        <sphereGeometry args={[0.08, 16, 16]} />
-        <meshStandardMaterial
-          color="#E63946"
-          emissive="#E63946"
-          emissiveIntensity={hovered ? 0.8 : 0.4}
-          roughness={0.3}
-        />
-      </mesh>
+        <HotdogModel hovered={hovered} />
+      </group>
       
       {hovered && (
         <Html
-          position={[0, 0.3, 0]}
+          position={[0, 0.4, 0]}
           center
           distanceFactor={6}
           style={{

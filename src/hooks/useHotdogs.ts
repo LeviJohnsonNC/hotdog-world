@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
 
 // Helper to convert lat/lng to 3D sphere coordinates
-const latLngToVector3 = (lat: number, lng: number, radius: number = 2): [number, number, number] => {
+const latLngToVector3 = (lat: number, lng: number, radius: number = 2.05): [number, number, number] => {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
   
