@@ -14,8 +14,8 @@ interface EarthProps {
 function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load bright cartoonish Earth texture
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-cartoon.jpg');
+  // Load bright cartoonish Earth texture in equirectangular projection
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-cartoon-equirect.jpg');
 
   useFrame(() => {
     if (groupRef.current && !isInteracting) {
