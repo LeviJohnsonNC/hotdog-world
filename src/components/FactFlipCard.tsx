@@ -92,12 +92,9 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
             <Badge variant="secondary" className="self-start mb-3 text-xs">
               Did You Know?
             </Badge>
-            <p className="text-sm text-foreground/90 leading-relaxed flex-1">
+            <p className="text-sm text-foreground/90 leading-relaxed">
               {fact}
             </p>
-            <div className="text-center mt-3">
-              <span className="text-xs text-muted-foreground">↻ Tap to flip back</span>
-            </div>
           </div>
         </div>
       </button>
