@@ -114,9 +114,9 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
       <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
         
         {/* Recipe Section */}
-        <Card className="relative p-10 md:p-12 shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-bun overflow-hidden">
+        <Card className="relative p-10 md:p-12 shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-bun">
           {/* Location Flag Badge - Stamp Style */}
-          <div className="absolute -top-3 -right-3 rotate-12 bg-tomato text-white px-4 py-2 rounded-lg shadow-lg font-display text-sm tracking-wider">
+          <div className="absolute top-4 right-4 rotate-6 bg-tomato text-white px-4 py-2 rounded-lg shadow-lg font-display text-sm tracking-wider">
             {hotdog.city.toUpperCase()}
           </div>
           
