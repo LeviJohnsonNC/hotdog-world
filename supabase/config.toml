@@ -1,1 +1,4 @@
 project_id = "yjpohmmrjuphbjjgvyhv"
+
+[functions.generate-hotdog-sprite]
+verify_jwt = false

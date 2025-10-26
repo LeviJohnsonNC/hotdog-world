@@ -73,19 +73,19 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         camera={{ position: [0, 0, 6], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
       >
-        <color attach="background" args={["#1a1a2e"]} />
+        <color attach="background" args={["#2a2a3e"]} />
         
         {/* Improved lighting for realistic globe */}
-        <ambientLight intensity={0.3} />
+        <ambientLight intensity={0.6} />
         <directionalLight 
           position={[5, 3, 5]} 
-          intensity={1.2}
+          intensity={1.8}
           color="#ffffff"
         />
         <hemisphereLight
           color="#ffffff"
-          groundColor="#444444"
-          intensity={0.5}
+          groundColor="#666666"
+          intensity={0.8}
         />
         <pointLight position={[-5, -3, -5]} intensity={0.3} color="#F6BD60" />
         

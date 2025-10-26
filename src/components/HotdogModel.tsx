@@ -8,7 +8,7 @@ interface HotdogModelProps {
 
 export function HotdogModel({ hovered, imageUrl }: HotdogModelProps) {
   const texture = useLoader(THREE.TextureLoader, imageUrl);
-  const scale = hovered ? 0.45 : 0.4;
+  const scale = hovered ? 0.15 : 0.12;
   
   return (
     <sprite scale={[scale, scale, 1]}>
@@ -16,7 +16,7 @@ export function HotdogModel({ hovered, imageUrl }: HotdogModelProps) {
         map={texture} 
         transparent 
         opacity={1}
-        sizeAttenuation={false}
+        sizeAttenuation={true}
       />
     </sprite>
   );
