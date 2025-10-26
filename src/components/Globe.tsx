@@ -15,11 +15,11 @@ interface EarthProps {
 function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Load Earth texture with proper equirectangular projection
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-cartoon-bright.jpg');
+  // Load REAL Earth texture - accurate equirectangular projection
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-equirect-clean.jpg');
   
   // Configure texture for proper sphere mapping
-  colorMap.wrapS = THREE.ClampToEdgeWrapping;
+  colorMap.wrapS = THREE.RepeatWrapping;
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
   colorMap.minFilter = THREE.LinearFilter;
@@ -34,14 +34,15 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
 
   return (
     <group ref={groupRef}>
-      {/* Main Earth sphere with increased segments for smoother texture mapping */}
-      <Sphere args={[2, 128, 128]}>
+      {/* Main Earth sphere with accurate texture and cartoonish styling */}
+      <Sphere args={[2, 128, 128]} rotation={[0, -Math.PI / 2, 0]}>
         <meshStandardMaterial
           map={colorMap}
-          roughness={0.4}
-          metalness={0.0}
-          emissive="#4FC3F7"
-          emissiveIntensity={0.1}
+          roughness={0.3}
+          metalness={0.1}
+          emissive="#00BCD4"
+          emissiveIntensity={0.15}
+          toneMapped={false}
         />
       </Sphere>
       
@@ -113,15 +114,20 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         <color attach="background" args={["#1a2332"]} />
         <fog attach="fog" args={["#1a2332", 10, 20]} />
         
-        {/* Lighting setup for glowing globe effect */}
-        <ambientLight intensity={0.8} />
+        {/* Bright cartoonish lighting setup */}
+        <ambientLight intensity={1.2} />
         <directionalLight 
           position={[5, 3, 5]} 
-          intensity={2.0}
+          intensity={2.5}
           color="#ffffff"
         />
-        <pointLight position={[0, 0, 4]} intensity={1.5} color="#4FC3F7" />
-        <pointLight position={[-5, -3, -5]} intensity={0.8} color="#9CCC65" />
+        <directionalLight 
+          position={[-3, -2, -4]} 
+          intensity={1.0}
+          color="#87CEEB"
+        />
+        <pointLight position={[0, 0, 5]} intensity={2.0} color="#00BCD4" />
+        <pointLight position={[-5, 0, 0]} intensity={1.2} color="#9CCC65" />
         
         {/* Starfield background */}
         <Stars />

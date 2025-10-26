@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
 
 // Helper to convert lat/lng to 3D sphere coordinates
+// Adjusted to match the rotated globe (rotation: [0, -Math.PI / 2, 0])
 const latLngToVector3 = (lat: number, lng: number, radius: number = 2.0): [number, number, number] => {
-  const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lng + 180) * (Math.PI / 180);
+  const phi = (90 - lat) * (Math.PI / 180); // Polar angle from north pole
+  const theta = (lng) * (Math.PI / 180);     // Azimuthal angle (removed +180 offset)
   
   const x = -(radius * Math.sin(phi) * Math.cos(theta));
   const y = radius * Math.cos(phi);
