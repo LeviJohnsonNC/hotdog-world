@@ -21,7 +21,7 @@ const getCardColor = (index: number): string => {
 };
 
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(isRevealed);
   const [showSparkle, setShowSparkle] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -36,6 +36,11 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+
+  // Sync isFlipped state with isRevealed prop
+  useEffect(() => {
+    setIsFlipped(isRevealed);
+  }, [isRevealed]);
 
   const handleFlip = () => {
     // Only allow flipping if not already revealed
