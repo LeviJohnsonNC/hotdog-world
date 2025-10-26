@@ -287,11 +287,8 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         <Card className="p-6 md:p-8 shadow-xl border-4 border-accent/10 bg-gradient-to-br from-bun to-mustard/10">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-gradient-to-br from-mustard to-tomato rounded-full">
-                  <Sparkles className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="font-heading text-3xl font-bold text-primary">Fun Facts & Trivia</h2>
+              <div className="inline-block px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+                FUN FACTS & TRIVIA
               </div>
               
               <div className="flex items-center gap-3">
