@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
 
 // Helper to convert lat/lng to 3D sphere coordinates
-const latLngToVector3 = (lat: number, lng: number, radius: number = 2.05): [number, number, number] => {
+const latLngToVector3 = (lat: number, lng: number, radius: number = 2.0): [number, number, number] => {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
   
@@ -26,7 +26,7 @@ export function useHotdogs() {
       if (error) throw error;
 
       // Use single hotdog pin image for all cities
-      const hotdogPinImage = '/src/assets/hotdog-pin.png';
+      const hotdogPinImage = '/hotdogs/hotdog-pin.png';
       
       const cityImageMap: Record<string, string> = {
         'Chicago': hotdogPinImage,
