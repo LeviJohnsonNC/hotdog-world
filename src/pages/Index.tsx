@@ -1,18 +1,13 @@
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Globe } from "@/components/Globe";
-import { HotdogDetail } from "@/components/HotdogDetail";
 import { useHotdogs } from "@/hooks/useHotdogs";
-import { Hotdog } from "@/types/hotdog";
 
 const Index = () => {
-  const [selectedHotdog, setSelectedHotdog] = useState<Hotdog | null>(null);
+  const navigate = useNavigate();
   const { data: hotdogs = [], isLoading } = useHotdogs();
 
   const handleHotdogClick = (hotdogId: string) => {
-    const hotdog = hotdogs.find((h) => h.id === hotdogId);
-    if (hotdog) {
-      setSelectedHotdog(hotdog);
-    }
+    navigate(`/hotdog/${hotdogId}`);
   };
 
   return (
@@ -51,13 +46,6 @@ const Index = () => {
         </div>
       </footer>
 
-      {/* Hotdog Detail Modal */}
-      {selectedHotdog && (
-        <HotdogDetail
-          hotdog={selectedHotdog}
-          onClose={() => setSelectedHotdog(null)}
-        />
-      )}
     </div>
   );
 };
