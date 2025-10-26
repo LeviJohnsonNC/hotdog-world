@@ -6,5 +6,6 @@ export interface Hotdog {
   description: string;
   latitude: number;
   longitude: number;
+  image: string;
   position: [number, number, number]; // 3D coordinates on globe
 }

@@ -25,10 +25,21 @@ export function useHotdogs() {
 
       if (error) throw error;
 
-      // Add 3D position to each hotdog
+      // Map city names to image files
+      const cityImageMap: Record<string, string> = {
+        'Chicago': '/src/assets/chicago-hotdog.jpg',
+        'New York': '/src/assets/newyork-hotdog.jpg',
+        'Tokyo': '/src/assets/tokyo-hotdog.jpg',
+        'Berlin': '/src/assets/berlin-hotdog.jpg',
+        'Copenhagen': '/src/assets/copenhagen-hotdog.jpg',
+        'São Paulo': '/src/assets/saopaulo-hotdog.jpg',
+      };
+
+      // Add 3D position and image to each hotdog
       return (data || []).map((hotdog) => ({
         ...hotdog,
-        position: latLngToVector3(Number(hotdog.latitude), Number(hotdog.longitude))
+        position: latLngToVector3(Number(hotdog.latitude), Number(hotdog.longitude)),
+        image: cityImageMap[hotdog.city] || '/src/assets/chicago-hotdog.jpg'
       })) as Hotdog[];
     },
   });

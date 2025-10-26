@@ -5,8 +5,13 @@ import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 
-function Earth() {
-  const earthRef = useRef<THREE.Mesh>(null);
+interface EarthProps {
+  hotdogs: Hotdog[];
+  onHotdogClick: (hotdogId: string) => void;
+}
+
+function Earth({ hotdogs, onHotdogClick }: EarthProps) {
+  const groupRef = useRef<THREE.Group>(null);
   
   // Load Earth textures
   const [colorMap, bumpMap] = useLoader(THREE.TextureLoader, [
@@ -15,15 +20,15 @@ function Earth() {
   ]);
 
   useFrame(() => {
-    if (earthRef.current) {
-      earthRef.current.rotation.y += 0.001;
+    if (groupRef.current) {
+      groupRef.current.rotation.y += 0.001;
     }
   });
 
   return (
-    <>
+    <group ref={groupRef}>
       {/* Main Earth sphere with realistic texture */}
-      <Sphere ref={earthRef} args={[2, 64, 64]}>
+      <Sphere args={[2, 64, 64]}>
         <meshStandardMaterial
           map={colorMap}
           bumpMap={bumpMap}
@@ -42,7 +47,17 @@ function Earth() {
           side={THREE.BackSide}
         />
       </Sphere>
-    </>
+      
+      {/* Hotdogs are now children of the rotating Earth group */}
+      {hotdogs.map((hotdog) => (
+        <HotdogPin
+          key={hotdog.id}
+          position={hotdog.position}
+          onClick={() => onHotdogClick(hotdog.id)}
+          hotdog={hotdog}
+        />
+      ))}
+    </group>
   );
 }
 
@@ -74,16 +89,7 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         />
         <pointLight position={[-5, -3, -5]} intensity={0.3} color="#F6BD60" />
         
-        <Earth />
-        
-        {hotdogs.map((hotdog) => (
-          <HotdogPin
-            key={hotdog.id}
-            position={hotdog.position}
-            onClick={() => onHotdogClick(hotdog.id)}
-            hotdog={hotdog}
-          />
-        ))}
+        <Earth hotdogs={hotdogs} onHotdogClick={onHotdogClick} />
         
         <OrbitControls
           enablePan={false}
