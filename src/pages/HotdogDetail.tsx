@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { FactFlipCard } from "@/components/FactFlipCard";
+import { toast } from "@/hooks/use-toast";
 
 const HotdogDetail = () => {
   const { id } = useParams();
@@ -17,6 +20,67 @@ const HotdogDetail = () => {
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
+  const [revealedFacts, setRevealedFacts] = useState<Set<number>>(new Set());
+  const [storyCompleted, setStoryCompleted] = useState(false);
+  const [showScrollCue, setShowScrollCue] = useState(true);
+
+  useEffect(() => {
+    // Load revealed facts from localStorage
+    if (hotdog) {
+      const saved = localStorage.getItem(`hotdog_facts_revealed_${hotdog.id}`);
+      if (saved) {
+        setRevealedFacts(new Set(JSON.parse(saved)));
+      }
+      
+      const completed = localStorage.getItem(`hotdog_story_completed_${hotdog.id}`);
+      if (completed === "true") {
+        setStoryCompleted(true);
+      }
+    }
+  }, [hotdog]);
+
+  const handleRevealFact = (index: number) => {
+    if (!hotdog) return;
+    
+    const newRevealed = new Set(revealedFacts);
+    newRevealed.add(index);
+    setRevealedFacts(newRevealed);
+    
+    localStorage.setItem(
+      `hotdog_facts_revealed_${hotdog.id}`,
+      JSON.stringify(Array.from(newRevealed))
+    );
+  };
+
+  useEffect(() => {
+    if (!hotdog || storyCompleted) return;
+
+    const handleScroll = () => {
+      const storySection = document.getElementById("origin-story");
+      if (!storySection) return;
+
+      const rect = storySection.getBoundingClientRect();
+      const scrolledToBottom = rect.bottom <= window.innerHeight + 100;
+
+      if (scrolledToBottom && !storyCompleted) {
+        setStoryCompleted(true);
+        localStorage.setItem(`hotdog_story_completed_${hotdog.id}`, "true");
+        
+        toast({
+          title: "🎉 Origin Story Unlocked!",
+          description: `You've discovered the complete history of the ${hotdog.name}!`,
+        });
+      }
+
+      // Hide scroll cue after first scroll
+      if (window.scrollY > 100) {
+        setShowScrollCue(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [hotdog, storyCompleted]);
 
   if (!hotdog) {
     return (
@@ -219,45 +283,139 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
           </TooltipProvider>
         </Card>
 
-        {/* Fun Facts Section */}
-        <Card className="p-8 shadow-xl border-4 border-accent/10 bg-gradient-to-br from-yellow-50 to-orange-50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full">
-              <Sparkles className="h-6 w-6 text-white" />
+        {/* Fun Facts Section - Interactive Flip Cards */}
+        <Card className="p-8 shadow-xl border-4 border-accent/10 bg-gradient-to-br from-bun to-mustard/10">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-mustard to-tomato rounded-full">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="font-heading text-3xl font-bold text-primary">Fun Facts & Trivia</h2>
             </div>
-            <h2 className="font-heading text-3xl font-bold text-primary">Fun Facts & Trivia</h2>
+            
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">
+                {revealedFacts.size} / {funFacts.length} discovered
+              </span>
+              <Progress 
+                value={(revealedFacts.size / funFacts.length) * 100} 
+                className="w-24 h-2"
+              />
+            </div>
           </div>
           
-          <div className="grid gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {funFacts.map((fact, index) => (
-              <div
+              <FactFlipCard
                 key={index}
-                className="p-4 bg-white rounded-lg border-l-4 border-accent shadow-sm hover:shadow-md transition-shadow"
-              >
-                <p className="text-foreground/80 flex items-start gap-3">
-                  <span className="text-2xl">✨</span>
-                  <span>{fact}</span>
-                </p>
-              </div>
+                fact={fact}
+                index={index}
+                isRevealed={revealedFacts.has(index)}
+                onReveal={() => handleRevealFact(index)}
+              />
             ))}
           </div>
         </Card>
 
-        {/* Origin Story Section */}
-        <Card className="p-8 shadow-xl border-4 border-primary/10 bg-gradient-to-br from-blue-50 to-purple-50">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full">
-              <BookOpen className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="font-heading text-3xl font-bold text-primary">Origin Story</h2>
-          </div>
+        {/* Origin Story Section - Timeline Narrative */}
+        <Card 
+          id="origin-story"
+          className="relative p-8 shadow-xl border-4 border-primary/10 overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--bun)) 0%, hsl(var(--background)) 100%)",
+          }}
+        >
+          {/* Vintage Paper Texture Overlay */}
+          <div 
+            className="absolute inset-0 opacity-5 pointer-events-none"
+            style={{
+              backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground)) 3px)",
+            }}
+          />
           
-          <div className="prose prose-lg max-w-none">
-            {originStory.split('\n\n').map((paragraph, index) => (
-              <p key={index} className="text-foreground/80 leading-relaxed mb-4">
-                {paragraph}
-              </p>
-            ))}
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-3 bg-gradient-to-br from-poppy to-tomato rounded-full">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <h2 className="font-heading text-3xl font-bold text-primary">Origin Story</h2>
+            </div>
+
+            {/* Timeline */}
+            <div className="relative mb-12">
+              <div className="flex justify-between items-center px-4">
+                {["1930s", "1950s", "Today"].map((year, idx) => (
+                  <div key={year} className="flex flex-col items-center">
+                    <div 
+                      className={`timeline-dot ${idx === 0 ? "active" : ""}`}
+                      aria-label={`Timeline milestone: ${year}`}
+                    />
+                    <span className="mt-2 text-sm font-semibold text-foreground/70 font-display">
+                      {year}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="absolute top-2 left-0 right-0 h-0.5 bg-border -z-10" />
+            </div>
+
+            {/* Story Segments */}
+            <div className="space-y-8">
+              {originStory.split('\n\n').map((paragraph, index) => {
+                const icons = ["🌱", "📈", "🌭"];
+                const eras = ["Birth", "Evolution", "Today"];
+                
+                // Highlight key terms
+                let highlightedParagraph = paragraph;
+                const keyTerms = [
+                  { term: "Great Depression", color: "text-tomato" },
+                  { term: "Vienna Beef", color: "text-mustard" },
+                  { term: "World's Fair", color: "text-relish" },
+                  { term: "Chicago", color: "text-poppy" },
+                  { term: "Maxwell Street", color: "text-mustard" },
+                ];
+                
+                keyTerms.forEach(({ term, color }) => {
+                  const regex = new RegExp(`(${term})`, "gi");
+                  highlightedParagraph = highlightedParagraph.replace(
+                    regex,
+                    `<span class="font-semibold ${color}">$1</span>`
+                  );
+                });
+
+                return (
+                  <div 
+                    key={index}
+                    className="story-segment visible"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-mustard/20 to-tomato/20 rounded-full flex items-center justify-center text-2xl">
+                        {icons[index] || "📖"}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-display text-xl font-bold text-foreground mb-3">
+                          {eras[index] || `Chapter ${index + 1}`}
+                        </h3>
+                        <p 
+                          className="text-foreground/80 leading-loose text-base"
+                          dangerouslySetInnerHTML={{ __html: highlightedParagraph }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Scroll Cue */}
+            {showScrollCue && !storyCompleted && (
+              <div className="flex justify-center mt-8 animate-bounce">
+                <div className="flex flex-col items-center text-muted-foreground">
+                  <span className="text-sm mb-1">Scroll to continue</span>
+                  <ChevronDown className="h-5 w-5" />
+                </div>
+              </div>
+            )}
           </div>
         </Card>
 
