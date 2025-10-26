@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
 import { hotdogs } from "@/data/hotdogs";
@@ -7,6 +7,12 @@ import { HotdogPin } from "./HotdogPin";
 
 function Earth() {
   const earthRef = useRef<THREE.Mesh>(null);
+  
+  // Load Earth textures
+  const [colorMap, bumpMap] = useLoader(THREE.TextureLoader, [
+    '/textures/earth-color.jpg',
+    '/textures/earth-bump.jpg'
+  ]);
 
   useFrame(() => {
     if (earthRef.current) {
@@ -15,15 +21,28 @@ function Earth() {
   });
 
   return (
-    <Sphere ref={earthRef} args={[2, 64, 64]}>
-      <meshStandardMaterial
-        color="#5BC0EB"
-        roughness={0.8}
-        metalness={0.2}
-        emissive="#3a8fb7"
-        emissiveIntensity={0.2}
-      />
-    </Sphere>
+    <>
+      {/* Main Earth sphere with realistic texture */}
+      <Sphere ref={earthRef} args={[2, 64, 64]}>
+        <meshStandardMaterial
+          map={colorMap}
+          bumpMap={bumpMap}
+          bumpScale={0.05}
+          roughness={0.7}
+          metalness={0.1}
+        />
+      </Sphere>
+      
+      {/* Atmosphere glow effect */}
+      <Sphere args={[2.05, 64, 64]}>
+        <meshBasicMaterial
+          color="#5BC0EB"
+          transparent
+          opacity={0.1}
+          side={THREE.BackSide}
+        />
+      </Sphere>
+    </>
   );
 }
 
@@ -38,10 +57,21 @@ export function Globe({ onHotdogClick }: GlobeProps) {
         camera={{ position: [0, 0, 6], fov: 45 }}
         gl={{ antialias: true, alpha: true }}
       >
-        <color attach="background" args={["#F3E9D2"]} />
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 5, 5]} intensity={0.8} />
-        <pointLight position={[-5, -5, -5]} intensity={0.4} color="#F6BD60" />
+        <color attach="background" args={["#1a1a2e"]} />
+        
+        {/* Improved lighting for realistic globe */}
+        <ambientLight intensity={0.3} />
+        <directionalLight 
+          position={[5, 3, 5]} 
+          intensity={1.2}
+          color="#ffffff"
+        />
+        <hemisphereLight
+          color="#ffffff"
+          groundColor="#444444"
+          intensity={0.5}
+        />
+        <pointLight position={[-5, -3, -5]} intensity={0.3} color="#F6BD60" />
         
         <Earth />
         
