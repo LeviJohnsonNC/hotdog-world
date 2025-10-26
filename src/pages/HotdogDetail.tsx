@@ -26,7 +26,8 @@ const HotdogDetail = () => {
     );
   }
 
-  const placeholderIngredients = [
+  // Use actual data if available, otherwise fall back to placeholders
+  const ingredients = hotdog.ingredients || [
     "Premium hot dog sausage",
     "Fresh baked bun",
     "Special house sauce",
@@ -35,7 +36,7 @@ const HotdogDetail = () => {
     "Secret spice blend",
   ];
 
-  const placeholderSteps = [
+  const instructions = hotdog.instructions || [
     "Grill the sausage until perfectly charred and juicy",
     "Toast the bun until golden and slightly crispy",
     "Layer the special sauce generously on the bun",
@@ -44,7 +45,7 @@ const HotdogDetail = () => {
     "Serve immediately while hot and enjoy!",
   ];
 
-  const placeholderFacts = [
+  const funFacts = hotdog.fun_facts || [
     `This hot dog is a beloved street food staple in ${hotdog.city}`,
     "Locals often enjoy it as a late-night snack after celebrations",
     "The recipe has been passed down through generations",
@@ -52,11 +53,15 @@ const HotdogDetail = () => {
     "It's featured in numerous food documentaries",
   ];
 
-  const placeholderLinks = [
-    { title: "Watch How It's Made", url: "#", icon: "📺" },
-    { title: "Best Places to Try", url: "#", icon: "📍" },
-    { title: "Recipe Video Tutorial", url: "#", icon: "🎥" },
-    { title: "Cultural History", url: "#", icon: "📚" },
+  const originStory = hotdog.origin_story || `The ${hotdog.name} has a rich history deeply rooted in ${hotdog.city}'s vibrant street food culture. This iconic dish emerged in the early 20th century when local vendors began experimenting with traditional recipes, creating something entirely unique to the region.
+
+What makes this hot dog distinctive is its perfect blend of local ingredients and international influences. Over the decades, it has evolved from a simple street snack to a cultural icon, representing the spirit and flavor of ${hotdog.country}. Today, it remains a must-try for food lovers visiting ${hotdog.city}, with countless vendors each adding their own special twist to this beloved classic.`;
+
+  const exploreLinks = hotdog.explore_links || [
+    { title: "Watch How It's Made", url: "#" },
+    { title: "Best Places to Try", url: "#" },
+    { title: "Recipe Video Tutorial", url: "#" },
+    { title: "Cultural History", url: "#" },
   ];
 
   return (
@@ -109,7 +114,7 @@ const HotdogDetail = () => {
                 🛒 Ingredients
               </h3>
               <ul className="space-y-2">
-                {placeholderIngredients.map((ingredient, index) => (
+                {ingredients.map((ingredient, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-sm flex items-center justify-center font-bold">
                       {index + 1}
@@ -125,7 +130,7 @@ const HotdogDetail = () => {
                 👨‍🍳 Instructions
               </h3>
               <ol className="space-y-3">
-                {placeholderSteps.map((step, index) => (
+                {instructions.map((step, index) => (
                   <li key={index} className="flex items-start gap-3">
                     <span className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 text-white text-sm flex items-center justify-center font-bold">
                       {index + 1}
@@ -148,7 +153,7 @@ const HotdogDetail = () => {
           </div>
           
           <div className="grid gap-4">
-            {placeholderFacts.map((fact, index) => (
+            {funFacts.map((fact, index) => (
               <div
                 key={index}
                 className="p-4 bg-white rounded-lg border-l-4 border-accent shadow-sm hover:shadow-md transition-shadow"
@@ -172,19 +177,11 @@ const HotdogDetail = () => {
           </div>
           
           <div className="prose prose-lg max-w-none">
-            <p className="text-foreground/80 leading-relaxed mb-4">
-              The <strong>{hotdog.name}</strong> has a rich history deeply rooted in {hotdog.city}'s 
-              vibrant street food culture. This iconic dish emerged in the early 20th century when 
-              local vendors began experimenting with traditional recipes, creating something entirely 
-              unique to the region.
-            </p>
-            <p className="text-foreground/80 leading-relaxed">
-              What makes this hot dog distinctive is its perfect blend of local ingredients and 
-              international influences. Over the decades, it has evolved from a simple street snack 
-              to a cultural icon, representing the spirit and flavor of {hotdog.country}. Today, 
-              it remains a must-try for food lovers visiting {hotdog.city}, with countless vendors 
-              each adding their own special twist to this beloved classic.
-            </p>
+            {originStory.split('\n\n').map((paragraph, index) => (
+              <p key={index} className="text-foreground/80 leading-relaxed mb-4">
+                {paragraph}
+              </p>
+            ))}
           </div>
         </Card>
 
@@ -198,27 +195,37 @@ const HotdogDetail = () => {
           </div>
           
           <div className="grid md:grid-cols-2 gap-4">
-            {placeholderLinks.map((link, index) => (
-              <a
-                key={index}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group"
-              >
-                <div className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border-2 border-primary/10 hover:border-primary/30 transition-all hover:shadow-lg hover:-translate-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">{link.icon}</span>
-                      <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {link.title}
-                      </span>
+            {exploreLinks.map((link, index) => {
+              // Determine icon based on title or URL
+              let icon = "🌐";
+              if (link.title.toLowerCase().includes("video") || link.title.toLowerCase().includes("youtube")) icon = "🎥";
+              else if (link.title.toLowerCase().includes("watch")) icon = "📺";
+              else if (link.title.toLowerCase().includes("place") || link.title.toLowerCase().includes("map")) icon = "📍";
+              else if (link.title.toLowerCase().includes("recipe")) icon = "👨‍🍳";
+              else if (link.title.toLowerCase().includes("history") || link.title.toLowerCase().includes("wikipedia")) icon = "📚";
+              
+              return (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group"
+                >
+                  <div className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border-2 border-primary/10 hover:border-primary/30 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{icon}</span>
+                        <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {link.title}
+                        </span>
+                      </div>
+                      <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
-                    <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              );
+            })}
           </div>
         </Card>
 

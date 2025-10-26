@@ -8,4 +8,9 @@ export interface Hotdog {
   longitude: number;
   image: string;
   position: [number, number, number]; // 3D coordinates on globe
+  ingredients?: string[];
+  instructions?: string[];
+  fun_facts?: string[];
+  origin_story?: string;
+  explore_links?: Array<{ title: string; url: string }>;
 }

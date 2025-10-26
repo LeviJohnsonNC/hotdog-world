@@ -41,7 +41,10 @@ export function useHotdogs() {
       return (data || []).map((hotdog) => ({
         ...hotdog,
         position: latLngToVector3(Number(hotdog.latitude), Number(hotdog.longitude)),
-        image: cityImageMap[hotdog.city] || hotdogPinImage
+        image: cityImageMap[hotdog.city] || hotdogPinImage,
+        explore_links: Array.isArray(hotdog.explore_links) 
+          ? hotdog.explore_links as Array<{ title: string; url: string }>
+          : []
       })) as Hotdog[];
     },
   });
