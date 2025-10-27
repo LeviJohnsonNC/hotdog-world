@@ -6,10 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon, ChevronDown } from "lucide-react";
+import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FactFlipCard } from "@/components/FactFlipCard";
-import { toast } from "@/hooks/use-toast";
 
 const HotdogDetail = () => {
   const { id } = useParams();
@@ -21,8 +20,6 @@ const HotdogDetail = () => {
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
   const [revealedFacts, setRevealedFacts] = useState<Set<number>>(new Set());
-  const [storyCompleted, setStoryCompleted] = useState(false);
-  const [showScrollCue, setShowScrollCue] = useState(true);
 
   useEffect(() => {
     // Load revealed facts from localStorage
@@ -30,11 +27,6 @@ const HotdogDetail = () => {
       const saved = localStorage.getItem(`hotdog_facts_revealed_${hotdog.id}`);
       if (saved) {
         setRevealedFacts(new Set(JSON.parse(saved)));
-      }
-      
-      const completed = localStorage.getItem(`hotdog_story_completed_${hotdog.id}`);
-      if (completed === "true") {
-        setStoryCompleted(true);
       }
     }
   }, [hotdog]);
@@ -52,35 +44,6 @@ const HotdogDetail = () => {
     );
   };
 
-  useEffect(() => {
-    if (!hotdog || storyCompleted) return;
-
-    const handleScroll = () => {
-      const storySection = document.getElementById("origin-story");
-      if (!storySection) return;
-
-      const rect = storySection.getBoundingClientRect();
-      const scrolledToBottom = rect.bottom <= window.innerHeight + 100;
-
-      if (scrolledToBottom && !storyCompleted) {
-        setStoryCompleted(true);
-        localStorage.setItem(`hotdog_story_completed_${hotdog.id}`, "true");
-        
-        toast({
-          title: "🎉 Origin Story Unlocked!",
-          description: `You've discovered the complete history of the ${hotdog.name}!`,
-        });
-      }
-
-      // Hide scroll cue after first scroll
-      if (window.scrollY > 100) {
-        setShowScrollCue(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [hotdog, storyCompleted]);
 
   if (!hotdog) {
     return (
@@ -407,15 +370,6 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
               })}
             </div>
 
-            {/* Scroll Cue */}
-            {showScrollCue && !storyCompleted && (
-              <div className="flex justify-center mt-8 animate-bounce">
-                <div className="flex flex-col items-center text-muted-foreground">
-                  <span className="text-sm mb-1">Scroll to continue</span>
-                  <ChevronDown className="h-5 w-5" />
-                </div>
-              </div>
-            )}
           </div>
         </Card>
 
