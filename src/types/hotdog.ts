@@ -14,9 +14,3 @@ export interface Hotdog {
   origin_story?: string;
   explore_links?: Array<{ title: string; url: string }>;
 }
-
-export interface HotdogCluster {
-  id: string;
-  position: [number, number, number];
-  hotdogs: Hotdog[];
-}
