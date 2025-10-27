@@ -4,7 +4,9 @@ import { useHotdogs } from "@/hooks/useHotdogs";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { data: hotdogs = [], isLoading } = useHotdogs();
+  const { data, isLoading } = useHotdogs();
+  const clusters = data?.clusters || [];
+  const singles = data?.singles || [];
 
   const handleHotdogClick = (hotdogId: string) => {
     navigate(`/hotdog/${hotdogId}`);
@@ -33,7 +35,7 @@ const Index = () => {
             <p className="text-muted-foreground">Loading hot dogs from around the world...</p>
           </div>
         ) : (
-          <Globe hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
+          <Globe clusters={clusters} singles={singles} onHotdogClick={handleHotdogClick} />
         )}
       </div>
 

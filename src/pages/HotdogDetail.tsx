@@ -14,9 +14,12 @@ import { toast } from "@/hooks/use-toast";
 const HotdogDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { data: hotdogs = [] } = useHotdogs();
+  const { data } = useHotdogs();
   
-  const hotdog = hotdogs.find((h) => h.id === id);
+  // Find hotdog in either clusters or singles
+  const hotdog = data 
+    ? [...data.singles, ...(data.clusters.flatMap(c => c.hotdogs))].find((h) => h.id === id)
+    : undefined;
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});

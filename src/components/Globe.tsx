@@ -2,17 +2,19 @@ import { useRef, useState } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
-import { Hotdog } from "@/types/hotdog";
+import { Hotdog, HotdogCluster as HotdogClusterType } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
+import { HotdogCluster } from "./HotdogCluster";
 import { Stars } from "./Stars";
 
 interface EarthProps {
-  hotdogs: Hotdog[];
+  clusters: HotdogClusterType[];
+  singles: Hotdog[];
   onHotdogClick: (hotdogId: string) => void;
   isInteracting: boolean;
 }
 
-function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
+function Earth({ clusters, singles, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
   
   // Load proper equirectangular Earth texture
@@ -51,8 +53,17 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
         />
       </Sphere>
       
-      {/* Hotdogs are now children of the rotating Earth group */}
-      {hotdogs.map((hotdog) => (
+      {/* Render clustered hotdogs */}
+      {clusters.map((cluster) => (
+        <HotdogCluster
+          key={cluster.id}
+          cluster={cluster}
+          onHotdogClick={onHotdogClick}
+        />
+      ))}
+      
+      {/* Render single hotdogs */}
+      {singles.map((hotdog) => (
         <HotdogPin
           key={hotdog.id}
           position={hotdog.position}
@@ -65,11 +76,12 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
 }
 
 interface GlobeProps {
-  hotdogs: Hotdog[];
+  clusters: HotdogClusterType[];
+  singles: Hotdog[];
   onHotdogClick: (hotdogId: string) => void;
 }
 
-export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
+export function Globe({ clusters, singles, onHotdogClick }: GlobeProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -115,7 +127,7 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         {/* Starfield background */}
         <Stars />
         
-        <Earth hotdogs={hotdogs} onHotdogClick={onHotdogClick} isInteracting={isInteracting} />
+        <Earth clusters={clusters} singles={singles} onHotdogClick={onHotdogClick} isInteracting={isInteracting} />
         
         <OrbitControls
           enablePan={false}
