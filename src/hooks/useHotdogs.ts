@@ -37,6 +37,7 @@ export function useHotdogs() {
         'New York': '/images/newyork-hotdog.png',
         'Kansas City': '/images/kansas-city-hotdog.png',
         'Providence': '/images/rhode-island-hotdog.png',
+        'Seattle': '/images/seattle-hotdog.png',
         'Tokyo': hotdogPinImage,
         'Berlin': hotdogPinImage,
         'Copenhagen': hotdogPinImage,
