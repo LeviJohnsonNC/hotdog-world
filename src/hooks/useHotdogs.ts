@@ -34,7 +34,8 @@ export function useHotdogs() {
       const cityImageMap: Record<string, string> = {
         'Chicago': hotdogPinImage,
         'Chicago, Illinois': '/images/chicago-hotdog-hero.png',
-        'New York': hotdogPinImage,
+        'New York': '/images/newyork-hotdog.png',
+        'Kansas City': '/images/kansas-city-hotdog.png',
         'Tokyo': hotdogPinImage,
         'Berlin': hotdogPinImage,
         'Copenhagen': hotdogPinImage,
