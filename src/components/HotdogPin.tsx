@@ -34,17 +34,17 @@ export function HotdogPin({ position, onClick, hotdog }: HotdogPinProps) {
       
       {hovered && (
         <Html
-          position={[0, 0.5, 0]}
+          position={[0, 0.15, 0]}
           center
-          distanceFactor={6}
+          distanceFactor={8}
           style={{
             pointerEvents: "none",
             userSelect: "none",
           }}
         >
-          <div className="bg-card/90 text-card-foreground px-2 py-1 rounded-md shadow-md whitespace-nowrap animate-fade-in leading-tight">
-            <p className="font-heading font-semibold text-xs">{hotdog.name}</p>
-            <p className="text-[11px] font-normal text-muted-foreground/80">{hotdog.city}</p>
+          <div className="bg-card/90 text-card-foreground px-1.5 py-0.5 rounded-md shadow-sm whitespace-nowrap animate-fade-in leading-tight">
+            <p className="font-heading font-semibold text-[10px]">{hotdog.name}</p>
+            <p className="text-[9px] font-normal text-muted-foreground/80">{hotdog.city}</p>
           </div>
         </Html>
       )}
