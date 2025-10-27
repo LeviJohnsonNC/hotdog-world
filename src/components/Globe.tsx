@@ -92,7 +92,7 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 6], fov: 45, near: 0.01 }}
+        camera={{ position: [0, 0, 4.5], fov: 45, near: 0.01 }}
         gl={{ antialias: true, alpha: true }}
       >
         {/* Dark starry background like the reference */}
