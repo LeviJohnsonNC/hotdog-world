@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
@@ -14,6 +14,8 @@ interface EarthProps {
 
 function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const [cameraDistance, setCameraDistance] = useState(4.5);
   
   // Load proper equirectangular Earth texture
   const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
@@ -27,6 +29,9 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
     if (groupRef.current && !isInteracting) {
       groupRef.current.rotation.y += 0.001;
     }
+    // Update camera distance for label scaling
+    const distance = camera.position.length();
+    setCameraDistance(distance);
   });
 
   return (
@@ -58,6 +63,7 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
           position={hotdog.position}
           onClick={() => onHotdogClick(hotdog.id)}
           hotdog={hotdog}
+          cameraDistance={cameraDistance}
         />
       ))}
     </group>
