@@ -113,6 +113,7 @@ export function useHotdogs() {
         'Chicago, Illinois': '/images/chicago-hotdog-hero.png',
         'New York': '/images/newyork-hotdog.png',
         'Detroit': '/images/detroit-coney-dog.png',
+        'Coney Island': '/images/coney-island-hotdog.png',
         'Kansas City': '/images/kansas-city-hotdog.png',
         'Providence': '/images/rhode-island-hotdog.png',
         'Seattle': '/images/seattle-hotdog.png',
