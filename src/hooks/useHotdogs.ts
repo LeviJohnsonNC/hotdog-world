@@ -121,8 +121,8 @@ export function useHotdogs() {
         'Berlin': hotdogPinImage,
         'Copenhagen': hotdogPinImage,
         'São Paulo': hotdogPinImage,
-        'Seoul': '/src/assets/seoul-corndog-transparent.png',
-        'Toronto': '/src/assets/toronto-hotdog-transparent.png',
+        'Seoul': '/images/seoul-corndog.png',
+        'Toronto': '/images/toronto-hotdog.png',
       };
 
       // Add 3D position and image to each hotdog
