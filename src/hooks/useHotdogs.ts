@@ -119,6 +119,7 @@ export function useHotdogs() {
         'Seattle': '/images/seattle-hotdog.png',
         'Atlanta': '/images/atlanta-hotdog.png',
         'Arizona': '/images/sonoran-hotdog.png',
+        'Guatemala City': '/images/shuco-hotdog.png',
         'Tokyo': hotdogPinImage,
         'Berlin': hotdogPinImage,
         'Copenhagen': hotdogPinImage,
