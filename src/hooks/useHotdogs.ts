@@ -122,12 +122,14 @@ export function useHotdogs() {
         'Guatemala City': '/images/shuco-hotdog.png',
         'Lima': '/images/lima-hotdog.png',
         'Santiago': '/images/completo-hotdog.png',
-        'Tokyo': hotdogPinImage,
+        'Tokyo': '/images/tokyo-hotdog.png',
         'Berlin': hotdogPinImage,
         'Copenhagen': hotdogPinImage,
         'São Paulo': '/images/saopaulo-hotdog.png',
         'Seoul': '/images/seoul-corndog.png',
         'Toronto': '/images/toronto-hotdog.png',
+        'Buenos Aires': '/images/pancho-hotdog.png',
+        'Honolulu': '/images/puka-hotdog.png',
       };
 
       // Add 3D position and image to each hotdog
