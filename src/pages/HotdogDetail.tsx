@@ -408,29 +408,28 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             {/* Story Sections with Natural Flow */}
             <div className="prose prose-lg max-w-none space-y-6">
               {originStory.split('\n\n').map((paragraph, index) => {
-                // Define section metadata with icons and headings
+                // Define generic section metadata that works for any hotdog
                 const sections = [
-                  { icon: "❄️", heading: "The Harsh Land" },
-                  { icon: "🌭", heading: "The Arrival" },
-                  { icon: "⭐", heading: "Rise to Glory" },
-                  { icon: "❤️", heading: "More Than Food" },
+                  { icon: "🌟", heading: "The Beginning" },
+                  { icon: "🌆", heading: "The Era" },
+                  { icon: "🌭", heading: "The Evolution" },
+                  { icon: "❤️", heading: "The Legacy" },
                 ];
                 
                 const section = sections[index] || { icon: "📖", heading: `Chapter ${index + 1}` };
                 
-                // Subtle key term highlighting - more context-aware
+                // Detect and highlight key location/cultural terms dynamically
                 let highlightedParagraph = paragraph;
-                const keyTerms = [
-                  "Iceland", "lamb", "Bæjarins Beztu", "Bill Clinton", 
-                  "ein með öllu", "pylsur", "remoulade"
-                ];
+                const cityTerms = [hotdog.city, hotdog.country, hotdog.name];
                 
-                keyTerms.forEach((term) => {
-                  const regex = new RegExp(`(${term})`, "gi");
-                  highlightedParagraph = highlightedParagraph.replace(
-                    regex,
-                    `<span class="font-medium text-primary/90 underline decoration-primary/30">$1</span>`
-                  );
+                cityTerms.forEach((term) => {
+                  if (term) {
+                    const regex = new RegExp(`\\b(${term})\\b`, "gi");
+                    highlightedParagraph = highlightedParagraph.replace(
+                      regex,
+                      `<span class="font-medium text-primary/90 underline decoration-primary/30">$1</span>`
+                    );
+                  }
                 });
 
                 return (
