@@ -129,7 +129,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
               {hotdog.name}
             </h1>
             <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
-              🌭 {hotdog.description}
+              {hotdog.description}
             </p>
           </div>
           {/* Dark overlay for text readability */}
