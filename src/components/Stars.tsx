@@ -43,15 +43,15 @@ export function Stars() {
       if (rand < 0.8) {
         // Background stars (80%) - distant and small
         distance = Math.random() * 8 + 12; // 12-20 units
-        size = 0.008;
+        size = 0.003;
       } else if (rand < 0.95) {
         // Mid-ground stars (15%) - medium distance
         distance = Math.random() * 4 + 8; // 8-12 units
-        size = 0.015;
+        size = 0.006;
       } else {
         // Foreground stars (5%) - closer and larger
         distance = Math.random() * 2 + 6; // 6-8 units
-        size = 0.025;
+        size = 0.01;
         // Mark some foreground stars for twinkling (~10% of foreground = ~0.5% total)
         if (Math.random() < 0.1) {
           twinkleIndices.push(i);
