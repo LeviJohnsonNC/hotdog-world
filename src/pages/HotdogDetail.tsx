@@ -405,67 +405,44 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
               ORIGIN STORY
             </div>
 
-            {/* Timeline */}
-            <div className="relative mb-12">
-              <div className="flex justify-between items-center px-4">
-                {["1930s", "1950s", "Today"].map((year, idx) => (
-                  <div key={year} className="flex flex-col items-center">
-                    <div 
-                      className={`timeline-dot ${idx === 0 ? "active" : ""}`}
-                      aria-label={`Timeline milestone: ${year}`}
-                    />
-                    <span className="mt-2 text-sm font-semibold text-foreground/70 font-display">
-                      {year}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="absolute top-2 left-0 right-0 h-0.5 bg-border -z-10" />
-            </div>
-
-            {/* Story Segments */}
-            <div className="space-y-8">
+            {/* Story Sections with Natural Flow */}
+            <div className="prose prose-lg max-w-none space-y-6">
               {originStory.split('\n\n').map((paragraph, index) => {
-                const icons = ["🌱", "📈", "🌭"];
-                const eras = ["Birth", "Evolution", "Today"];
-                
-                // Highlight key terms
-                let highlightedParagraph = paragraph;
-                const keyTerms = [
-                  { term: "Great Depression", color: "text-tomato" },
-                  { term: "Vienna Beef", color: "text-mustard" },
-                  { term: "World's Fair", color: "text-relish" },
-                  { term: "Chicago", color: "text-poppy" },
-                  { term: "Maxwell Street", color: "text-mustard" },
+                // Define section metadata with icons and headings
+                const sections = [
+                  { icon: "❄️", heading: "The Harsh Land" },
+                  { icon: "🌭", heading: "The Arrival" },
+                  { icon: "⭐", heading: "Rise to Glory" },
+                  { icon: "❤️", heading: "More Than Food" },
                 ];
                 
-                keyTerms.forEach(({ term, color }) => {
+                const section = sections[index] || { icon: "📖", heading: `Chapter ${index + 1}` };
+                
+                // Subtle key term highlighting - more context-aware
+                let highlightedParagraph = paragraph;
+                const keyTerms = [
+                  "Iceland", "lamb", "Bæjarins Beztu", "Bill Clinton", 
+                  "ein með öllu", "pylsur", "remoulade"
+                ];
+                
+                keyTerms.forEach((term) => {
                   const regex = new RegExp(`(${term})`, "gi");
                   highlightedParagraph = highlightedParagraph.replace(
                     regex,
-                    `<span class="font-semibold ${color}">$1</span>`
+                    `<span class="font-medium text-primary/90 underline decoration-primary/30">$1</span>`
                   );
                 });
 
                 return (
-                  <div 
-                    key={index}
-                    className="story-segment visible"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-mustard/20 to-tomato/20 rounded-full flex items-center justify-center text-2xl">
-                        {icons[index] || "📖"}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                          {eras[index] || `Chapter ${index + 1}`}
-                        </h3>
-                        <p 
-                          className="text-foreground/80 leading-loose text-base"
-                          dangerouslySetInnerHTML={{ __html: highlightedParagraph }}
-                        />
-                      </div>
-                    </div>
+                  <div key={index} className="mb-6 last:mb-0">
+                    <h3 className="flex items-center gap-2 font-display text-lg font-bold text-foreground mb-3">
+                      <span className="text-2xl">{section.icon}</span>
+                      {section.heading}
+                    </h3>
+                    <div 
+                      className="text-foreground/80 leading-relaxed text-base pl-8"
+                      dangerouslySetInnerHTML={{ __html: highlightedParagraph }}
+                    />
                   </div>
                 );
               })}
