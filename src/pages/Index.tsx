@@ -17,7 +17,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="font-heading text-3xl md:text-4xl font-bold text-primary">
-              🌭 Hotdogs Around the World
+              Hotdogs Around the World
             </h1>
             <p className="text-sm md:text-base text-muted-foreground mt-1">
               Click a pin to discover iconic street food from every corner of the planet
