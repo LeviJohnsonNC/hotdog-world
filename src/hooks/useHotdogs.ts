@@ -123,13 +123,21 @@ export function useHotdogs() {
         'Lima': '/images/lima-hotdog.png',
         'Santiago': '/images/completo-hotdog.png',
         'Tokyo': '/images/tokyo-hotdog.png',
-        'Berlin': hotdogPinImage,
-        'Copenhagen': hotdogPinImage,
+        'Berlin': '/images/currywurst-hotdog.png',
+        'Copenhagen': '/images/rod-polser-hotdog.png',
         'São Paulo': '/images/saopaulo-hotdog.png',
         'Seoul': '/images/seoul-corndog.png',
         'Toronto': '/images/toronto-hotdog.png',
         'Buenos Aires': '/images/pancho-hotdog.png',
         'Honolulu': '/images/puka-hotdog.png',
+        'Reykjavík': '/images/pylsa-hotdog.png',
+        'London': '/images/london-hotdog.png',
+        'Stockholm': '/images/tunnbrodsrulle-hotdog.png',
+        'Oslo': '/images/polse-lompe-hotdog.png',
+        'Helsinki': '/images/grilli-makkara-hotdog.png',
+        'Warsaw': '/images/kielbasa-roll-hotdog.png',
+        'Prague': '/images/parek-rohliku-hotdog.png',
+        'Moscow': '/images/sosiska-teste-hotdog.png',
       };
 
       // Add 3D position and image to each hotdog
