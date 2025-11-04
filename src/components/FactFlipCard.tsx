@@ -103,11 +103,12 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
 
         {/* Back Side */}
         <div className="flip-card-face flip-card-back bg-white border-2 border-mustard/40">
-          <div className="flex flex-col h-full p-8">
-            <Badge variant="secondary" className="self-start mb-4 text-xs font-display tracking-wider">
-              DID YOU KNOW?
-            </Badge>
-            <p className={`${getTextSize(reveal)} text-foreground/90 leading-relaxed`}>
+          <div className="flex flex-col h-full p-6">
+            <p className="text-sm italic text-foreground/60 leading-relaxed mb-3">
+              {teaser}
+            </p>
+            <div className="border-t border-mustard/20 my-2" />
+            <p className={`${getTextSize(reveal)} text-foreground/90 leading-relaxed flex-1`}>
               {reveal}
             </p>
           </div>
