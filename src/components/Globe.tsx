@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EarthProps {
   hotdogs: Hotdog[];
@@ -72,6 +73,10 @@ interface GlobeProps {
 export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
   const [isInteracting, setIsInteracting] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMobile = useIsMobile();
+  
+  const cameraZ = isMobile ? 6.5 : 4.5;
+  const minZoom = isMobile ? 5.5 : 4;
 
   const handleInteractionStart = () => {
     setIsInteracting(true);
@@ -92,7 +97,7 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
   return (
     <div className="w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 4.5], fov: 50, near: 0.01 }}
+        camera={{ position: [0, 0, cameraZ], fov: 50, near: 0.01 }}
         gl={{ antialias: true, alpha: true }}
       >
         {/* Dark starry background like the reference */}
@@ -120,7 +125,7 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
         <OrbitControls
           enablePan={false}
           enableZoom={true}
-          minDistance={4}
+          minDistance={minZoom}
           maxDistance={10}
           rotateSpeed={0.5}
           zoomSpeed={0.8}
