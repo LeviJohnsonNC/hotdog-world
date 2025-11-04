@@ -60,14 +60,25 @@ const HotdogDetail = () => {
   }
 
   // Use actual data if available, otherwise fall back to placeholders
-  const ingredients = hotdog.ingredients || [
-    "Premium hot dog sausage",
-    "Fresh baked bun",
-    "Special house sauce",
-    "Crispy fried onions",
-    "Fresh vegetables",
-    "Secret spice blend",
-  ];
+  // Check if ingredients is structured format or legacy array
+  const isStructuredIngredients = hotdog.ingredients && 
+    typeof hotdog.ingredients === 'object' && 
+    !Array.isArray(hotdog.ingredients);
+  
+  const ingredientsData = isStructuredIngredients 
+    ? hotdog.ingredients as { hotdog_and_bun?: string[]; toppings?: string[] }
+    : null;
+  
+  const ingredientsArray = !isStructuredIngredients 
+    ? (hotdog.ingredients as string[] || [
+        "Premium hot dog sausage",
+        "Fresh baked bun",
+        "Special house sauce",
+        "Crispy fried onions",
+        "Fresh vegetables",
+        "Secret spice blend",
+      ])
+    : [];
 
   const instructions = hotdog.instructions || [
     "Grill the sausage until perfectly charred and juicy",
@@ -163,48 +174,118 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                   </h3>
                 </div>
                 
-                <ul className="space-y-3">
-                  {ingredients.map((ingredient, index) => {
-                    const needsTooltip = ingredient.toLowerCase().includes('sport pepper');
-                    const ingredientItem = (
-                      <li key={index} className="flex items-start gap-4 group">
-                        <Checkbox
-                          id={`ingredient-${index}`}
-                          checked={checkedIngredients[index] || false}
-                          onCheckedChange={(checked) => 
-                            setCheckedIngredients(prev => ({ ...prev, [index]: checked as boolean }))
-                          }
-                          className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                        />
-                        <label
-                          htmlFor={`ingredient-${index}`}
-                          className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                            checkedIngredients[index] 
-                              ? 'line-through opacity-50' 
-                              : 'text-poppy/90 group-hover:text-poppy'
-                          }`}
-                        >
-                          {ingredient}
-                        </label>
-                      </li>
-                    );
-
-                    if (needsTooltip) {
-                      return (
-                        <Tooltip key={index}>
-                          <TooltipTrigger asChild>
-                            {ingredientItem}
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-xs">
-                            <p className="text-sm">Small pickled peppers commonly used in Chicago-style hot dogs</p>
-                          </TooltipContent>
-                        </Tooltip>
+                {isStructuredIngredients && ingredientsData ? (
+                  // Structured ingredients with subsections
+                  <div className="space-y-6">
+                    {ingredientsData.hotdog_and_bun && ingredientsData.hotdog_and_bun.length > 0 && (
+                      <div>
+                        <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded">
+                          FOR THE HOT DOG AND BUN
+                        </div>
+                        <ul className="space-y-3">
+                          {ingredientsData.hotdog_and_bun.map((ingredient, index) => (
+                            <li key={`bun-${index}`} className="flex items-start gap-4 group">
+                              <Checkbox
+                                id={`ingredient-bun-${index}`}
+                                checked={checkedIngredients[`bun-${index}`] || false}
+                                onCheckedChange={(checked) => 
+                                  setCheckedIngredients(prev => ({ ...prev, [`bun-${index}`]: checked as boolean }))
+                                }
+                                className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                              />
+                              <label
+                                htmlFor={`ingredient-bun-${index}`}
+                                className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                  checkedIngredients[`bun-${index}`]
+                                    ? 'line-through opacity-50' 
+                                    : 'text-poppy/90 group-hover:text-poppy'
+                                }`}
+                              >
+                                {ingredient}
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {ingredientsData.toppings && ingredientsData.toppings.length > 0 && (
+                      <div>
+                        <div className="inline-block mb-3 px-3 py-1 bg-tomato/20 text-tomato font-display text-xs tracking-wider rounded">
+                          FOR THE TOPPINGS
+                        </div>
+                        <ul className="space-y-3">
+                          {ingredientsData.toppings.map((ingredient, index) => (
+                            <li key={`topping-${index}`} className="flex items-start gap-4 group">
+                              <Checkbox
+                                id={`ingredient-topping-${index}`}
+                                checked={checkedIngredients[`topping-${index}`] || false}
+                                onCheckedChange={(checked) => 
+                                  setCheckedIngredients(prev => ({ ...prev, [`topping-${index}`]: checked as boolean }))
+                                }
+                                className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                              />
+                              <label
+                                htmlFor={`ingredient-topping-${index}`}
+                                className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                  checkedIngredients[`topping-${index}`]
+                                    ? 'line-through opacity-50' 
+                                    : 'text-poppy/90 group-hover:text-poppy'
+                                }`}
+                              >
+                                {ingredient}
+                              </label>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Legacy array format
+                  <ul className="space-y-3">
+                    {ingredientsArray.map((ingredient, index) => {
+                      const needsTooltip = ingredient.toLowerCase().includes('sport pepper');
+                      const ingredientItem = (
+                        <li key={index} className="flex items-start gap-4 group">
+                          <Checkbox
+                            id={`ingredient-${index}`}
+                            checked={checkedIngredients[index] || false}
+                            onCheckedChange={(checked) => 
+                              setCheckedIngredients(prev => ({ ...prev, [index]: checked as boolean }))
+                            }
+                            className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                          />
+                          <label
+                            htmlFor={`ingredient-${index}`}
+                            className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                              checkedIngredients[index] 
+                                ? 'line-through opacity-50' 
+                                : 'text-poppy/90 group-hover:text-poppy'
+                            }`}
+                          >
+                            {ingredient}
+                          </label>
+                        </li>
                       );
-                    }
 
-                    return ingredientItem;
-                  })}
-                </ul>
+                      if (needsTooltip) {
+                        return (
+                          <Tooltip key={index}>
+                            <TooltipTrigger asChild>
+                              {ingredientItem}
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">Small pickled peppers commonly used in Chicago-style hot dogs</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      }
+
+                      return ingredientItem;
+                    })}
+                  </ul>
+                )}
               </div>
 
               {/* Instructions Column */}
@@ -243,6 +324,26 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 </ol>
               </div>
             </div>
+
+            {/* Method and Soul Section - Inside Recipe Card */}
+            {hotdog.method_and_soul && (
+              <div className="mt-12 pt-10 border-t-2 border-dashed border-mustard/30">
+                <div className="inline-block mb-6 px-4 py-2 bg-relish text-white font-display text-lg tracking-wider shadow-md rotate-1">
+                  METHOD & SOUL
+                </div>
+                
+                <div className="prose prose-lg max-w-none">
+                  {hotdog.method_and_soul.split('\n\n').map((paragraph, index) => (
+                    <p 
+                      key={index}
+                      className="text-poppy/80 leading-relaxed mb-4 last:mb-0 text-base md:text-lg"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
           </TooltipProvider>
         </Card>
 

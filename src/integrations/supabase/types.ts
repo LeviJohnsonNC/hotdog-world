@@ -23,10 +23,11 @@ export type Database = {
           explore_links: Json | null
           fun_facts: string[] | null
           id: string
-          ingredients: string[] | null
+          ingredients: Json | null
           instructions: string[] | null
           latitude: number
           longitude: number
+          method_and_soul: string | null
           name: string
           origin_story: string | null
         }
@@ -38,10 +39,11 @@ export type Database = {
           explore_links?: Json | null
           fun_facts?: string[] | null
           id?: string
-          ingredients?: string[] | null
+          ingredients?: Json | null
           instructions?: string[] | null
           latitude: number
           longitude: number
+          method_and_soul?: string | null
           name: string
           origin_story?: string | null
         }
@@ -53,10 +55,11 @@ export type Database = {
           explore_links?: Json | null
           fun_facts?: string[] | null
           id?: string
-          ingredients?: string[] | null
+          ingredients?: Json | null
           instructions?: string[] | null
           latitude?: number
           longitude?: number
+          method_and_soul?: string | null
           name?: string
           origin_story?: string | null
         }
