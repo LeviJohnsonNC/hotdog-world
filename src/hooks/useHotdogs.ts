@@ -25,118 +25,69 @@ const distance3D = (pos1: [number, number, number], pos2: [number, number, numbe
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 };
 
-// Apply minimal offsets to overlapping pins while keeping them close to real locations
+// Apply minimal offsets to overlapping pins while preserving real locations
 const applyOverlapOffsets = (
   hotdogs: Array<{ position: [number, number, number]; [key: string]: any }>,
-  threshold: number = 0.35,
-  offsetRadius: number = 0.12,
+  threshold: number = 0.3,
+  offsetStrength: number = 0.08,
   sphereRadius: number = 2.02
 ): void => {
-  const processed = new Set<number>();
+  // Apply iterative nudging to separate overlapping pins
+  const maxIterations = 3;
   
-  for (let i = 0; i < hotdogs.length; i++) {
-    if (processed.has(i)) continue;
+  for (let iteration = 0; iteration < maxIterations; iteration++) {
+    let hasOverlap = false;
     
-    // Find all overlapping hotdogs
-    const group: number[] = [i];
-    for (let j = i + 1; j < hotdogs.length; j++) {
-      if (processed.has(j)) continue;
-      
-      const dist = distance3D(hotdogs[i].position, hotdogs[j].position);
-      if (dist < threshold) {
-        group.push(j);
-        processed.add(j);
+    for (let i = 0; i < hotdogs.length; i++) {
+      for (let j = i + 1; j < hotdogs.length; j++) {
+        const pos1 = hotdogs[i].position;
+        const pos2 = hotdogs[j].position;
+        const dist = distance3D(pos1, pos2);
+        
+        if (dist < threshold && dist > 0) {
+          hasOverlap = true;
+          
+          // Calculate push-away direction
+          const dx = pos2[0] - pos1[0];
+          const dy = pos2[1] - pos1[1];
+          const dz = pos2[2] - pos1[2];
+          
+          // Normalize direction
+          const mag = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          const dirX = dx / mag;
+          const dirY = dy / mag;
+          const dirZ = dz / mag;
+          
+          // Apply small offset in opposite directions
+          const offset = offsetStrength * (threshold - dist) / threshold;
+          
+          // Move pin i slightly away
+          const new1X = pos1[0] - dirX * offset;
+          const new1Y = pos1[1] - dirY * offset;
+          const new1Z = pos1[2] - dirZ * offset;
+          const mag1 = Math.sqrt(new1X * new1X + new1Y * new1Y + new1Z * new1Z);
+          hotdogs[i].position = [
+            (new1X / mag1) * sphereRadius,
+            (new1Y / mag1) * sphereRadius,
+            (new1Z / mag1) * sphereRadius
+          ];
+          
+          // Move pin j slightly away
+          const new2X = pos2[0] + dirX * offset;
+          const new2Y = pos2[1] + dirY * offset;
+          const new2Z = pos2[2] + dirZ * offset;
+          const mag2 = Math.sqrt(new2X * new2X + new2Y * new2Y + new2Z * new2Z);
+          hotdogs[j].position = [
+            (new2X / mag2) * sphereRadius,
+            (new2Y / mag2) * sphereRadius,
+            (new2Z / mag2) * sphereRadius
+          ];
+        }
       }
     }
     
-    // If overlap detected, distribute all pins in the group
-    if (group.length > 1) {
-      processed.add(i);
-      
-      // Calculate centroid of the group
-      const centroid: [number, number, number] = [0, 0, 0];
-      group.forEach(idx => {
-        centroid[0] += hotdogs[idx].position[0];
-        centroid[1] += hotdogs[idx].position[1];
-        centroid[2] += hotdogs[idx].position[2];
-      });
-      centroid[0] /= group.length;
-      centroid[1] /= group.length;
-      centroid[2] /= group.length;
-      
-      // Normalize centroid to sphere surface
-      const centroidMag = Math.sqrt(
-        centroid[0] * centroid[0] + 
-        centroid[1] * centroid[1] + 
-        centroid[2] * centroid[2]
-      );
-      centroid[0] = (centroid[0] / centroidMag) * sphereRadius;
-      centroid[1] = (centroid[1] / centroidMag) * sphereRadius;
-      centroid[2] = (centroid[2] / centroidMag) * sphereRadius;
-      
-      // Create two perpendicular vectors on the tangent plane
-      const up: [number, number, number] = [0, 1, 0];
-      const normal = centroid;
-      
-      // First tangent vector (cross product of normal and up)
-      let tangent1: [number, number, number] = [
-        normal[1] * up[2] - normal[2] * up[1],
-        normal[2] * up[0] - normal[0] * up[2],
-        normal[0] * up[1] - normal[1] * up[0]
-      ];
-      
-      // Handle case where normal is parallel to up
-      if (Math.abs(normal[1]) > 0.99) {
-        const right: [number, number, number] = [1, 0, 0];
-        tangent1 = [
-          normal[1] * right[2] - normal[2] * right[1],
-          normal[2] * right[0] - normal[0] * right[2],
-          normal[0] * right[1] - normal[1] * right[0]
-        ];
-      }
-      
-      // Normalize tangent1
-      const t1Mag = Math.sqrt(tangent1[0]**2 + tangent1[1]**2 + tangent1[2]**2);
-      tangent1[0] /= t1Mag;
-      tangent1[1] /= t1Mag;
-      tangent1[2] /= t1Mag;
-      
-      // Second tangent vector (cross product of normal and tangent1)
-      const tangent2: [number, number, number] = [
-        normal[1] * tangent1[2] - normal[2] * tangent1[1],
-        normal[2] * tangent1[0] - normal[0] * tangent1[2],
-        normal[0] * tangent1[1] - normal[1] * tangent1[0]
-      ];
-      
-      const t2Mag = Math.sqrt(tangent2[0]**2 + tangent2[1]**2 + tangent2[2]**2);
-      tangent2[0] /= t2Mag;
-      tangent2[1] /= t2Mag;
-      tangent2[2] /= t2Mag;
-      
-      // Distribute ALL pins evenly in a circle
-      group.forEach((idx, k) => {
-        const angle = (2 * Math.PI * k) / group.length;
-        
-        // Calculate offset using tangent vectors
-        const offsetX = offsetRadius * (Math.cos(angle) * tangent1[0] + Math.sin(angle) * tangent2[0]);
-        const offsetY = offsetRadius * (Math.cos(angle) * tangent1[1] + Math.sin(angle) * tangent2[1]);
-        const offsetZ = offsetRadius * (Math.cos(angle) * tangent1[2] + Math.sin(angle) * tangent2[2]);
-        
-        // Apply offset to centroid
-        const newX = centroid[0] + offsetX;
-        const newY = centroid[1] + offsetY;
-        const newZ = centroid[2] + offsetZ;
-        
-        // Renormalize to sphere surface
-        const newMag = Math.sqrt(newX**2 + newY**2 + newZ**2);
-        
-        hotdogs[idx].position = [
-          (newX / newMag) * sphereRadius,
-          (newY / newMag) * sphereRadius,
-          (newZ / newMag) * sphereRadius
-        ];
-      });
-    }
+    // Stop early if no overlaps found
+    if (!hasOverlap) break;
   }
 };
 
