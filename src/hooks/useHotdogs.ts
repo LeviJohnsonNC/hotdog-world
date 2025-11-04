@@ -4,7 +4,7 @@ import { Hotdog } from "@/types/hotdog";
 
 // Standard spherical to Cartesian coordinate conversion
 // Works with Three.js SphereGeometry default UV mapping
-const latLngToVector3 = (lat: number, lng: number, radius: number = 2.02): [number, number, number] => {
+const latLngToVector3 = (lat: number, lng: number, radius: number = 2.08): [number, number, number] => {
   // Convert lat/lng to spherical coordinates (phi, theta)
   const phi = (90 - lat) * (Math.PI / 180);      // 0 at north pole, π at south pole
   const theta = (lng + 180) * (Math.PI / 180);   // 0 to 2π around equator
@@ -30,7 +30,7 @@ const applyOverlapOffsets = (
   hotdogs: Array<{ position: [number, number, number]; [key: string]: any }>,
   threshold: number = 0.3,
   offsetStrength: number = 0.08,
-  sphereRadius: number = 2.02
+  sphereRadius: number = 2.08
 ): void => {
   // Apply iterative nudging to separate overlapping pins
   const maxIterations = 3;

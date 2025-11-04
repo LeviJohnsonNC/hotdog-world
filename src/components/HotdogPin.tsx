@@ -30,7 +30,7 @@ export function HotdogPin({ position, onClick, hotdog }: HotdogPinProps) {
         document.body.style.cursor = "auto";
       }}
     >
-      <HotdogModel hovered={hovered} imageUrl={hotdog.image} />
+      <HotdogModel hovered={hovered} imageUrl={hotdog.image} position={position} />
       
       {hovered && (
         <Html
