@@ -75,8 +75,8 @@ export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useIsMobile();
   
-  const cameraZ = isMobile ? 6.5 : 4.5;
-  const minZoom = isMobile ? 5.5 : 4;
+  const cameraZ = isMobile ? 8 : 4.5;
+  const minZoom = isMobile ? 6.5 : 4;
 
   const handleInteractionStart = () => {
     setIsInteracting(true);
