@@ -138,6 +138,9 @@ export function useHotdogs() {
         'Warsaw': '/images/kielbasa-roll-hotdog.png',
         'Prague': '/images/parek-rohliku-hotdog.png',
         'Moscow': '/images/sosiska-teste-hotdog.png',
+        'Mumbai': '/images/bombay-hotdog.png',
+        'Bangkok': '/images/bangkok-hotdog.png',
+        'Sydney': '/images/aussie-hotdog.png',
       };
 
       // Add 3D position and image to each hotdog
