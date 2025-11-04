@@ -9,10 +9,19 @@ interface FactFlipCardProps {
   onReveal: () => void;
 }
 
-const getFactTeaser = (fact: string): string => {
-  // Extract first 4-6 words as teaser
+const parseFactContent = (fact: string): { teaser: string; reveal: string } => {
+  // Check if fact has explicit teaser/reveal format
+  if (fact.includes("Teaser:") && fact.includes("Reveal:")) {
+    const parts = fact.split("Reveal:");
+    const teaser = parts[0].replace("Teaser:", "").trim();
+    const reveal = parts[1].trim();
+    return { teaser, reveal };
+  }
+  
+  // Fallback: generate teaser from first 4-6 words
   const words = fact.split(" ");
-  return words.slice(0, Math.min(6, words.length)).join(" ") + "...";
+  const teaser = words.slice(0, Math.min(6, words.length)).join(" ") + "...";
+  return { teaser, reveal: fact };
 };
 
 const getCardColor = (index: number): string => {
@@ -67,6 +76,8 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
     }
   };
 
+  const { teaser, reveal } = parseFactContent(fact);
+
   return (
     <div
       className="flip-card-container"
@@ -78,14 +89,14 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
         className={`flip-card ${isFlipped ? "flipped" : ""} ${prefersReducedMotion ? "no-motion" : ""}`}
         onClick={handleFlip}
         onKeyDown={handleKeyPress}
-        aria-label={`Fun fact ${index + 1}, ${isFlipped ? "revealed" : "hidden"}, ${getFactTeaser(fact)}`}
+        aria-label={`Fun fact ${index + 1}, ${isFlipped ? "revealed" : "hidden"}, ${teaser}`}
         aria-pressed={isFlipped}
       >
         {/* Front Side */}
         <div className={`flip-card-face flip-card-front ${getCardColor(index)} border-2 border-poppy/30`}>
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
             <p className="text-base font-display tracking-wide text-foreground leading-relaxed">
-              {getFactTeaser(fact)}
+              {teaser}
             </p>
           </div>
         </div>
@@ -96,8 +107,8 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
             <Badge variant="secondary" className="self-start mb-4 text-xs font-display tracking-wider">
               DID YOU KNOW?
             </Badge>
-            <p className={`${getTextSize(fact)} text-foreground/90 leading-relaxed`}>
-              {fact}
+            <p className={`${getTextSize(reveal)} text-foreground/90 leading-relaxed`}>
+              {reveal}
             </p>
           </div>
         </div>
