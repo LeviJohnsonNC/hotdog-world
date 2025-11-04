@@ -25,11 +25,11 @@ const distance3D = (pos1: [number, number, number], pos2: [number, number, numbe
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 };
 
-// Apply radial offsets to overlapping pins with enhanced distribution
+// Apply minimal offsets to overlapping pins while keeping them close to real locations
 const applyOverlapOffsets = (
   hotdogs: Array<{ position: [number, number, number]; [key: string]: any }>,
-  threshold: number = 0.5,
-  offsetRadius: number = 0.3,
+  threshold: number = 0.35,
+  offsetRadius: number = 0.12,
   sphereRadius: number = 2.02
 ): void => {
   const processed = new Set<number>();
