@@ -8,7 +8,7 @@ interface HotdogModelProps {
 
 export function HotdogModel({ hovered, imageUrl }: HotdogModelProps) {
   const texture = useLoader(THREE.TextureLoader, imageUrl);
-  const scale = hovered ? 0.16 : 0.12;
+  const scale = hovered ? 0.24 : 0.18;
   
   return (
     <sprite scale={[scale, scale, 1]} renderOrder={1}>
