@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { Globe } from "@/components/Globe";
+import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogs } from "@/hooks/useHotdogs";
 
 const Index = () => {
@@ -26,14 +28,14 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Globe */}
-      <div className="absolute inset-0 pt-24">
+      {/* Globe with Loading State */}
+      <div className="absolute inset-0 pt-20 md:pt-24">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Loading hot dogs from around the world...</p>
-          </div>
+          <LoadingGlobe />
         ) : (
-          <Globe hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
+          <Suspense fallback={<LoadingGlobe />}>
+            <Globe hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
+          </Suspense>
         )}
       </div>
 

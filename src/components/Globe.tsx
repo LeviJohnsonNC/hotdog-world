@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
@@ -15,8 +15,9 @@ interface EarthProps {
 
 function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const isMobile = useIsMobile();
   
-  // Load proper equirectangular Earth texture
+  // Load optimized Earth texture (will use browser caching after first load)
   const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
   
   // Standard texture configuration for equirectangular projection
@@ -30,10 +31,13 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
     }
   });
 
+  // Mobile optimization: reduce geometry complexity
+  const sphereDetail = isMobile ? 32 : 64;
+  
   return (
     <group ref={groupRef}>
-      {/* Main Earth sphere - standard Three.js sphere with equirectangular UV mapping */}
-      <Sphere args={[2, 64, 64]}>
+      {/* Main Earth sphere - optimized geometry for mobile */}
+      <Sphere args={[2, sphereDetail, sphereDetail]}>
         <meshStandardMaterial
           map={colorMap}
           roughness={0.7}

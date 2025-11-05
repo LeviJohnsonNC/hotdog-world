@@ -1,14 +1,19 @@
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Stars() {
   const points = useRef<THREE.Points>(null);
+  const isMobile = useIsMobile();
+  
+  // Mobile optimization: reduce star count
+  const starCount = isMobile ? 1000 : 2000;
   
   const particlesPosition = useMemo(() => {
-    const positions = new Float32Array(2000 * 3);
+    const positions = new Float32Array(starCount * 3);
     
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < starCount; i++) {
       const distance = Math.random() * 15 + 8;
       const theta = THREE.MathUtils.randFloatSpread(360);
       const phi = THREE.MathUtils.randFloatSpread(360);
@@ -21,7 +26,7 @@ export function Stars() {
     }
     
     return positions;
-  }, []);
+  }, [starCount]);
 
   useFrame(() => {
     if (points.current) {
