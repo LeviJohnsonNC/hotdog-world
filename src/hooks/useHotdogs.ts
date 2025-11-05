@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+
 // Standard spherical to Cartesian coordinate conversion
 // Works with Three.js SphereGeometry default UV mapping
 const latLngToVector3 = (lat: number, lng: number, radius: number = 2.08): [number, number, number] => {
@@ -97,7 +99,7 @@ export function useHotdogs() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("hotdogs")
-        .select("*")
+        .select("id, name, city, country, description, latitude, longitude, ingredients, instructions, fun_facts, origin_story, method_and_soul, explore_links, sprite_x, sprite_y, sprite_width, sprite_height, sprite_sheet_version")
         .order("name");
 
       if (error) throw error;
@@ -140,11 +142,18 @@ export function useHotdogs() {
         'Sydney': '/images/aussie-hotdog.png',
       };
 
-      // Add 3D position and image to each hotdog
+      // Get sprite sheet URL if available
+      const spriteSheetUrl = data && data[0]?.sprite_sheet_version
+        ? `${supabaseUrl}/storage/v1/object/public/hotdog-sprites/hotdog-sprite-v${data[0].sprite_sheet_version}.png`
+        : null;
+
+      // Add 3D position, sprite coordinates, and fallback image to each hotdog
       const hotdogsWithPositions = (data || []).map((hotdog) => ({
         ...hotdog,
         position: latLngToVector3(Number(hotdog.latitude), Number(hotdog.longitude)),
         image: cityImageMap[hotdog.city] || hotdogPinImage,
+        spriteSheetUrl,
+        hasSpriteCoordinates: hotdog.sprite_x !== null && hotdog.sprite_y !== null,
         explore_links: Array.isArray(hotdog.explore_links) 
           ? hotdog.explore_links as Array<{ title: string; url: string }>
           : []

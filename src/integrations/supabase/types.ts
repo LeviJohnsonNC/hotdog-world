@@ -29,7 +29,13 @@ export type Database = {
           longitude: number
           method_and_soul: string | null
           name: string
+          needs_sprite_update: boolean | null
           origin_story: string | null
+          sprite_height: number | null
+          sprite_sheet_version: number | null
+          sprite_width: number | null
+          sprite_x: number | null
+          sprite_y: number | null
         }
         Insert: {
           city: string
@@ -45,7 +51,13 @@ export type Database = {
           longitude: number
           method_and_soul?: string | null
           name: string
+          needs_sprite_update?: boolean | null
           origin_story?: string | null
+          sprite_height?: number | null
+          sprite_sheet_version?: number | null
+          sprite_width?: number | null
+          sprite_x?: number | null
+          sprite_y?: number | null
         }
         Update: {
           city?: string
@@ -61,7 +73,13 @@ export type Database = {
           longitude?: number
           method_and_soul?: string | null
           name?: string
+          needs_sprite_update?: boolean | null
           origin_story?: string | null
+          sprite_height?: number | null
+          sprite_sheet_version?: number | null
+          sprite_width?: number | null
+          sprite_x?: number | null
+          sprite_y?: number | null
         }
         Relationships: []
       }
