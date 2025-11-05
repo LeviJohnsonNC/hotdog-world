@@ -13,13 +13,13 @@ const Index = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 p-6">
+      <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6 bg-background/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl md:text-4xl font-bold text-primary">
+          <div className="text-center md:text-left">
+            <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary">
               Hotdogs Around the World
             </h1>
-            <p className="text-sm md:text-base text-muted-foreground mt-1">
+            <p className="text-xs md:text-base text-muted-foreground mt-0.5 md:mt-1">
               Click a pin to discover iconic street food from every corner of the planet
             </p>
           </div>
