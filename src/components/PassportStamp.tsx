@@ -128,7 +128,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="fixed top-20 right-6 md:top-6 md:right-6 z-40 bg-relish text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-display text-lg tracking-wide flex items-center gap-2"
+        className="fixed top-6 right-6 z-40 bg-relish text-white px-3 py-2 md:px-6 md:py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 font-display text-sm md:text-lg tracking-wide flex items-center gap-2"
       >
         <span>✅ TRIED</span>
         {stamp.rating && (
@@ -147,11 +147,11 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
       {!isExpanded && (
         <Button
           onClick={() => setIsExpanded(true)}
-          className="fixed top-20 right-6 md:top-6 md:right-6 z-40 shadow-lg rounded-full px-6 animate-pulse hover:animate-none bg-mustard text-poppy hover:bg-mustard/90"
-          size="lg"
+          className="fixed top-6 right-6 z-40 shadow-lg rounded-full px-3 py-2 md:px-6 text-sm md:text-base animate-pulse hover:animate-none bg-mustard text-poppy hover:bg-mustard/90"
         >
-          <Stamp className="mr-2 h-5 w-5" />
-          Stamp My Passport
+          <Stamp className="hidden md:inline-block mr-0 md:mr-2 h-5 w-5" />
+          <span className="hidden md:inline">Stamp My Passport</span>
+          <span className="md:hidden">Stamp</span>
         </Button>
       )}
 
