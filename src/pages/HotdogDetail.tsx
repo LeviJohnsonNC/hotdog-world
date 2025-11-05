@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { FactFlipCard } from "@/components/FactFlipCard";
+import { PassportStamp } from "@/components/PassportStamp";
 
 const HotdogDetail = () => {
   const { id } = useParams();
@@ -119,6 +120,9 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         <ArrowLeft className="mr-2 h-5 w-5" />
         Back to Map
       </Button>
+
+      {/* Passport Stamp Button */}
+      <PassportStamp hotdogId={hotdog.id} hotdogName={hotdog.name} />
 
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[400px] bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
