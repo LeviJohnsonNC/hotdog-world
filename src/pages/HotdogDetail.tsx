@@ -110,16 +110,6 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
-      {/* Floating Back Button */}
-      <Button
-        onClick={() => navigate("/")}
-        className="fixed top-6 left-6 z-50 shadow-lg rounded-full px-6"
-        size="lg"
-      >
-        <ArrowLeft className="mr-2 h-5 w-5" />
-        Back to Map
-      </Button>
-
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[400px] bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
         {/* Hero Image Background */}
