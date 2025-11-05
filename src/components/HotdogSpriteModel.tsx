@@ -46,8 +46,9 @@ export function HotdogSpriteModel({
   useFrame(() => {
     if (!spriteRef.current) return;
     
-    // Calculate screen position
-    const worldPos = new THREE.Vector3(...position);
+    // Calculate screen position using actual world position after globe rotation
+    const worldPos = new THREE.Vector3();
+    spriteRef.current.getWorldPosition(worldPos);
     const screenPos = worldPos.clone().project(camera);
     
     // Calculate distance from edges (0 = edge, 1 = center)
