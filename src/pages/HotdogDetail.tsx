@@ -491,17 +491,6 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
           </div>
         </Card>
 
-        {/* Bottom Navigation */}
-        <div className="text-center pt-8 pb-12">
-          <Button
-            onClick={() => navigate("/")}
-            size="lg"
-            className="shadow-xl text-lg px-8 py-6"
-          >
-            <ArrowLeft className="mr-2 h-5 w-5" />
-            Explore More Hot Dogs Around the World
-          </Button>
-        </div>
       </div>
     </div>
   );
