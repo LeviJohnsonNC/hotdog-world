@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      hotdog_stamps: {
+        Row: {
+          created_at: string
+          hotdog_id: string
+          id: string
+          last_modified: number
+          photo_url: string | null
+          rating: number | null
+          review: string | null
+          timestamp: number
+          tried: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          hotdog_id: string
+          id?: string
+          last_modified: number
+          photo_url?: string | null
+          rating?: number | null
+          review?: string | null
+          timestamp: number
+          tried?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          hotdog_id?: string
+          id?: string
+          last_modified?: number
+          photo_url?: string | null
+          rating?: number | null
+          review?: string | null
+          timestamp?: number
+          tried?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       hotdogs: {
         Row: {
           city: string
@@ -80,6 +119,51 @@ export type Database = {
           sprite_width?: number | null
           sprite_x?: number | null
           sprite_y?: number | null
+        }
+        Relationships: []
+      }
+      revealed_facts: {
+        Row: {
+          created_at: string
+          fact_index: number
+          hotdog_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fact_index: number
+          hotdog_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fact_index?: number
+          hotdog_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
