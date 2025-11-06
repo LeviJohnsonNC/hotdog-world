@@ -167,8 +167,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             RECIPE
           </div>
           
-          <TooltipProvider>
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
               {/* Ingredients Column */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-6">
@@ -348,7 +347,6 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 </div>
               </div>
             )}
-          </TooltipProvider>
         </Card>
 
         {/* Fun Facts Section - Interactive Flip Cards */}
