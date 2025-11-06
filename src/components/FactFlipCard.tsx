@@ -31,10 +31,9 @@ const getCardColor = (index: number): string => {
 
 const getTextSize = (text: string): string => {
   const length = text.length;
-  if (length < 80) return "text-base"; // 16px
-  if (length < 120) return "text-sm"; // 14px
-  if (length < 160) return "text-xs"; // 12px
-  return "text-[11px]"; // 11px for very long text
+  if (length < 100) return "text-base"; // 16px
+  if (length < 150) return "text-sm"; // 14px
+  return "text-sm"; // 14px minimum for readability
 };
 
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
@@ -95,7 +94,7 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
         {/* Front Side */}
         <div className={`flip-card-face flip-card-front ${getCardColor(index)} border-2 border-poppy/30`}>
           <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-            <p className="text-base font-display tracking-wide text-foreground leading-relaxed">
+            <p className="text-lg font-heading font-semibold text-foreground leading-relaxed">
               {teaser}
             </p>
           </div>
@@ -103,12 +102,12 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
 
         {/* Back Side */}
         <div className="flip-card-face flip-card-back bg-white border-2 border-mustard/40">
-          <div className="flex flex-col h-full p-6">
-            <p className="text-sm italic text-foreground/60 leading-relaxed mb-3">
+          <div className="flex flex-col h-full p-8">
+            <p className="text-sm font-heading font-medium text-foreground leading-relaxed mb-3">
               {teaser}
             </p>
-            <div className="border-t border-mustard/20 my-2" />
-            <p className={`${getTextSize(reveal)} text-foreground/90 leading-relaxed flex-1`}>
+            <div className="border-t border-mustard/30 my-3" />
+            <p className={`${getTextSize(reveal)} text-foreground leading-relaxed flex-1`}>
               {reveal}
             </p>
           </div>
