@@ -49,7 +49,7 @@ const HotdogDetail = () => {
     !Array.isArray(hotdog.ingredients);
   
   const ingredientsData = isStructuredIngredients 
-    ? hotdog.ingredients as { hotdog_and_bun?: string[]; toppings?: string[] }
+    ? hotdog.ingredients as Record<string, string[]>
     : null;
   
   const ingredientsArray = !isStructuredIngredients 
@@ -160,71 +160,46 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 </div>
                 
                 {isStructuredIngredients && ingredientsData ? (
-                  // Structured ingredients with subsections
+                  // Structured ingredients with subsections - dynamically render all groups
                   <div className="space-y-6">
-                    {ingredientsData.hotdog_and_bun && ingredientsData.hotdog_and_bun.length > 0 && (
-                      <div>
-                        <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded">
-                          FOR THE HOT DOG AND BUN
+                    {Object.entries(ingredientsData).map(([groupName, ingredients]) => {
+                      if (!Array.isArray(ingredients) || ingredients.length === 0) return null;
+                      
+                      return (
+                        <div key={groupName}>
+                          <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
+                            {groupName}
+                          </div>
+                          <ul className="space-y-3">
+                            {ingredients.map((ingredient, index) => {
+                              const checkboxKey = `${groupName}-${index}`;
+                              return (
+                                <li key={checkboxKey} className="flex items-start gap-4 group">
+                                  <Checkbox
+                                    id={`ingredient-${checkboxKey}`}
+                                    checked={checkedIngredients[checkboxKey] || false}
+                                    onCheckedChange={(checked) => 
+                                      setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
+                                    }
+                                    className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                                  />
+                                  <label
+                                    htmlFor={`ingredient-${checkboxKey}`}
+                                    className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                      checkedIngredients[checkboxKey]
+                                        ? 'line-through opacity-50' 
+                                        : 'text-poppy/90 group-hover:text-poppy'
+                                    }`}
+                                  >
+                                    {ingredient}
+                                  </label>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         </div>
-                        <ul className="space-y-3">
-                          {ingredientsData.hotdog_and_bun.map((ingredient, index) => (
-                            <li key={`bun-${index}`} className="flex items-start gap-4 group">
-                              <Checkbox
-                                id={`ingredient-bun-${index}`}
-                                checked={checkedIngredients[`bun-${index}`] || false}
-                                onCheckedChange={(checked) => 
-                                  setCheckedIngredients(prev => ({ ...prev, [`bun-${index}`]: checked as boolean }))
-                                }
-                                className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                              />
-                              <label
-                                htmlFor={`ingredient-bun-${index}`}
-                                className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                                  checkedIngredients[`bun-${index}`]
-                                    ? 'line-through opacity-50' 
-                                    : 'text-poppy/90 group-hover:text-poppy'
-                                }`}
-                              >
-                                {ingredient}
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {ingredientsData.toppings && ingredientsData.toppings.length > 0 && (
-                      <div>
-                        <div className="inline-block mb-3 px-3 py-1 bg-tomato/20 text-tomato font-display text-xs tracking-wider rounded">
-                          FOR THE TOPPINGS
-                        </div>
-                        <ul className="space-y-3">
-                          {ingredientsData.toppings.map((ingredient, index) => (
-                            <li key={`topping-${index}`} className="flex items-start gap-4 group">
-                              <Checkbox
-                                id={`ingredient-topping-${index}`}
-                                checked={checkedIngredients[`topping-${index}`] || false}
-                                onCheckedChange={(checked) => 
-                                  setCheckedIngredients(prev => ({ ...prev, [`topping-${index}`]: checked as boolean }))
-                                }
-                                className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                              />
-                              <label
-                                htmlFor={`ingredient-topping-${index}`}
-                                className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                                  checkedIngredients[`topping-${index}`]
-                                    ? 'line-through opacity-50' 
-                                    : 'text-poppy/90 group-hover:text-poppy'
-                                }`}
-                              >
-                                {ingredient}
-                              </label>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
                 ) : (
                   // Legacy array format
