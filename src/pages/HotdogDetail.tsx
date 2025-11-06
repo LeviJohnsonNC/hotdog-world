@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useHotdogs } from "@/hooks/useHotdogs";
+import { useRevealedFacts } from "@/hooks/useRevealedFacts";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, BookOpen, Globe as GlobeIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FactFlipCard } from "@/components/FactFlipCard";
 import { PassportStamp } from "@/components/PassportStamp";
 
@@ -17,32 +18,13 @@ const HotdogDetail = () => {
   const { data: hotdogs = [] } = useHotdogs();
   
   const hotdog = hotdogs.find((h) => h.id === id);
+  const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(id || '');
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
-  const [revealedFacts, setRevealedFacts] = useState<Set<number>>(new Set());
 
-  useEffect(() => {
-    // Load revealed facts from localStorage
-    if (hotdog) {
-      const saved = localStorage.getItem(`hotdog_facts_revealed_${hotdog.id}`);
-      if (saved) {
-        setRevealedFacts(new Set(JSON.parse(saved)));
-      }
-    }
-  }, [hotdog]);
-
-  const handleRevealFact = (index: number) => {
-    if (!hotdog) return;
-    
-    const newRevealed = new Set(revealedFacts);
-    newRevealed.add(index);
-    setRevealedFacts(newRevealed);
-    
-    localStorage.setItem(
-      `hotdog_facts_revealed_${hotdog.id}`,
-      JSON.stringify(Array.from(newRevealed))
-    );
+  const handleRevealFact = async (index: number) => {
+    await revealFact(index);
   };
 
 
@@ -359,10 +341,10 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
               
               <div className="flex items-center gap-3">
                 <span className="text-sm text-muted-foreground">
-                  {revealedFacts.size} / {funFacts.length} discovered
+                  {revealedIndices.length} / {funFacts.length} discovered
                 </span>
                 <Progress 
-                  value={(revealedFacts.size / funFacts.length) * 100} 
+                  value={(revealedIndices.length / funFacts.length) * 100} 
                   className="w-24 h-2"
                 />
               </div>
@@ -379,7 +361,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 key={index}
                 fact={fact}
                 index={index}
-                isRevealed={revealedFacts.has(index)}
+                isRevealed={isRevealed(index)}
                 onReveal={() => handleRevealFact(index)}
               />
             ))}

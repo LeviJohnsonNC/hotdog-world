@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
 import { useHotdogs } from "@/hooks/useHotdogs";
-import { combineHotdogsWithStamps, calculatePassportStats, sortHotdogs } from "@/utils/passportHelpers";
+import { useStamps } from "@/hooks/useStamps";
+import { calculatePassportStats, sortHotdogs } from "@/utils/passportHelpers";
 import { StampCard } from "@/components/passport/StampCard";
 import { StampDetailModal } from "@/components/passport/StampDetailModal";
 import { PassportStats } from "@/components/passport/PassportStats";
@@ -12,15 +13,22 @@ import { StampedHotdog } from "@/types/passport";
 
 const Passport = () => {
   const navigate = useNavigate();
-  const { data: hotdogs = [], isLoading } = useHotdogs();
+  const { data: hotdogs = [], isLoading: hotdogsLoading } = useHotdogs();
+  const { stamps, loading: stampsLoading } = useStamps();
   const [selectedHotdog, setSelectedHotdog] = useState<StampedHotdog | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   // Combine hotdog data with stamps
   const stampedHotdogs = useMemo(() => {
-    return combineHotdogsWithStamps(hotdogs);
-  }, [hotdogs, refreshKey]);
+    return hotdogs.map(hotdog => {
+      const stamp = stamps.find(s => s.hotdogId === hotdog.id) || null;
+      return {
+        ...hotdog,
+        stamp,
+        isStamped: stamp !== null
+      };
+    });
+  }, [hotdogs, stamps]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -37,9 +45,7 @@ const Passport = () => {
     setModalOpen(true);
   };
 
-  const handleStampDeleted = () => {
-    setRefreshKey(prev => prev + 1);
-  };
+  const isLoading = hotdogsLoading || stampsLoading;
 
   if (isLoading) {
     return (
@@ -140,7 +146,6 @@ const Passport = () => {
         hotdog={selectedHotdog}
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onStampDeleted={handleStampDeleted}
       />
     </div>
   );

@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Camera, X, Stamp } from "lucide-react";
 import { HotdogStamp } from "@/types/passport";
-import { getStamp, saveStamp, deleteStamp } from "@/utils/stampStorage";
+import { useStamps } from "@/hooks/useStamps";
 import { compressImageToBase64, checkStorageSpace } from "@/utils/imageCompression";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ interface PassportStampProps {
 }
 
 export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
+  const { getStamp, saveStamp: saveStampToStorage, deleteStamp: deleteStampFromStorage } = useStamps();
   const [isExpanded, setIsExpanded] = useState(false);
   const [stamp, setStamp] = useState<HotdogStamp | null>(null);
   const [tried, setTried] = useState(false);
@@ -35,7 +36,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
       setReview(existingStamp.review || "");
       setPhotoDataUrl(existingStamp.photoDataUrl || "");
     }
-  }, [hotdogId]);
+  }, [hotdogId, getStamp]);
 
   // Scroll to top when stamp section opens
   useEffect(() => {
@@ -62,7 +63,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
       lastModified: Date.now(),
     };
 
-    const success = saveStamp(newStamp);
+    const success = await saveStampToStorage(newStamp);
     
     if (success) {
       setStamp(newStamp);
@@ -71,8 +72,8 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
         description: `${hotdogName} has been added to your collection.`,
       });
     } else {
-      toast.error("Storage full!", {
-        description: "Please delete some old stamps to make space.",
+      toast.error("Failed to save stamp!", {
+        description: "Please try again.",
       });
     }
 
@@ -119,15 +120,19 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
     }
   };
 
-  const handleDelete = () => {
-    deleteStamp(hotdogId);
-    setStamp(null);
-    setTried(false);
-    setRating(0);
-    setReview("");
-    setPhotoDataUrl("");
-    setIsExpanded(false);
-    toast.success("Stamp removed from passport");
+  const handleDelete = async () => {
+    const success = await deleteStampFromStorage(hotdogId);
+    if (success) {
+      setStamp(null);
+      setTried(false);
+      setRating(0);
+      setReview("");
+      setPhotoDataUrl("");
+      setIsExpanded(false);
+      toast.success("Stamp removed from passport");
+    } else {
+      toast.error("Failed to delete stamp");
+    }
   };
 
   // Compact stamped view

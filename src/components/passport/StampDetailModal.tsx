@@ -2,7 +2,7 @@ import { StampedHotdog } from '@/types/passport';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Star, MapPin, Calendar, Trash2, Edit } from 'lucide-react';
-import { deleteStamp } from '@/utils/stampStorage';
+import { useStamps } from '@/hooks/useStamps';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -11,24 +11,31 @@ interface StampDetailModalProps {
   hotdog: StampedHotdog | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onStampDeleted?: () => void;
 }
 
-export const StampDetailModal = ({ hotdog, open, onOpenChange, onStampDeleted }: StampDetailModalProps) => {
+export const StampDetailModal = ({ hotdog, open, onOpenChange }: StampDetailModalProps) => {
   const navigate = useNavigate();
+  const { deleteStamp } = useStamps();
 
   if (!hotdog) return null;
 
-  const handleRemoveStamp = () => {
+  const handleRemoveStamp = async () => {
     if (!hotdog.isStamped) return;
     
-    deleteStamp(hotdog.id);
-    toast({
-      title: "Stamp removed",
-      description: `${hotdog.name} has been removed from your passport.`,
-    });
-    onOpenChange(false);
-    onStampDeleted?.();
+    const success = await deleteStamp(hotdog.id);
+    if (success) {
+      toast({
+        title: "Stamp removed",
+        description: `${hotdog.name} has been removed from your passport.`,
+      });
+      onOpenChange(false);
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to remove stamp. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleEdit = () => {
