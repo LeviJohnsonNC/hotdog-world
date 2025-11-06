@@ -140,6 +140,7 @@ export function useHotdogs() {
         'Mumbai': '/images/bombay-hotdog.png',
         'Bangkok': '/images/bangkok-hotdog.png',
         'Sydney': '/images/aussie-hotdog.png',
+        'Cape Town': '/images/boerewors-hotdog.png',
       };
 
       // Get sprite sheet URL if available
