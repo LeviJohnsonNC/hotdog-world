@@ -88,7 +88,7 @@ const Auth = () => {
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold font-heading text-primary mb-2">
-            Hot Dog Passport
+            Hotdogs Around the World
           </h1>
           <p className="text-muted-foreground">
             Sign in to save your journey across devices
