@@ -17,30 +17,29 @@ const Index = () => {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="text-center md:text-left flex-1">
-            <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary">
-              Hotdogs Around the World
-            </h1>
-            <p className="text-xs md:text-base text-muted-foreground mt-0.5 md:mt-1">
-              Click a pin to discover iconic street food from every corner of the planet
-            </p>
-          </div>
-          
-          {/* Passport Icon Button */}
-          <button
-            onClick={() => navigate("/passport")}
-            className="ml-4 flex-shrink-0 transition-transform hover:scale-110 active:scale-95 cursor-pointer"
-            aria-label="View My Passport"
-          >
-            <img 
-              src={passportIcon} 
-              alt="Hot Dog Passport" 
-              className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg"
-            />
-          </button>
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary">
+            Hotdogs Around the World
+          </h1>
+          <p className="text-xs md:text-base text-muted-foreground mt-0.5 md:mt-1">
+            Click a pin to discover iconic street food from every corner of the planet
+          </p>
         </div>
       </header>
+
+      {/* Floating Passport Icon */}
+      <button
+        onClick={() => navigate("/passport")}
+        className="fixed top-20 right-4 sm:top-20 sm:right-4 md:top-24 md:right-6 z-20 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 transition-all duration-300 hover:scale-110 active:scale-95 hover:drop-shadow-[0_0_15px_rgba(255,165,0,0.5)] drop-shadow-2xl animate-pulse cursor-pointer"
+        aria-label="View My Passport"
+        role="button"
+      >
+        <img 
+          src={passportIcon} 
+          alt="Hot Dog Passport" 
+          className="w-full h-full object-contain"
+        />
+      </button>
 
       {/* Globe with Loading State */}
       <div className="absolute inset-0 pt-20 md:pt-24">
