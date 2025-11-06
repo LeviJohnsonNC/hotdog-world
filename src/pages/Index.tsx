@@ -29,14 +29,14 @@ const Index = () => {
           {user ? (
             <button
               onClick={() => signOut()}
-              className="absolute bottom-4 right-4 md:top-6 md:right-6 text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="absolute bottom-2 right-4 md:top-6 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
             >
               Log Out
             </button>
           ) : (
             <button
               onClick={() => navigate('/auth')}
-              className="absolute bottom-4 right-4 md:top-6 md:right-6 text-sm text-muted-foreground hover:text-primary transition-colors"
+              className="absolute bottom-2 right-4 md:top-6 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
             >
               Sign In
             </button>
