@@ -19,7 +19,7 @@ export const StampCard = ({ hotdog, onClick }: StampCardProps) => {
         "border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isStamped
           ? "border-primary shadow-md"
-          : "border-dashed border-muted-foreground/30 opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
+          : "border-dashed border-muted-foreground/30"
       )}
       aria-label={`${name} - ${isStamped ? 'Stamped' : 'Not yet tried'}`}
     >
@@ -70,15 +70,6 @@ export const StampCard = ({ hotdog, onClick }: StampCardProps) => {
         {isStamped && stamp?.photoDataUrl && (
           <div className="absolute top-2 left-2 bg-accent/90 backdrop-blur-sm rounded-full px-2 py-1">
             <span className="text-xs font-medium text-accent-foreground">📸</span>
-          </div>
-        )}
-        
-        {/* Unstamped State Icon */}
-        {!isStamped && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-muted/50 backdrop-blur-sm flex items-center justify-center border-2 border-dashed border-muted-foreground/50 group-hover:scale-110 transition-transform">
-              <span className="text-2xl">🌭</span>
-            </div>
           </div>
         )}
       </div>
