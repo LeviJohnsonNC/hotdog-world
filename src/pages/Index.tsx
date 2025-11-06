@@ -30,7 +30,7 @@ const Index = () => {
       {/* Floating Passport Icon */}
       <button
         onClick={() => navigate("/passport")}
-        className="fixed top-20 right-4 sm:top-20 sm:right-4 md:top-24 md:right-6 z-20 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 transition-all duration-300 hover:scale-110 active:scale-95 hover:drop-shadow-[0_0_15px_rgba(255,165,0,0.5)] drop-shadow-2xl animate-pulse cursor-pointer"
+        className="fixed top-20 right-4 sm:top-20 sm:right-4 md:top-24 md:right-6 z-20 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 transition-all duration-300 hover:scale-110 active:scale-95 hover:drop-shadow-[0_0_15px_rgba(255,165,0,0.5)] drop-shadow-2xl cursor-pointer"
         aria-label="View My Passport"
         role="button"
       >
