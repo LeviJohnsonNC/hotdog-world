@@ -31,9 +31,25 @@ const getCardColor = (index: number): string => {
 
 const getTextSize = (text: string): string => {
   const length = text.length;
-  if (length < 100) return "text-base"; // 16px
-  if (length < 150) return "text-sm"; // 14px
-  return "text-sm"; // 14px minimum for readability
+  if (length < 80) return "text-base"; // 16px - short facts
+  if (length < 140) return "text-sm"; // 14px - medium facts
+  if (length < 200) return "text-xs"; // 12px - longer facts
+  if (length < 280) return "text-xs leading-tight"; // 12px tighter - very long
+  return "text-xs leading-tight"; // 12px minimum with tight leading
+};
+
+const getTeaserSize = (text: string): string => {
+  const length = text.length;
+  if (length < 40) return "text-sm";
+  if (length < 60) return "text-xs";
+  return "text-xs leading-snug";
+};
+
+const getPadding = (text: string): string => {
+  const length = text.length;
+  if (length < 150) return "p-8";
+  if (length < 250) return "p-6";
+  return "p-5";
 };
 
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
@@ -102,14 +118,16 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
 
         {/* Back Side */}
         <div className="flip-card-face flip-card-back bg-white border-2 border-mustard/40">
-          <div className="flex flex-col h-full p-8">
-            <p className="text-sm font-heading font-medium text-foreground leading-relaxed mb-3">
+          <div className={`flex flex-col h-full ${getPadding(reveal)}`}>
+            <p className={`${getTeaserSize(teaser)} font-heading font-medium text-foreground leading-relaxed mb-2`}>
               {teaser}
             </p>
-            <div className="border-t border-mustard/30 my-3" />
-            <p className={`${getTextSize(reveal)} text-foreground leading-relaxed flex-1`}>
-              {reveal}
-            </p>
+            <div className="border-t border-mustard/30 my-2" />
+            <div className="flex-1 overflow-y-auto max-h-[280px]">
+              <p className={`${getTextSize(reveal)} text-foreground leading-relaxed`}>
+                {reveal}
+              </p>
+            </div>
           </div>
         </div>
       </button>
