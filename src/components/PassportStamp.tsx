@@ -37,6 +37,13 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
     }
   }, [hotdogId]);
 
+  // Scroll to top when stamp section opens
+  useEffect(() => {
+    if (isExpanded) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isExpanded]);
+
   const handleSave = async () => {
     if (!tried) {
       toast.error("Please mark this hotdog as tried first!");
