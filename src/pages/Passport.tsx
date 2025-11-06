@@ -74,7 +74,7 @@ const Passport = () => {
           
           <div className="text-center flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
-              🛂 My Hot Dog Passport
+              My Hot Dog Passport
             </h1>
             <p className="text-sm text-muted-foreground">
               {stats.stamped} of {stats.total} destinations visited
