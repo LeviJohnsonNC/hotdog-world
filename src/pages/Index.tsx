@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Globe } from "@/components/Globe";
 import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogs } from "@/hooks/useHotdogs";
+import passportIcon from "@/assets/passport-icon.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Index = () => {
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6 bg-background/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="text-center md:text-left">
+          <div className="text-center md:text-left flex-1">
             <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary">
               Hotdogs Around the World
             </h1>
@@ -25,6 +26,19 @@ const Index = () => {
               Click a pin to discover iconic street food from every corner of the planet
             </p>
           </div>
+          
+          {/* Passport Icon Button */}
+          <button
+            onClick={() => navigate("/passport")}
+            className="ml-4 flex-shrink-0 transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+            aria-label="View My Passport"
+          >
+            <img 
+              src={passportIcon} 
+              alt="Hot Dog Passport" 
+              className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-lg"
+            />
+          </button>
         </div>
       </header>
 
