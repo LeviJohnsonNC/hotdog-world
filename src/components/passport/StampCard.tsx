@@ -19,7 +19,7 @@ export const StampCard = ({ hotdog, onClick }: StampCardProps) => {
         "border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isStamped
           ? "border-primary shadow-md"
-          : "border-dashed border-muted-foreground/30"
+          : "border-dashed border-muted-foreground/30 grayscale opacity-60"
       )}
       aria-label={`${name} - ${isStamped ? 'Stamped' : 'Not yet tried'}`}
     >
