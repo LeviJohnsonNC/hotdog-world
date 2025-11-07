@@ -11,7 +11,38 @@ serve(async (req) => {
   }
 
   try {
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { city, country, description } = await req.json();
+    
+    // Input validation
+    if (!city || typeof city !== 'string' || city.length > 100 || !/^[a-zA-Z\s\-']+$/.test(city)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid city parameter. Must be 1-100 characters, letters only.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!country || typeof country !== 'string' || country.length > 100 || !/^[a-zA-Z\s\-']+$/.test(country)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid country parameter. Must be 1-100 characters, letters only.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!description || typeof description !== 'string' || description.length > 500) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid description parameter. Must be 1-500 characters.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
