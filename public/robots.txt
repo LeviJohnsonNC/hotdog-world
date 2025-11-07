@@ -1,16 +1,72 @@
+# Major Search Engines
 User-agent: Googlebot
 Allow: /
+Disallow: /auth
+Disallow: /passport
 
 User-agent: Bingbot
 Allow: /
+Disallow: /auth
+Disallow: /passport
 
+# Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+# Additional Search Engines
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: Baiduspider
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: YandexBot
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: Slurp
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+# AI Crawlers (Allowed for discoverability)
+User-agent: GPTBot
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: CCBot
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /auth
+Disallow: /passport
+
+# Default rule for all other bots
 User-agent: *
 Allow: /
+Disallow: /auth
+Disallow: /passport
 
 Sitemap: https://hotdog-world.com/sitemap.xml
