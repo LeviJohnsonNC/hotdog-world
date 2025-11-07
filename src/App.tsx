@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import HotdogDetail from "./pages/HotdogDetail";
 import Passport from "./pages/Passport";
 import Auth from "./pages/Auth";
+import Sitemap from "./pages/Sitemap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/hotdog/:id" element={<HotdogDetail />} />
             <Route path="/passport" element={<Passport />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/sitemap.xml" element={<Sitemap />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
