@@ -46,7 +46,7 @@ const Index = () => {
       </header>
 
       {/* Floating Icons - Leaderboard and Passport */}
-      <div className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 flex flex-row gap-2 sm:gap-3 md:gap-4">
+      <div className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 flex flex-row items-center gap-2 sm:gap-3 md:gap-4">
         {/* Leaderboard Icon */}
         <button
           onClick={() => navigate("/leaderboard")}
