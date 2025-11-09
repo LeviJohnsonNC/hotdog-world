@@ -40,11 +40,11 @@ const AccountSettings = () => {
         .from("user_profiles")
         .select("display_name")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (data && !error) {
-        setDisplayName(data.display_name);
-        setOriginalDisplayName(data.display_name);
+        setDisplayName(data.display_name || "");
+        setOriginalDisplayName(data.display_name || "");
       }
     };
 
@@ -67,8 +67,12 @@ const AccountSettings = () => {
 
     const { error } = await supabase
       .from("user_profiles")
-      .update({ display_name: displayName.trim() })
-      .eq("user_id", user.id);
+      .upsert({ 
+        user_id: user.id,
+        display_name: displayName.trim() 
+      }, {
+        onConflict: "user_id"
+      });
 
     if (error) {
       toast({
