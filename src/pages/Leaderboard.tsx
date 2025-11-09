@@ -1,9 +1,150 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { LeaderboardCard } from "@/components/leaderboard/LeaderboardCard";
+import { UserRankCard } from "@/components/leaderboard/UserRankCard";
+
+interface LeaderboardEntry {
+  user_id: string;
+  display_name: string | null;
+  stamp_count: number;
+  first_stamp_time: number;
+}
 
 const Leaderboard = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Fetch total hotdog count
+  const { data: totalHotdogs = 0 } = useQuery({
+    queryKey: ["total-hotdogs"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("hotdogs")
+        .select("*", { count: "exact", head: true });
+      
+      if (error) throw error;
+      return count || 0;
+    },
+  });
+
+  // Fetch top 10 leaderboard
+  const { data: leaderboard = [], isLoading: isLoadingLeaderboard } = useQuery({
+    queryKey: ["leaderboard-top10"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("hotdog_stamps")
+        .select(`
+          user_id,
+          hotdog_id,
+          timestamp,
+          user_profiles!inner(display_name)
+        `);
+      
+      if (error) throw error;
+
+      // Group by user and calculate stats
+      const userStats = new Map<string, { 
+        user_id: string; 
+        display_name: string | null; 
+        stamp_count: number; 
+        first_stamp_time: number;
+      }>();
+
+      data?.forEach(stamp => {
+        const userId = stamp.user_id;
+        const existing = userStats.get(userId);
+        
+        if (!existing) {
+          userStats.set(userId, {
+            user_id: userId,
+            display_name: (stamp.user_profiles as any)?.display_name || null,
+            stamp_count: 1,
+            first_stamp_time: stamp.timestamp,
+          });
+        } else {
+          existing.stamp_count++;
+          existing.first_stamp_time = Math.min(existing.first_stamp_time, stamp.timestamp);
+        }
+      });
+
+      // Convert to array and sort
+      const sorted = Array.from(userStats.values()).sort((a, b) => {
+        if (b.stamp_count !== a.stamp_count) {
+          return b.stamp_count - a.stamp_count; // More stamps = higher rank
+        }
+        return a.first_stamp_time - b.first_stamp_time; // Earlier stamp = higher rank
+      });
+
+      return sorted.slice(0, 10);
+    },
+  });
+
+  // Fetch current user's rank (if logged in)
+  const { data: userRank } = useQuery({
+    queryKey: ["user-rank", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from("hotdog_stamps")
+        .select(`
+          user_id,
+          hotdog_id,
+          timestamp,
+          user_profiles!inner(display_name)
+        `);
+      
+      if (error) throw error;
+
+      // Group by user and calculate stats (same logic as leaderboard)
+      const userStats = new Map<string, { 
+        user_id: string; 
+        display_name: string | null; 
+        stamp_count: number; 
+        first_stamp_time: number;
+      }>();
+
+      data?.forEach(stamp => {
+        const userId = stamp.user_id;
+        const existing = userStats.get(userId);
+        
+        if (!existing) {
+          userStats.set(userId, {
+            user_id: userId,
+            display_name: (stamp.user_profiles as any)?.display_name || null,
+            stamp_count: 1,
+            first_stamp_time: stamp.timestamp,
+          });
+        } else {
+          existing.stamp_count++;
+          existing.first_stamp_time = Math.min(existing.first_stamp_time, stamp.timestamp);
+        }
+      });
+
+      // Convert to array and sort
+      const sorted = Array.from(userStats.values()).sort((a, b) => {
+        if (b.stamp_count !== a.stamp_count) {
+          return b.stamp_count - a.stamp_count;
+        }
+        return a.first_stamp_time - b.first_stamp_time;
+      });
+
+      // Find user's rank
+      const userIndex = sorted.findIndex(entry => entry.user_id === user.id);
+      if (userIndex === -1) return null;
+
+      return {
+        ...sorted[userIndex],
+        rank: userIndex + 1,
+      };
+    },
+    enabled: !!user,
+  });
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
@@ -33,16 +174,67 @@ const Leaderboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center py-16 space-y-4">
-          <div className="text-6xl mb-4">🏆</div>
-          <h2 className="text-2xl font-bold text-foreground">
-            Coming Soon!
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* User's Rank Card */}
+        {user && userRank && (
+          <div className="mb-8 animate-fade-in">
+            <UserRankCard
+              rank={userRank.rank}
+              displayName={userRank.display_name}
+              stampCount={userRank.stamp_count}
+              totalHotdogs={totalHotdogs}
+              userId={userRank.user_id}
+            />
+          </div>
+        )}
+
+        {/* Top 10 Section */}
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold text-foreground mb-4">
+            🏆 Top 10 Explorers
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            The leaderboard is being prepared. Soon you'll be able to see
-            how your hot dog journey ranks against other explorers!
-          </p>
+
+          {/* Loading State */}
+          {isLoadingLeaderboard && (
+            <div className="space-y-4">
+              {[...Array(10)].map((_, i) => (
+                <Skeleton key={i} className="h-32 w-full" />
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoadingLeaderboard && leaderboard.length === 0 && (
+            <div className="text-center py-16 space-y-4">
+              <div className="text-6xl mb-4">🌭</div>
+              <h3 className="text-2xl font-bold text-foreground">
+                Be the First Explorer!
+              </h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                No one has started collecting hot dog stamps yet. 
+                Start your journey and claim the top spot!
+              </p>
+              <Button onClick={() => navigate("/")}>
+                Start Exploring
+              </Button>
+            </div>
+          )}
+
+          {/* Leaderboard Cards */}
+          {!isLoadingLeaderboard && leaderboard.length > 0 && (
+            <div className="space-y-3">
+              {leaderboard.map((entry, index) => (
+                <LeaderboardCard
+                  key={entry.user_id}
+                  rank={index + 1}
+                  displayName={entry.display_name}
+                  stampCount={entry.stamp_count}
+                  totalHotdogs={totalHotdogs}
+                  userId={entry.user_id}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
