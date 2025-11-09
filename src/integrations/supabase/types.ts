@@ -149,18 +149,21 @@ export type Database = {
       user_profiles: {
         Row: {
           created_at: string
+          display_name: string
           email: string | null
           id: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          display_name: string
           email?: string | null
           id?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          display_name?: string
           email?: string | null
           id?: string
           user_id?: string
@@ -172,7 +175,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_unique_display_name: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

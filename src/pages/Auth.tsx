@@ -18,6 +18,7 @@ const Auth = () => {
   const [signInPassword, setSignInPassword] = useState('');
   
   const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpDisplayName, setSignUpDisplayName] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
 
   // Redirect if already authenticated
@@ -54,6 +55,16 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    if (!signUpDisplayName.trim()) {
+      toast({
+        title: "Display name required",
+        description: "Please enter a display name.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+
     if (signUpPassword.length < 6) {
       toast({
         title: "Password too short",
@@ -64,7 +75,7 @@ const Auth = () => {
       return;
     }
 
-    const { error } = await signUp(signUpEmail, signUpPassword);
+    const { error } = await signUp(signUpEmail, signUpPassword, signUpDisplayName);
     
     if (error) {
       toast({
@@ -146,6 +157,22 @@ const Auth = () => {
                   required
                   disabled={isLoading}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="signup-displayname">Display Name</Label>
+                <Input
+                  id="signup-displayname"
+                  type="text"
+                  placeholder="Choose your display name"
+                  value={signUpDisplayName}
+                  onChange={(e) => setSignUpDisplayName(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  maxLength={50}
+                />
+                <p className="text-xs text-muted-foreground">
+                  This is how other explorers will see you
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Password</Label>
