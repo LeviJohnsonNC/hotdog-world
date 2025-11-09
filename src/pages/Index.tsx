@@ -20,7 +20,15 @@ const Index = () => {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center relative">
+          {user && (
+            <button
+              onClick={() => navigate('/settings')}
+              className="absolute bottom-2 left-4 md:top-0 md:left-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
+            >
+              Account Settings
+            </button>
+          )}
           <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary">
             Hotdogs Around the World
           </h1>
@@ -30,14 +38,14 @@ const Index = () => {
           {user ? (
             <button
               onClick={() => signOut()}
-              className="absolute bottom-2 right-4 md:top-6 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
+              className="absolute bottom-2 right-4 md:top-0 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
             >
               Log Out
             </button>
           ) : (
             <button
               onClick={() => navigate('/auth')}
-              className="absolute bottom-2 right-4 md:top-6 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
+              className="absolute bottom-2 right-4 md:top-0 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
             >
               Sign In
             </button>

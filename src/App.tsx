@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import HotdogDetail from "./pages/HotdogDetail";
 import Passport from "./pages/Passport";
 import Leaderboard from "./pages/Leaderboard";
+import AccountSettings from "./pages/AccountSettings";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/hotdog/:id" element={<HotdogDetail />} />
             <Route path="/passport" element={<Passport />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/settings" element={<AccountSettings />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
