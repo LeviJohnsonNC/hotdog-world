@@ -81,7 +81,6 @@ const Index = () => {
               onClick={() => navigate('/settings')}
               className="flex items-center gap-2 px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
             >
-              <span>⚙️</span>
               <span className="hidden sm:inline">Account Settings</span>
               <span className="sm:hidden">Settings</span>
             </button>
@@ -94,7 +93,6 @@ const Index = () => {
               onClick={() => signOut()}
               className="flex items-center gap-2 px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
             >
-              <span>👋</span>
               <span>Log Out</span>
             </button>
           ) : (
@@ -102,7 +100,6 @@ const Index = () => {
               onClick={() => navigate('/auth')}
               className="flex items-center gap-2 px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
             >
-              <span>🔓</span>
               <span>Sign In</span>
             </button>
           )}
