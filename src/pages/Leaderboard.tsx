@@ -36,13 +36,14 @@ const Leaderboard = () => {
   const { data: leaderboard = [], isLoading: isLoadingLeaderboard } = useQuery({
     queryKey: ["leaderboard-top10"],
     queryFn: async () => {
+      // Fetch all stamps with LEFT JOIN to user_profiles
       const { data, error } = await supabase
         .from("hotdog_stamps")
         .select(`
           user_id,
           hotdog_id,
           timestamp,
-          user_profiles!inner(display_name)
+          user_profiles(display_name)
         `);
       
       if (error) throw error;
@@ -90,13 +91,14 @@ const Leaderboard = () => {
     queryFn: async () => {
       if (!user) return null;
 
+      // Fetch all stamps with LEFT JOIN to user_profiles
       const { data, error } = await supabase
         .from("hotdog_stamps")
         .select(`
           user_id,
           hotdog_id,
           timestamp,
-          user_profiles!inner(display_name)
+          user_profiles(display_name)
         `);
       
       if (error) throw error;
