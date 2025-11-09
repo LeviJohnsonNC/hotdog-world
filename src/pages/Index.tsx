@@ -74,7 +74,7 @@ const Index = () => {
 
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-mustard/90 via-ketchup/90 to-mustard/90 backdrop-blur-md border-t-2 border-mustard/50 rounded-t-3xl shadow-2xl pointer-events-auto">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-2 md:py-2.5 flex items-center justify-between">
           {/* Left: Account Settings */}
           {user && (
             <button
