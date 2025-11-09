@@ -5,6 +5,7 @@ import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogs } from "@/hooks/useHotdogs";
 import { useAuth } from "@/contexts/AuthContext";
 import passportIcon from "@/assets/passport-icon.png";
+import leaderboardIcon from "@/assets/leaderboard-icon.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -44,19 +45,36 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Floating Passport Icon */}
-      <button
-        onClick={() => navigate("/passport")}
-        className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 w-24 h-24 sm:w-24 sm:h-24 md:w-32 md:h-32 transition-all duration-300 hover:scale-110 active:scale-95 hover:drop-shadow-[0_0_15px_rgba(255,165,0,0.5)] drop-shadow-2xl cursor-pointer"
-        aria-label="View My Passport"
-        role="button"
-      >
-        <img 
-          src={passportIcon} 
-          alt="Hot Dog Passport" 
-          className="w-full h-full object-contain"
-        />
-      </button>
+      {/* Floating Icons - Leaderboard and Passport */}
+      <div className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 flex flex-col gap-2 sm:gap-3 md:gap-4">
+        {/* Leaderboard Icon */}
+        <button
+          onClick={() => navigate("/leaderboard")}
+          className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 transition-all duration-300 hover:scale-110 active:scale-95 hover:drop-shadow-[0_0_15px_rgba(255,165,0,0.5)] drop-shadow-2xl cursor-pointer"
+          aria-label="View Leaderboard"
+          role="button"
+        >
+          <img 
+            src={leaderboardIcon} 
+            alt="Hot Dog Leaderboard" 
+            className="w-full h-full object-contain"
+          />
+        </button>
+
+        {/* Passport Icon */}
+        <button
+          onClick={() => navigate("/passport")}
+          className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 transition-all duration-300 hover:scale-110 active:scale-95 hover:drop-shadow-[0_0_15px_rgba(255,165,0,0.5)] drop-shadow-2xl cursor-pointer"
+          aria-label="View My Passport"
+          role="button"
+        >
+          <img 
+            src={passportIcon} 
+            alt="Hot Dog Passport" 
+            className="w-full h-full object-contain"
+          />
+        </button>
+      </div>
 
       {/* Globe with Loading State */}
       <div className="absolute inset-0 pt-20 md:pt-24">
