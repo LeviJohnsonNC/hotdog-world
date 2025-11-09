@@ -36,52 +36,12 @@ const Leaderboard = () => {
   const { data: leaderboard = [], isLoading: isLoadingLeaderboard } = useQuery({
     queryKey: ["leaderboard-top10"],
     queryFn: async () => {
-      // Fetch all stamps with LEFT JOIN to user_profiles
       const { data, error } = await supabase
-        .from("hotdog_stamps")
-        .select(`
-          user_id,
-          hotdog_id,
-          timestamp,
-          user_profiles(display_name)
-        `);
+        .rpc("get_leaderboard_data");
       
       if (error) throw error;
-
-      // Group by user and calculate stats
-      const userStats = new Map<string, { 
-        user_id: string; 
-        display_name: string | null; 
-        stamp_count: number; 
-        first_stamp_time: number;
-      }>();
-
-      data?.forEach(stamp => {
-        const userId = stamp.user_id;
-        const existing = userStats.get(userId);
-        
-        if (!existing) {
-          userStats.set(userId, {
-            user_id: userId,
-            display_name: (stamp.user_profiles as any)?.display_name || null,
-            stamp_count: 1,
-            first_stamp_time: stamp.timestamp,
-          });
-        } else {
-          existing.stamp_count++;
-          existing.first_stamp_time = Math.min(existing.first_stamp_time, stamp.timestamp);
-        }
-      });
-
-      // Convert to array and sort
-      const sorted = Array.from(userStats.values()).sort((a, b) => {
-        if (b.stamp_count !== a.stamp_count) {
-          return b.stamp_count - a.stamp_count; // More stamps = higher rank
-        }
-        return a.first_stamp_time - b.first_stamp_time; // Earlier stamp = higher rank
-      });
-
-      return sorted.slice(0, 10);
+      
+      return (data || []).slice(0, 10);
     },
   });
 
@@ -91,57 +51,17 @@ const Leaderboard = () => {
     queryFn: async () => {
       if (!user) return null;
 
-      // Fetch all stamps with LEFT JOIN to user_profiles
       const { data, error } = await supabase
-        .from("hotdog_stamps")
-        .select(`
-          user_id,
-          hotdog_id,
-          timestamp,
-          user_profiles(display_name)
-        `);
+        .rpc("get_leaderboard_data");
       
       if (error) throw error;
 
-      // Group by user and calculate stats (same logic as leaderboard)
-      const userStats = new Map<string, { 
-        user_id: string; 
-        display_name: string | null; 
-        stamp_count: number; 
-        first_stamp_time: number;
-      }>();
-
-      data?.forEach(stamp => {
-        const userId = stamp.user_id;
-        const existing = userStats.get(userId);
-        
-        if (!existing) {
-          userStats.set(userId, {
-            user_id: userId,
-            display_name: (stamp.user_profiles as any)?.display_name || null,
-            stamp_count: 1,
-            first_stamp_time: stamp.timestamp,
-          });
-        } else {
-          existing.stamp_count++;
-          existing.first_stamp_time = Math.min(existing.first_stamp_time, stamp.timestamp);
-        }
-      });
-
-      // Convert to array and sort
-      const sorted = Array.from(userStats.values()).sort((a, b) => {
-        if (b.stamp_count !== a.stamp_count) {
-          return b.stamp_count - a.stamp_count;
-        }
-        return a.first_stamp_time - b.first_stamp_time;
-      });
-
       // Find user's rank
-      const userIndex = sorted.findIndex(entry => entry.user_id === user.id);
+      const userIndex = data?.findIndex(entry => entry.user_id === user.id) ?? -1;
       if (userIndex === -1) return null;
 
       return {
-        ...sorted[userIndex],
+        ...data[userIndex],
         rank: userIndex + 1,
       };
     },

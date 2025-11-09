@@ -176,6 +176,15 @@ export type Database = {
     }
     Functions: {
       generate_unique_display_name: { Args: never; Returns: string }
+      get_leaderboard_data: {
+        Args: never
+        Returns: {
+          display_name: string
+          first_stamp_time: number
+          stamp_count: number
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
