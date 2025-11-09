@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import hotdogGlobePattern from '@/assets/hotdog-globe-pattern.png';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -95,8 +96,15 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-background to-primary/5">
-      <Card className="w-full max-w-md p-8">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        backgroundImage: `url(${hotdogGlobePattern})`,
+        backgroundRepeat: 'repeat',
+        backgroundSize: 'auto'
+      }}
+    >
+      <Card className="w-full max-w-md p-8 shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold font-heading text-primary mb-2">
             Hotdogs Around the World
