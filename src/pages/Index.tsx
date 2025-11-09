@@ -20,36 +20,13 @@ const Index = () => {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-4 md:p-6 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto text-center relative">
-          {user && (
-            <button
-              onClick={() => navigate('/settings')}
-              className="absolute bottom-2 left-4 md:top-0 md:left-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
-            >
-              Account Settings
-            </button>
-          )}
+        <div className="max-w-7xl mx-auto text-center">
           <h1 className="font-heading text-2xl md:text-4xl font-bold text-primary">
             Hotdogs Around the World
           </h1>
           <p className="text-xs md:text-base text-muted-foreground mt-0.5 md:mt-1">
             Click a pin to discover iconic street food from every corner of the planet
           </p>
-          {user ? (
-            <button
-              onClick={() => signOut()}
-              className="absolute bottom-2 right-4 md:top-0 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
-            >
-              Log Out
-            </button>
-          ) : (
-            <button
-              onClick={() => navigate('/auth')}
-              className="absolute bottom-2 right-4 md:top-0 md:right-6 text-sm text-foreground hover:text-primary transition-colors font-medium"
-            >
-              Sign In
-            </button>
-          )}
         </div>
       </header>
 
@@ -95,14 +72,42 @@ const Index = () => {
         )}
       </div>
 
-      {/* Info Footer */}
-      <footer className="absolute bottom-0 left-0 right-0 z-10 p-6 pointer-events-none">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm text-muted-foreground bg-background/60 backdrop-blur-sm rounded-full px-4 py-2 inline-block">
-            🌍 Rotate • 🔍 Zoom • 🖱️ Click pins to explore
-          </p>
+      {/* Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-mustard/90 via-ketchup/90 to-mustard/90 backdrop-blur-md border-t-2 border-mustard/50 rounded-t-3xl shadow-2xl pointer-events-auto">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 md:py-4 flex items-center justify-between">
+          {/* Left: Account Settings */}
+          {user && (
+            <button
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-2 px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+            >
+              <span>⚙️</span>
+              <span className="hidden sm:inline">Account Settings</span>
+              <span className="sm:hidden">Settings</span>
+            </button>
+          )}
+          {!user && <div />} {/* Spacer when logged out */}
+          
+          {/* Right: Sign In / Log Out */}
+          {user ? (
+            <button
+              onClick={() => signOut()}
+              className="flex items-center gap-2 px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+            >
+              <span>👋</span>
+              <span>Log Out</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/auth')}
+              className="flex items-center gap-2 px-6 py-2 bg-white/90 hover:bg-white text-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+            >
+              <span>🔓</span>
+              <span>Sign In</span>
+            </button>
+          )}
         </div>
-      </footer>
+      </div>
 
     </div>
   );
