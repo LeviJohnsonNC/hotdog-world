@@ -49,7 +49,7 @@ const Index = () => {
         {/* Passport Icon */}
         <button
           onClick={() => navigate("/passport")}
-          className="w-16 h-16 sm:w-18 sm:h-18 md:w-22 md:h-22 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
+          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
           aria-label="View My Passport"
           role="button"
         >
