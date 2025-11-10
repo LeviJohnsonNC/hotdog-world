@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -68,8 +69,30 @@ const Leaderboard = () => {
     enabled: !!user,
   });
 
+  const siteUrl = window.location.origin;
+
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <Helmet>
+        <title>Hot Dog Leaderboard - Top Explorers | Hotdogs Around the World</title>
+        <meta 
+          name="description" 
+          content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world."
+        />
+        <link rel="canonical" href={`${siteUrl}/leaderboard`} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content="Hot Dog Leaderboard - Top Explorers | Hotdogs Around the World" />
+        <meta property="og:description" content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${siteUrl}/leaderboard`} />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Hot Dog Leaderboard - Top Explorers" />
+        <meta name="twitter:description" content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world." />
+      </Helmet>
+
       {/* Header */}
       <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">

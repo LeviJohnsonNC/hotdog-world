@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { useHotdogs } from "@/hooks/useHotdogs";
 import { useRevealedFacts } from "@/hooks/useRevealedFacts";
 import { Button } from "@/components/ui/button";
@@ -91,8 +92,84 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
     { title: "Cultural History", url: "#" },
   ];
 
+  const siteUrl = window.location.origin;
+  const pageUrl = `${siteUrl}/hotdog/${id}`;
+  
+  // Prepare ingredients for Recipe schema
+  const allIngredients = isStructuredIngredients && ingredientsData
+    ? Object.values(ingredientsData).flat()
+    : ingredientsArray;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
+      <Helmet>
+        <title>{hotdog.name} Recipe - {hotdog.city}, {hotdog.country} | Hotdogs Around the World</title>
+        <meta 
+          name="description" 
+          content={`Learn how to make authentic ${hotdog.name} from ${hotdog.city}. Get the complete recipe, ingredients, and origin story of this iconic ${hotdog.country} street food.`}
+        />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content={`${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country}`} />
+        <meta property="og:description" content={hotdog.description} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={hotdog.image} />
+        <meta property="og:image:alt" content={`${hotdog.name} from ${hotdog.city}`} />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country}`} />
+        <meta name="twitter:description" content={hotdog.description} />
+        <meta name="twitter:image" content={hotdog.image} />
+
+        {/* Structured Data - Recipe Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Recipe",
+            "name": hotdog.name,
+            "description": hotdog.description,
+            "image": [hotdog.image],
+            "recipeIngredient": allIngredients,
+            "recipeInstructions": instructions.map((step, index) => ({
+              "@type": "HowToStep",
+              "position": index + 1,
+              "text": step
+            })),
+            "recipeCuisine": hotdog.country,
+            "recipeCategory": "Street Food",
+            "keywords": `${hotdog.name}, ${hotdog.city}, ${hotdog.country}, hot dog, street food, recipe`,
+            "author": {
+              "@type": "Organization",
+              "name": "Hotdogs Around the World"
+            }
+          })}
+        </script>
+
+        {/* Structured Data - BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": siteUrl
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": hotdog.name,
+                "item": pageUrl
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
       {/* Floating Back Button */}
       <Button
         onClick={() => navigate("/")}

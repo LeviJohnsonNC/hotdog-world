@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -132,9 +133,30 @@ const AccountSettings = () => {
   };
 
   const hasChanges = displayName.trim() !== originalDisplayName;
+  const siteUrl = window.location.origin;
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <Helmet>
+        <title>Account Settings | Hotdogs Around the World</title>
+        <meta 
+          name="description" 
+          content="Manage your hot dog passport account settings, update your display name, and manage your data."
+        />
+        <link rel="canonical" href={`${siteUrl}/settings`} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content="Account Settings | Hotdogs Around the World" />
+        <meta property="og:description" content="Manage your hot dog passport account settings and preferences." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${siteUrl}/settings`} />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Account Settings | Hotdogs Around the World" />
+        <meta name="twitter:description" content="Manage your hot dog passport account settings and preferences." />
+      </Helmet>
+
       {/* Header */}
       <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">

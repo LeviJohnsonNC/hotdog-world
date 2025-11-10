@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -95,6 +96,8 @@ const Auth = () => {
     setIsLoading(false);
   };
 
+  const siteUrl = window.location.origin;
+
   return (
     <div 
       className="min-h-screen flex items-center justify-center p-4"
@@ -104,6 +107,26 @@ const Auth = () => {
         backgroundSize: 'auto'
       }}
     >
+      <Helmet>
+        <title>Sign In / Sign Up | Hotdogs Around the World</title>
+        <meta 
+          name="description" 
+          content="Sign in or create an account to save your hot dog journey across devices and compete on the leaderboard."
+        />
+        <link rel="canonical" href={`${siteUrl}/auth`} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content="Sign In / Sign Up | Hotdogs Around the World" />
+        <meta property="og:description" content="Sign in or create an account to save your hot dog journey across devices." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${siteUrl}/auth`} />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Sign In / Sign Up | Hotdogs Around the World" />
+        <meta name="twitter:description" content="Sign in or create an account to save your hot dog journey across devices." />
+      </Helmet>
+
       <Card className="w-full max-w-md p-8 shadow-2xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold font-heading text-primary mb-2">

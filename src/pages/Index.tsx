@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Globe } from "@/components/Globe";
 import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogs } from "@/hooks/useHotdogs";
@@ -16,8 +17,65 @@ const Index = () => {
     navigate(`/hotdog/${hotdogId}`);
   };
 
+  const siteUrl = window.location.origin;
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
+      <Helmet>
+        <title>Hotdogs Around the World - Discover Global Street Food Cultures</title>
+        <meta 
+          name="description" 
+          content="Explore iconic hot dog recipes from around the world. Learn authentic recipes, discover origin stories, and collect passport stamps from global street food destinations." 
+        />
+        <link rel="canonical" href={siteUrl} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
+        <meta property="og:description" content="Explore iconic hot dog recipes from around the world. Learn authentic recipes, discover origin stories, and collect passport stamps from global street food destinations." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
+        <meta name="twitter:description" content="Explore iconic hot dog recipes from around the world. Learn authentic recipes, discover origin stories, and collect passport stamps from global street food destinations." />
+        <meta name="twitter:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
+
+        {/* Structured Data - Organization */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Hotdogs Around the World",
+            "url": siteUrl,
+            "logo": `${siteUrl}/images/chicago-hotdog-hero.png`,
+            "description": "A global exploration of iconic hot dog recipes and street food cultures"
+          })}
+        </script>
+
+        {/* Structured Data - WebSite */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Hotdogs Around the World",
+            "url": siteUrl,
+            "description": "Explore iconic hot dog recipes from around the world",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": `${siteUrl}/hotdog/{search_term_string}`
+              },
+              "query-input": "required name=search_term_string"
+            }
+          })}
+        </script>
+      </Helmet>
+
       {/* Header */}
       <header className="absolute top-0 left-0 right-0 z-10 p-3 md:p-4 bg-background/60 backdrop-blur-md">
         <div className="max-w-7xl mx-auto text-center">

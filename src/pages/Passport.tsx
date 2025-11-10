@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
@@ -47,6 +48,8 @@ const Passport = () => {
 
   const isLoading = hotdogsLoading || stampsLoading;
 
+  const siteUrl = window.location.origin;
+
   if (isLoading) {
     return (
       <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
@@ -60,6 +63,26 @@ const Passport = () => {
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <Helmet>
+        <title>My Hot Dog Passport | Hotdogs Around the World</title>
+        <meta 
+          name="description" 
+          content="Track your hot dog journey around the world. View your collected stamps, stats, and explore new destinations."
+        />
+        <link rel="canonical" href={`${siteUrl}/passport`} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content="My Hot Dog Passport | Hotdogs Around the World" />
+        <meta property="og:description" content="Track your hot dog journey around the world. View your collected stamps, stats, and explore new destinations." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${siteUrl}/passport`} />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="My Hot Dog Passport | Hotdogs Around the World" />
+        <meta name="twitter:description" content="Track your hot dog journey around the world. View your collected stamps, stats, and explore new destinations." />
+      </Helmet>
+
       {/* Header */}
       <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
