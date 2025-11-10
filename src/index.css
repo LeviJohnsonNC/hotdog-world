@@ -8,14 +8,15 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Brand Colors - Hotdog Theme */
-    --ketchup-red: 355 78% 56%;
-    --mustard-yellow: 40 89% 68%;
+    /* Brand Colors - Hotdog Theme (Refined) */
+    --ketchup-red: 8 58% 48%;
+    --mustard-yellow: 42 65% 48%;
     --bun-beige: 43 60% 91%;
     --sky-blue: 197 81% 64%;
     --leafy-green: 122 39% 49%;
     --midnight-navy: 217 37% 16%;
     --papaya-pink: 352 100% 74%;
+    --parchment: 40 25% 92%;
 
     /* Semantic Tokens - Light Mode */
     --background: 43 60% 96%;
@@ -27,11 +28,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 217 37% 16%;
 
-    --primary: 355 78% 56%;
+    --primary: 8 58% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 89% 68%;
-    --secondary-foreground: 217 37% 16%;
+    --secondary: 42 65% 48%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 43 60% 91%;
     --muted-foreground: 217 37% 40%;
@@ -44,7 +45,7 @@ All colors MUST be HSL.
 
     --border: 43 40% 85%;
     --input: 43 40% 85%;
-    --ring: 355 78% 56%;
+    --ring: 8 58% 48%;
 
     --radius: 1rem;
 
@@ -63,7 +64,8 @@ All colors MUST be HSL.
     --shadow-elevated: 0 8px 24px hsla(217, 37%, 16%, 0.12);
     
     /* Food-derived colors for Chicago Dog theme */
-    --mustard-yellow: 45 93% 58%;
+    --mustard: 42 65% 48%;
+    --ketchup: 8 58% 48%;
     --relish-green: 135 35% 45%;
     --poppy-seed: 0 0% 15%;
     --tomato-red: 10 80% 55%;
@@ -125,7 +127,7 @@ All colors MUST be HSL.
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    font-weight: 500;
   }
 }
 
