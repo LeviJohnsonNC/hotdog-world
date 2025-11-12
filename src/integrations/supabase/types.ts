@@ -70,6 +70,7 @@ export type Database = {
           name: string
           needs_sprite_update: boolean | null
           origin_story: string | null
+          slug: string
           sprite_height: number | null
           sprite_sheet_version: number | null
           sprite_width: number | null
@@ -92,6 +93,7 @@ export type Database = {
           name: string
           needs_sprite_update?: boolean | null
           origin_story?: string | null
+          slug: string
           sprite_height?: number | null
           sprite_sheet_version?: number | null
           sprite_width?: number | null
@@ -114,6 +116,7 @@ export type Database = {
           name?: string
           needs_sprite_update?: boolean | null
           origin_story?: string | null
+          slug?: string
           sprite_height?: number | null
           sprite_sheet_version?: number | null
           sprite_width?: number | null

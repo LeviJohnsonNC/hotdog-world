@@ -26,7 +26,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/hotdog/:id" element={<HotdogDetail />} />
+              <Route path="/hotdog/:slug" element={<HotdogDetail />} />
               <Route path="/hotdogs" element={<BrowseHotdogs />} />
               <Route path="/passport" element={<Passport />} />
               <Route path="/leaderboard" element={<Leaderboard />} />

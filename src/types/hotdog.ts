@@ -1,5 +1,6 @@
 export interface Hotdog {
   id: string;
+  slug: string;
   name: string;
   city: string;
   country: string;

@@ -9,9 +9,9 @@ const BrowseHotdogs = () => {
   const { data: hotdogs = [], isLoading } = useHotdogs();
   const siteUrl = window.location.origin;
 
-  const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogId: string) => {
+  const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
     e.preventDefault();
-    navigate(`/hotdog/${hotdogId}`);
+    navigate(`/hotdog/${hotdogSlug}`);
   };
 
   if (isLoading) {
@@ -81,8 +81,8 @@ const BrowseHotdogs = () => {
           {hotdogs.map((hotdog) => (
             <a
               key={hotdog.id}
-              href={`/hotdog/${hotdog.id}`}
-              onClick={(e) => handleHotdogClick(e, hotdog.id)}
+              href={`/hotdog/${hotdog.slug}`}
+              onClick={(e) => handleHotdogClick(e, hotdog.slug)}
               className="group block"
             >
               <Card className="overflow-hidden bg-card/40 backdrop-blur-sm border-border/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl h-full">

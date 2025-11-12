@@ -13,8 +13,8 @@ const Index = () => {
   const { data: hotdogs = [], isLoading } = useHotdogs();
   const { user, signOut } = useAuth();
 
-  const handleHotdogClick = (hotdogId: string) => {
-    navigate(`/hotdog/${hotdogId}`);
+  const handleHotdogClick = (hotdogSlug: string) => {
+    navigate(`/hotdog/${hotdogSlug}`);
   };
 
   const siteUrl = window.location.origin;

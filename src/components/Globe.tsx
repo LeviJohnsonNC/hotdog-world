@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EarthProps {
   hotdogs: Hotdog[];
-  onHotdogClick: (hotdogId: string) => void;
+  onHotdogClick: (hotdogSlug: string) => void;
   isInteracting: boolean;
 }
 
@@ -61,7 +61,7 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
         <HotdogPin
           key={hotdog.id}
           position={hotdog.position}
-          onClick={() => onHotdogClick(hotdog.id)}
+          onClick={() => onHotdogClick(hotdog.slug)}
           hotdog={hotdog}
         />
       ))}
@@ -71,7 +71,7 @@ function Earth({ hotdogs, onHotdogClick, isInteracting }: EarthProps) {
 
 interface GlobeProps {
   hotdogs: Hotdog[];
-  onHotdogClick: (hotdogId: string) => void;
+  onHotdogClick: (hotdogSlug: string) => void;
 }
 
 export function Globe({ hotdogs, onHotdogClick }: GlobeProps) {

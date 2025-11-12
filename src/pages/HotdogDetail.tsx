@@ -14,12 +14,12 @@ import { FactFlipCard } from "@/components/FactFlipCard";
 import { PassportStamp } from "@/components/PassportStamp";
 
 const HotdogDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const { data: hotdogs = [] } = useHotdogs();
   
-  const hotdog = hotdogs.find((h) => h.id === id);
-  const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(id || '');
+  const hotdog = hotdogs.find((h) => h.slug === slug);
+  const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(hotdog?.id || '');
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
@@ -93,7 +93,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
   ];
 
   const siteUrl = window.location.origin;
-  const pageUrl = `${siteUrl}/hotdog/${id}`;
+  const pageUrl = `${siteUrl}/hotdog/${slug}`;
   
   // Prepare ingredients for Recipe schema
   const allIngredients = isStructuredIngredients && ingredientsData
