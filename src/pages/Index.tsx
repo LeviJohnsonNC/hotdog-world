@@ -188,54 +188,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Footer with crawlable links */}
-      <footer className="fixed bottom-16 left-0 right-0 z-[5] pointer-events-none">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-4 text-xs pointer-events-auto">
-            <a
-              href="/hotdogs"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/hotdogs");
-              }}
-              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
-            >
-              Browse All
-            </a>
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/");
-              }}
-              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
-            >
-              Globe
-            </a>
-            <a
-              href="/passport"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/passport");
-              }}
-              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
-            >
-              Passport
-            </a>
-            <a
-              href="/leaderboard"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/leaderboard");
-              }}
-              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
-            >
-              Leaderboard
-            </a>
-          </div>
-        </div>
-      </footer>
-
     </div>
   );
 };
