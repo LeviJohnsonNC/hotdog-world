@@ -85,16 +85,6 @@ const Index = () => {
           <p className="text-xs md:text-base text-foreground/60 mt-0.5 md:mt-1">
             Click a pin to discover iconic street food from every corner of the planet
           </p>
-          <a
-            href="/hotdogs"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/hotdogs");
-            }}
-            className="inline-block mt-2 text-xs md:text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
-          >
-            Browse All Hotdogs
-          </a>
         </div>
       </header>
 
@@ -149,27 +139,38 @@ const Index = () => {
       {/* Bottom Navigation Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-mustard/40 via-ketchup/30 to-mustard/40 backdrop-blur-md border-t-2 border-mustard/30 rounded-t-3xl shadow-lg pointer-events-auto">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-1.5 md:py-2 flex items-center justify-between">
-          {/* Left: Account Settings */}
-          {user && (
+          {/* Left: Browse All & Account Settings */}
+          <div className="flex items-center gap-2">
             <a
-              href="/settings"
+              href="/hotdogs"
               onClick={(e) => {
                 e.preventDefault();
-                navigate('/settings');
+                navigate("/hotdogs");
               }}
-              className="flex items-center gap-2 px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
             >
-              <span className="hidden sm:inline">Account Settings</span>
-              <span className="sm:hidden">Settings</span>
+              <span>Browse All</span>
             </a>
-          )}
-          {!user && <div />} {/* Spacer when logged out */}
+            {user && (
+              <a
+                href="/settings"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/settings');
+                }}
+                className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
+              >
+                <span className="hidden sm:inline">Account Settings</span>
+                <span className="sm:hidden">Settings</span>
+              </a>
+            )}
+          </div>
           
           {/* Right: Sign In / Log Out */}
           {user ? (
             <button
               onClick={() => signOut()}
-              className="flex items-center gap-2 px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
             >
               <span>Log Out</span>
             </button>
@@ -180,7 +181,7 @@ const Index = () => {
                 e.preventDefault();
                 navigate('/auth');
               }}
-              className="flex items-center gap-2 px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
+              className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
             >
               <span>Sign In</span>
             </a>
