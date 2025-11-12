@@ -85,38 +85,54 @@ const Index = () => {
           <p className="text-xs md:text-base text-foreground/60 mt-0.5 md:mt-1">
             Click a pin to discover iconic street food from every corner of the planet
           </p>
+          <a
+            href="/hotdogs"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/hotdogs");
+            }}
+            className="inline-block mt-2 text-xs md:text-sm text-primary hover:text-primary/80 underline underline-offset-4 transition-colors"
+          >
+            Browse All Hotdogs
+          </a>
         </div>
       </header>
 
       {/* Floating Icons - Leaderboard and Passport */}
       <div className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 flex flex-row items-center gap-2 sm:gap-3 bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
         {/* Leaderboard Icon */}
-        <button
-          onClick={() => navigate("/leaderboard")}
-          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
+        <a
+          href="/leaderboard"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/leaderboard");
+          }}
+          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer block"
           aria-label="View Leaderboard"
-          role="button"
         >
           <img 
             src={leaderboardIcon} 
             alt="Hot Dog Leaderboard" 
             className="w-full h-full object-contain"
           />
-        </button>
+        </a>
 
         {/* Passport Icon */}
-        <button
-          onClick={() => navigate("/passport")}
-          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer"
+        <a
+          href="/passport"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/passport");
+          }}
+          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer block"
           aria-label="View My Passport"
-          role="button"
         >
           <img 
             src={passportIcon} 
             alt="Hot Dog Passport" 
             className="w-full h-full object-contain"
           />
-        </button>
+        </a>
       </div>
 
       {/* Globe with Loading State */}
@@ -135,13 +151,17 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-1.5 md:py-2 flex items-center justify-between">
           {/* Left: Account Settings */}
           {user && (
-            <button
-              onClick={() => navigate('/settings')}
+            <a
+              href="/settings"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/settings');
+              }}
               className="flex items-center gap-2 px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
             >
               <span className="hidden sm:inline">Account Settings</span>
               <span className="sm:hidden">Settings</span>
-            </button>
+            </a>
           )}
           {!user && <div />} {/* Spacer when logged out */}
           
@@ -154,15 +174,67 @@ const Index = () => {
               <span>Log Out</span>
             </button>
           ) : (
-            <button
-              onClick={() => navigate('/auth')}
+            <a
+              href="/auth"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/auth');
+              }}
               className="flex items-center gap-2 px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg"
             >
               <span>Sign In</span>
-            </button>
+            </a>
           )}
         </div>
       </div>
+
+      {/* Footer with crawlable links */}
+      <footer className="fixed bottom-16 left-0 right-0 z-[5] pointer-events-none">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-4 text-xs pointer-events-auto">
+            <a
+              href="/hotdogs"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/hotdogs");
+              }}
+              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
+            >
+              Browse All
+            </a>
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
+              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
+            >
+              Globe
+            </a>
+            <a
+              href="/passport"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/passport");
+              }}
+              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
+            >
+              Passport
+            </a>
+            <a
+              href="/leaderboard"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/leaderboard");
+              }}
+              className="text-foreground/60 hover:text-primary transition-colors bg-background/60 backdrop-blur-sm px-3 py-1 rounded-full"
+            >
+              Leaderboard
+            </a>
+          </div>
+        </div>
+      </footer>
 
     </div>
   );

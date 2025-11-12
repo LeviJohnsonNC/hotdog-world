@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import HotdogDetail from "./pages/HotdogDetail";
+import BrowseHotdogs from "./pages/BrowseHotdogs";
 import Passport from "./pages/Passport";
 import Leaderboard from "./pages/Leaderboard";
 import AccountSettings from "./pages/AccountSettings";
@@ -26,6 +27,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/hotdog/:id" element={<HotdogDetail />} />
+              <Route path="/hotdogs" element={<BrowseHotdogs />} />
               <Route path="/passport" element={<Passport />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/settings" element={<AccountSettings />} />
