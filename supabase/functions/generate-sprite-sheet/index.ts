@@ -29,6 +29,23 @@ serve(async (req) => {
 
     console.log('Starting sprite sheet generation...');
 
+    // Ensure bucket exists (create if it doesn't)
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(b => b.id === 'hotdog-sprites');
+    
+    if (!bucketExists) {
+      console.log('Creating hotdog-sprites bucket...');
+      const { error: bucketError } = await supabase.storage.createBucket('hotdog-sprites', {
+        public: true,
+        fileSizeLimit: 10485760 // 10MB
+      });
+      if (bucketError) {
+        console.error('Error creating bucket:', bucketError);
+        throw bucketError;
+      }
+      console.log('Bucket created successfully');
+    }
+
     // 1. Fetch all hotdogs from database
     const { data: hotdogs, error: fetchError } = await supabase
       .from('hotdogs')
