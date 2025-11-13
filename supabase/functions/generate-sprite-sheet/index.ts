@@ -29,19 +29,8 @@ serve(async (req) => {
 
     console.log('Starting sprite sheet generation...');
 
-    // Ensure bucket exists (create if it doesn't)
-    const { data: buckets } = await supabase.storage.listBuckets();
-    const bucketExists = buckets?.some(b => b.id === 'hotdog-sprites');
-    
-    if (!bucketExists) {
-      console.log('Creating hotdog-sprites bucket...');
-      const { error: bucketError } = await supabase.storage.createBucket('hotdog-sprites');
-      if (bucketError) {
-        console.error('Error creating bucket:', bucketError);
-        throw bucketError;
-      }
-      console.log('Bucket created successfully');
-    }
+    // Bucket is provisioned via migration - no need to create it here
+    console.log('Using hotdog-sprites bucket...');
 
     // 1. Fetch all hotdogs from database
     const { data: hotdogs, error: fetchError } = await supabase
