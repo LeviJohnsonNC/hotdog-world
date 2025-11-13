@@ -35,10 +35,7 @@ serve(async (req) => {
     
     if (!bucketExists) {
       console.log('Creating hotdog-sprites bucket...');
-      const { error: bucketError } = await supabase.storage.createBucket('hotdog-sprites', {
-        public: true,
-        fileSizeLimit: 10485760 // 10MB
-      });
+      const { error: bucketError } = await supabase.storage.createBucket('hotdog-sprites');
       if (bucketError) {
         console.error('Error creating bucket:', bucketError);
         throw bucketError;
