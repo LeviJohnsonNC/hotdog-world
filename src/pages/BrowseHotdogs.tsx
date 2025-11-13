@@ -18,6 +18,7 @@ const BrowseHotdogs = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-mustard/10 flex items-center justify-center">
         <div className="text-center">
+          <h1 className="text-4xl font-heading text-primary mb-4">Browse All Hotdogs</h1>
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-foreground/60">Loading hotdogs...</p>
         </div>
