@@ -54,6 +54,7 @@ const Passport = () => {
     return (
       <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
         <div className="text-center">
+          <h1 className="text-2xl font-heading text-primary mb-4">My Hot Dog Passport</h1>
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent mx-auto mb-4" />
           <p className="text-muted-foreground">Loading your passport...</p>
         </div>

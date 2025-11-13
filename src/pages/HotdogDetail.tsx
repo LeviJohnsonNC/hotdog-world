@@ -33,7 +33,7 @@ const HotdogDetail = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5">
         <div className="text-center">
-          <h2 className="text-2xl font-heading mb-4">Hot dog not found</h2>
+          <h1 className="text-2xl font-heading mb-4">Hot Dog Not Found</h1>
           <Button onClick={() => navigate("/")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Map
