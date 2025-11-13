@@ -17,11 +17,11 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch all hotdogs
+    // Fetch all hotdogs with slugs
     const { data: hotdogs, error } = await supabase
       .from('hotdogs')
-      .select('id')
-      .order('id');
+      .select('slug')
+      .order('slug');
 
     if (error) {
       console.error('Error fetching hotdogs:', error);
@@ -57,11 +57,32 @@ Deno.serve(async (req) => {
     xml += '    <priority>0.8</priority>\n';
     xml += '  </url>\n';
 
-    // Add hotdog detail pages
+    xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}/hotdogs</loc>\n`;
+    xml += `    <lastmod>${currentDate}</lastmod>\n`;
+    xml += '    <changefreq>weekly</changefreq>\n';
+    xml += '    <priority>0.9</priority>\n';
+    xml += '  </url>\n';
+
+    xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}/leaderboard</loc>\n`;
+    xml += `    <lastmod>${currentDate}</lastmod>\n`;
+    xml += '    <changefreq>daily</changefreq>\n';
+    xml += '    <priority>0.7</priority>\n';
+    xml += '  </url>\n';
+
+    xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}/settings</loc>\n`;
+    xml += `    <lastmod>${currentDate}</lastmod>\n`;
+    xml += '    <changefreq>monthly</changefreq>\n';
+    xml += '    <priority>0.4</priority>\n';
+    xml += '  </url>\n';
+
+    // Add hotdog detail pages with slugs
     if (hotdogs) {
       for (const hotdog of hotdogs) {
         xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/hotdog/${hotdog.id}</loc>\n`;
+        xml += `    <loc>${baseUrl}/hotdog/${hotdog.slug}</loc>\n`;
         xml += `    <lastmod>${currentDate}</lastmod>\n`;
         xml += '    <changefreq>monthly</changefreq>\n';
         xml += '    <priority>0.7</priority>\n';
