@@ -29,22 +29,6 @@ serve(async (req) => {
 
     console.log('Starting sprite sheet generation...');
 
-    // Check if bucket exists, create if it doesn't
-    const { data: buckets } = await supabase.storage.listBuckets();
-    const bucketExists = buckets?.some(b => b.id === 'hotdog-sprites');
-    
-    if (!bucketExists) {
-      console.log('Creating hotdog-sprites bucket via Storage API...');
-      const { error: bucketError } = await supabase.storage.createBucket('hotdog-sprites');
-      if (bucketError) {
-        console.error('Bucket creation error:', bucketError);
-        throw bucketError;
-      }
-      console.log('Bucket created successfully');
-    } else {
-      console.log('Using existing hotdog-sprites bucket...');
-    }
-
     // 1. Fetch all hotdogs from database
     const { data: hotdogs, error: fetchError } = await supabase
       .from('hotdogs')
@@ -121,16 +105,16 @@ serve(async (req) => {
     const imageBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
     
     const version = Date.now();
-    const fileName = `hotdog-sprite-v${version}.png`;
+    const SPRITE_PATH = 'sprites/hotdog-sprite-sheet.png';
 
-    console.log(`Uploading sprite sheet as ${fileName}...`);
+    console.log(`Uploading sprite sheet to ${SPRITE_PATH}...`);
 
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('hotdog-sprites')
-      .upload(fileName, imageBuffer, {
+      .from('hotdog-photos')
+      .upload(SPRITE_PATH, imageBuffer, {
         contentType: 'image/png',
         cacheControl: '31536000', // 1 year cache
-        upsert: true
+        upsert: true // Overwrite if exists
       });
 
     if (uploadError) {
@@ -142,8 +126,8 @@ serve(async (req) => {
 
     // 5. Get public URL
     const { data: urlData } = supabase.storage
-      .from('hotdog-sprites')
-      .getPublicUrl(fileName);
+      .from('hotdog-photos')
+      .getPublicUrl(SPRITE_PATH);
 
     const spriteSheetUrl = urlData.publicUrl;
     console.log('Sprite sheet URL:', spriteSheetUrl);
@@ -190,6 +174,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
+        bucket: 'hotdog-photos',
+        path: SPRITE_PATH,
         spriteSheetUrl,
         version,
         hotdogsProcessed: hotdogs.length,
