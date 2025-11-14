@@ -23,7 +23,7 @@ export function useSpriteSheetGenerator() {
       }
 
       toast.success('Sprite sheet generated successfully! Globe will load much faster now.', {
-        description: `Processed ${data.hotdogsProcessed} hotdogs in ${data.gridSize}x${data.gridSize} grid`,
+        description: `Processed ${data.hotdogsProcessed} hotdogs in ${data.gridSize}x${data.gridSize} grid (stored in database)`,
         duration: 5000,
       });
 

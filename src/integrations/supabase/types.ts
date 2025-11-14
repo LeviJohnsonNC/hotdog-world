@@ -149,6 +149,45 @@ export type Database = {
         }
         Relationships: []
       }
+      sprite_sheets: {
+        Row: {
+          created_at: string | null
+          grid_size: number
+          hotdogs_count: number
+          id: string
+          image_data: string
+          name: string
+          sheet_size: number
+          sprite_size: number
+          updated_at: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string | null
+          grid_size: number
+          hotdogs_count: number
+          id?: string
+          image_data: string
+          name: string
+          sheet_size: number
+          sprite_size: number
+          updated_at?: string | null
+          version: number
+        }
+        Update: {
+          created_at?: string | null
+          grid_size?: number
+          hotdogs_count?: number
+          id?: string
+          image_data?: string
+          name?: string
+          sheet_size?: number
+          sprite_size?: number
+          updated_at?: string | null
+          version?: number
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           created_at: string
