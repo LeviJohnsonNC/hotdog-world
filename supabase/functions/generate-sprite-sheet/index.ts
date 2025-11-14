@@ -100,37 +100,33 @@ serve(async (req) => {
 
     console.log('Sprite sheet generated successfully');
 
-    // 4. Upload sprite sheet to storage
-    const base64Data = generatedImageBase64.replace(/^data:image\/\w+;base64,/, '');
-    const imageBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-    
+    // 4. Store sprite sheet in database (bypassing storage due to tenant config issues)
     const version = Date.now();
-    const SPRITE_PATH = 'sprites/hotdog-sprite-sheet.png';
+    
+    console.log('Storing sprite sheet in database...');
 
-    console.log(`Uploading sprite sheet to ${SPRITE_PATH}...`);
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('hotdog-photos')
-      .upload(SPRITE_PATH, imageBuffer, {
-        contentType: 'image/png',
-        cacheControl: '31536000', // 1 year cache
-        upsert: true // Overwrite if exists
+    // Upsert sprite sheet data into database
+    const { error: dbError } = await supabase
+      .from('sprite_sheets')
+      .upsert({
+        name: 'hotdog-sprite-sheet',
+        image_data: generatedImageBase64, // Store full base64 data URL
+        version,
+        grid_size: GRID_SIZE,
+        sprite_size: SPRITE_SIZE,
+        sheet_size: SHEET_SIZE,
+        hotdogs_count: hotdogs.length,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'name'
       });
 
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      throw uploadError;
+    if (dbError) {
+      console.error('Database storage error:', dbError);
+      throw dbError;
     }
 
-    console.log('Sprite sheet uploaded successfully');
-
-    // 5. Get public URL
-    const { data: urlData } = supabase.storage
-      .from('hotdog-photos')
-      .getPublicUrl(SPRITE_PATH);
-
-    const spriteSheetUrl = urlData.publicUrl;
-    console.log('Sprite sheet URL:', spriteSheetUrl);
+    console.log('Sprite sheet stored in database successfully');
 
     // 6. Update database with sprite coordinates
     console.log('Updating hotdog sprite coordinates...');
@@ -174,9 +170,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        bucket: 'hotdog-photos',
-        path: SPRITE_PATH,
-        spriteSheetUrl,
+        storage: 'database',
+        name: 'hotdog-sprite-sheet',
         version,
         hotdogsProcessed: hotdogs.length,
         gridSize: GRID_SIZE,
