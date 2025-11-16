@@ -132,19 +132,42 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             "name": hotdog.name,
             "description": hotdog.description,
             "image": [hotdog.image],
+            "author": {
+              "@type": "Organization",
+              "name": "Hotdogs Around the World",
+              "url": siteUrl
+            },
+            "datePublished": hotdog.date_published || new Date().toISOString().split('T')[0],
+            "prepTime": hotdog.prep_time || "PT10M",
+            "cookTime": hotdog.cook_time || "PT5M",
+            "totalTime": hotdog.total_time || "PT15M",
+            "recipeYield": hotdog.recipe_yield || "Serves 1",
+            "recipeCategory": "Street Food",
+            "recipeCuisine": hotdog.country,
+            "keywords": `${hotdog.name}, ${hotdog.city}, ${hotdog.country}, hot dog, street food, recipe`,
             "recipeIngredient": allIngredients,
             "recipeInstructions": instructions.map((step, index) => ({
               "@type": "HowToStep",
               "position": index + 1,
-              "text": step
+              "text": step,
+              "name": `Step ${index + 1}`
             })),
-            "recipeCuisine": hotdog.country,
-            "recipeCategory": "Street Food",
-            "keywords": `${hotdog.name}, ${hotdog.city}, ${hotdog.country}, hot dog, street food, recipe`,
-            "author": {
-              "@type": "Organization",
-              "name": "Hotdogs Around the World"
-            }
+            ...(hotdog.calories && {
+              "nutrition": {
+                "@type": "NutritionInformation",
+                "calories": `${hotdog.calories} calories`
+              }
+            }),
+            ...(hotdog.video_url && {
+              "video": {
+                "@type": "VideoObject",
+                "name": `How to Make ${hotdog.name}`,
+                "description": `Watch how to make authentic ${hotdog.name}`,
+                "thumbnailUrl": hotdog.image,
+                "contentUrl": hotdog.video_url,
+                "uploadDate": hotdog.date_published
+              }
+            })
           })}
         </script>
 

@@ -55,9 +55,12 @@ export type Database = {
       }
       hotdogs: {
         Row: {
+          calories: number | null
           city: string
+          cook_time: string | null
           country: string
           created_at: string | null
+          date_published: string | null
           description: string
           explore_links: Json | null
           fun_facts: string[] | null
@@ -70,17 +73,24 @@ export type Database = {
           name: string
           needs_sprite_update: boolean | null
           origin_story: string | null
+          prep_time: string | null
+          recipe_yield: string | null
           slug: string
           sprite_height: number | null
           sprite_sheet_version: number | null
           sprite_width: number | null
           sprite_x: number | null
           sprite_y: number | null
+          total_time: string | null
+          video_url: string | null
         }
         Insert: {
+          calories?: number | null
           city: string
+          cook_time?: string | null
           country: string
           created_at?: string | null
+          date_published?: string | null
           description: string
           explore_links?: Json | null
           fun_facts?: string[] | null
@@ -93,17 +103,24 @@ export type Database = {
           name: string
           needs_sprite_update?: boolean | null
           origin_story?: string | null
+          prep_time?: string | null
+          recipe_yield?: string | null
           slug: string
           sprite_height?: number | null
           sprite_sheet_version?: number | null
           sprite_width?: number | null
           sprite_x?: number | null
           sprite_y?: number | null
+          total_time?: string | null
+          video_url?: string | null
         }
         Update: {
+          calories?: number | null
           city?: string
+          cook_time?: string | null
           country?: string
           created_at?: string | null
+          date_published?: string | null
           description?: string
           explore_links?: Json | null
           fun_facts?: string[] | null
@@ -116,12 +133,16 @@ export type Database = {
           name?: string
           needs_sprite_update?: boolean | null
           origin_story?: string | null
+          prep_time?: string | null
+          recipe_yield?: string | null
           slug?: string
           sprite_height?: number | null
           sprite_sheet_version?: number | null
           sprite_width?: number | null
           sprite_x?: number | null
           sprite_y?: number | null
+          total_time?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }
