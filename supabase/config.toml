@@ -4,4 +4,4 @@ project_id = "yjpohmmrjuphbjjgvyhv"
 verify_jwt = false
 
 [functions.populate-recipe-metadata]
-verify_jwt = false
+verify_jwt = true

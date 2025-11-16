@@ -30,6 +30,8 @@ const AccountSettings = () => {
   const [originalDisplayName, setOriginalDisplayName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isClearingData, setIsClearingData] = useState(false);
+  const [isPopulatingMetadata, setIsPopulatingMetadata] = useState(false);
+  const [metadataResults, setMetadataResults] = useState<any>(null);
   const { generateSprites, isGenerating } = useSpriteSheetGenerator();
 
   // Fetch hotdog count for sprite status
@@ -163,6 +165,45 @@ const AccountSettings = () => {
       });
     } finally {
       setIsClearingData(false);
+    }
+  };
+
+  const handlePopulateMetadata = async () => {
+    if (!user) return;
+
+    setIsPopulatingMetadata(true);
+    setMetadataResults(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('populate-recipe-metadata');
+
+      if (error) {
+        throw error;
+      }
+
+      setMetadataResults(data);
+
+      if (data.successCount > 0) {
+        toast({
+          title: "Metadata population successful!",
+          description: `Updated ${data.successCount} of ${data.total} hotdogs with AI-generated recipe metadata.`,
+        });
+      } else {
+        toast({
+          title: "No records updated",
+          description: data.errorCount > 0 ? `Failed to update ${data.errorCount} hotdogs. Check the results below.` : "No hotdogs found to update.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error populating metadata:", error);
+      toast({
+        title: "Population failed",
+        description: error.message || "Failed to populate recipe metadata. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsPopulatingMetadata(false);
     }
   };
 
@@ -317,6 +358,81 @@ const AccountSettings = () => {
                   This will create optimized images for all {hotdogCount || 0} hotdogs. 
                   Takes ~30-60 seconds. Re-run this when you add new hotdogs.
                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* Recipe Metadata Population - Admin Only */}
+          {isAdmin && (
+            <div className="bg-card rounded-lg p-6 shadow-md border-2 border-primary/20">
+              <h2 className="text-xl font-semibold text-foreground mb-2">Recipe Metadata Population</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Use AI to intelligently populate prep time, cook time, calories, and yield for Google Recipe structured data
+              </p>
+              
+              <div className="space-y-4">
+                {/* Populate Button */}
+                <Button 
+                  onClick={handlePopulateMetadata}
+                  disabled={isPopulatingMetadata}
+                  variant="secondary"
+                  className="w-full sm:w-auto"
+                >
+                  {isPopulatingMetadata ? 'Populating...' : 'Populate Recipe Metadata'}
+                </Button>
+                
+                <p className="text-xs text-muted-foreground">
+                  This analyzes each hotdog's ingredients and instructions to generate accurate recipe times and nutritional info. Takes 1-2 minutes for all hotdogs.
+                </p>
+
+                {/* Results Display */}
+                {metadataResults && (
+                  <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                    <div className="flex gap-4 text-sm mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-green-600" />
+                        <span>{metadataResults.successCount} successful</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-red-600" />
+                        <span>{metadataResults.errorCount} errors</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">Total: {metadataResults.total}</span>
+                      </div>
+                    </div>
+
+                    {metadataResults.results && metadataResults.results.length > 0 && (
+                      <div className="max-h-60 overflow-y-auto space-y-1">
+                        {metadataResults.results.slice(0, 10).map((result: any, index: number) => (
+                          <div 
+                            key={index}
+                            className={`text-xs p-2 rounded ${
+                              result.success 
+                                ? 'bg-green-50 dark:bg-green-950/20 text-green-900 dark:text-green-200' 
+                                : 'bg-red-50 dark:bg-red-950/20 text-red-900 dark:text-red-200'
+                            }`}
+                          >
+                            <span className="font-medium">{result.name}</span>
+                            {result.success && result.metadata && (
+                              <span className="ml-2 opacity-70">
+                                ({result.metadata.prep_time}, {result.metadata.cook_time}, {result.metadata.calories} cal)
+                              </span>
+                            )}
+                            {result.error && (
+                              <span className="ml-2">- Error: {result.error}</span>
+                            )}
+                          </div>
+                        ))}
+                        {metadataResults.results.length > 10 && (
+                          <p className="text-xs text-muted-foreground italic pt-2">
+                            ...and {metadataResults.results.length - 10} more
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
