@@ -12,6 +12,7 @@ import Passport from "./pages/Passport";
 import Leaderboard from "./pages/Leaderboard";
 import AccountSettings from "./pages/AccountSettings";
 import Auth from "./pages/Auth";
+import PopulateMetadata from "./pages/PopulateMetadata";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/settings" element={<AccountSettings />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/admin/populate-metadata" element={<PopulateMetadata />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
