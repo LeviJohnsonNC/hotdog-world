@@ -12,6 +12,7 @@ import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, Bo
 import { useState } from "react";
 import { FactFlipCard } from "@/components/FactFlipCard";
 import { PassportStamp } from "@/components/PassportStamp";
+import { formatCategoryName } from "@/lib/utils";
 
 const HotdogDetail = () => {
   const { slug } = useParams();
@@ -268,7 +269,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                       return (
                         <div key={groupName}>
                           <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
-                            {groupName}
+                            {formatCategoryName(groupName)}
                           </div>
                           <ul className="space-y-3">
                             {ingredients.map((ingredient, index) => {
