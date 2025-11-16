@@ -26,4 +26,12 @@ export interface Hotdog {
   sprite_sheet_version?: number | null;
   spriteSheetUrl?: string | null;
   hasSpriteCoordinates?: boolean;
+  // Recipe metadata for Google structured data
+  prep_time?: string;
+  cook_time?: string;
+  total_time?: string;
+  recipe_yield?: string;
+  date_published?: string;
+  calories?: number;
+  video_url?: string;
 }
