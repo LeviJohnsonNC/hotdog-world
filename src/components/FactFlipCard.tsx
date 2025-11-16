@@ -31,11 +31,11 @@ const getCardColor = (index: number): string => {
 
 const getTextSize = (text: string): string => {
   const length = text.length;
-  if (length < 80) return "text-base"; // 16px - short facts
-  if (length < 140) return "text-sm"; // 14px - medium facts
-  if (length < 200) return "text-xs"; // 12px - longer facts
-  if (length < 280) return "text-xs leading-tight"; // 12px tighter - very long
-  return "text-xs leading-tight"; // 12px minimum with tight leading
+  if (length < 60) return "text-base"; // 16px - short facts
+  if (length < 100) return "text-sm"; // 14px - medium facts
+  if (length < 150) return "text-xs"; // 12px - longer facts
+  if (length < 220) return "text-[11px] leading-tight"; // 11px tighter - very long
+  return "text-[10px] leading-tight"; // 10px minimum with tight leading for extra long content
 };
 
 const getTeaserSize = (text: string): string => {
@@ -47,9 +47,10 @@ const getTeaserSize = (text: string): string => {
 
 const getPadding = (text: string): string => {
   const length = text.length;
-  if (length < 150) return "p-8";
-  if (length < 250) return "p-6";
-  return "p-5";
+  if (length < 120) return "p-8";
+  if (length < 180) return "p-6";
+  if (length < 250) return "p-5";
+  return "p-4"; // More aggressive padding reduction for very long text
 };
 
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
@@ -117,13 +118,13 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
         </div>
 
         {/* Back Side */}
-        <div className="flip-card-face flip-card-back bg-white border-2 border-mustard/40">
-          <div className={`flex flex-col h-full ${getPadding(reveal)}`}>
+        <div className="flip-card-face flip-card-back bg-white border-2 border-mustard/40 overflow-hidden">
+          <div className={`flex flex-col h-full ${getPadding(reveal)} overflow-hidden`}>
             <p className={`${getTeaserSize(teaser)} font-heading font-medium text-foreground leading-relaxed mb-2`}>
               {teaser}
             </p>
             <div className="border-t border-mustard/30 my-2" />
-            <div className="flex-1 overflow-y-auto max-h-[280px]">
+            <div className="flex-1 flex items-center justify-center overflow-hidden">
               <p className={`${getTextSize(reveal)} text-foreground leading-relaxed`}>
                 {reveal}
               </p>
