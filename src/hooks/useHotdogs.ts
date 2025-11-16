@@ -99,7 +99,7 @@ export function useHotdogs() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("hotdogs")
-        .select("id, slug, name, city, country, description, latitude, longitude, ingredients, instructions, fun_facts, origin_story, method_and_soul, explore_links, sprite_x, sprite_y, sprite_width, sprite_height, sprite_sheet_version")
+        .select("id, slug, name, city, country, description, latitude, longitude, ingredients, instructions, fun_facts, origin_story, method_and_soul, explore_links, sprite_x, sprite_y, sprite_width, sprite_height, sprite_sheet_version, prep_time, cook_time, total_time, recipe_yield, date_published, calories, video_url")
         .order("name");
 
       if (error) throw error;
