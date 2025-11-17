@@ -23,12 +23,13 @@ const HotdogDetail = () => {
   const hotdog = hotdogs.find((h) => h.slug === slug);
   const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(hotdog?.id || '');
   
-  const [checkedIngredients, setCheckedIngredients] = useState<Record<string | number, boolean>>({});
+  const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
 
   const handleRevealFact = async (index: number) => {
     await revealFact(index);
   };
+
 
   if (!hotdog) {
     return (
@@ -44,6 +45,8 @@ const HotdogDetail = () => {
     );
   }
 
+  // Use actual data if available, otherwise fall back to placeholders
+  // Check if ingredients is structured format or legacy array
   const isStructuredIngredients = hotdog.ingredients && 
     typeof hotdog.ingredients === 'object' && 
     !Array.isArray(hotdog.ingredients);
@@ -53,180 +56,325 @@ const HotdogDetail = () => {
     : null;
   
   const ingredientsArray = !isStructuredIngredients 
-    ? (hotdog.ingredients as string[] || [])
+    ? (hotdog.ingredients as string[] || [
+        "Premium hot dog sausage",
+        "Fresh baked bun",
+        "Special house sauce",
+        "Crispy fried onions",
+        "Fresh vegetables",
+        "Secret spice blend",
+      ])
     : [];
 
-  const instructions = hotdog.instructions || [];
-  const funFacts = hotdog.fun_facts || [];
-  const originStory = hotdog.origin_story || '';
-  const exploreLinks = hotdog.explore_links as { url: string; title: string }[] || [];
+  const instructions = hotdog.instructions || [
+    "Grill the sausage until perfectly charred and juicy",
+    "Toast the bun until golden and slightly crispy",
+    "Layer the special sauce generously on the bun",
+    "Place the hot sausage in the bun",
+    "Add toppings in the traditional order",
+    "Serve immediately while hot and enjoy!",
+  ];
 
-  const recipeIngredientList = isStructuredIngredients && ingredientsData
+  const funFacts = hotdog.fun_facts || [
+    `This hot dog is a beloved street food staple in ${hotdog.city}`,
+    "Locals often enjoy it as a late-night snack after celebrations",
+    "The recipe has been passed down through generations",
+    "Over 1 million of these are sold annually in the city",
+    "It's featured in numerous food documentaries",
+  ];
+
+  const originStory = hotdog.origin_story || `The ${hotdog.name} has a rich history deeply rooted in ${hotdog.city}'s vibrant street food culture. This iconic dish emerged in the early 20th century when local vendors began experimenting with traditional recipes, creating something entirely unique to the region.
+
+What makes this hot dog distinctive is its perfect blend of local ingredients and international influences. Over the decades, it has evolved from a simple street snack to a cultural icon, representing the spirit and flavor of ${hotdog.country}. Today, it remains a must-try for food lovers visiting ${hotdog.city}, with countless vendors each adding their own special twist to this beloved classic.`;
+
+  const exploreLinks = hotdog.explore_links || [
+    { title: "Watch How It's Made", url: "#" },
+    { title: "Best Places to Try", url: "#" },
+    { title: "Recipe Video Tutorial", url: "#" },
+    { title: "Cultural History", url: "#" },
+  ];
+
+  const siteUrl = window.location.origin;
+  const pageUrl = `${siteUrl}/hotdog/${slug}`;
+  
+  // Prepare ingredients for Recipe schema
+  const allIngredients = isStructuredIngredients && ingredientsData
     ? Object.values(ingredientsData).flat()
     : ingredientsArray;
 
-  const recipeInstructionList = instructions.map((instruction, index) => ({
-    "@type": "HowToStep",
-    name: `Step ${index + 1}`,
-    text: instruction.replace(/Technique tip:.*$/is, '').trim(),
-  }));
-
-  const imageUrl = `/images/${hotdog.slug}.png`;
-
   return (
-    <TooltipProvider>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
       <Helmet>
-        <title>{hotdog.name} Recipe - Hot Dog Passport</title>
-        <meta name="description" content={`Discover the authentic ${hotdog.name} from ${hotdog.city}, ${hotdog.country}. ${hotdog.description.slice(0, 120)}...`} />
-        <link rel="canonical" href={`https://hotdogpassport.com/hotdog/${hotdog.slug}`} />
-        <meta property="og:title" content={`${hotdog.name} Recipe - Hot Dog Passport`} />
-        <meta property="og:description" content={`Discover the authentic ${hotdog.name} from ${hotdog.city}, ${hotdog.country}.`} />
+        <title>{hotdog.name} Recipe - {hotdog.city}, {hotdog.country} | Hotdogs Around the World</title>
+        <meta 
+          name="description" 
+          content={`Learn how to make authentic ${hotdog.name} from ${hotdog.city}. Get the complete recipe, ingredients, and origin story of this iconic ${hotdog.country} street food.`}
+        />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content={`${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country}`} />
+        <meta property="og:description" content={hotdog.description} />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content={`https://hotdogpassport.com/hotdog/${hotdog.slug}`} />
-        <meta property="og:image" content={`https://hotdogpassport.com${imageUrl}`} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:image" content={hotdog.image} />
+        <meta property="og:image:alt" content={`${hotdog.name} from ${hotdog.city}`} />
+        
+        {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${hotdog.name} Recipe`} />
-        <meta name="twitter:description" content={`Discover the authentic ${hotdog.name} from ${hotdog.city}, ${hotdog.country}.`} />
-        <meta name="twitter:image" content={`https://hotdogpassport.com${imageUrl}`} />
+        <meta name="twitter:title" content={`${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country}`} />
+        <meta name="twitter:description" content={hotdog.description} />
+        <meta name="twitter:image" content={hotdog.image} />
+
+        {/* Structured Data - Recipe Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
-            "@context": "https://schema.org/",
+            "@context": "https://schema.org",
             "@type": "Recipe",
             "name": hotdog.name,
-            "image": [`https://hotdogpassport.com${imageUrl}`],
             "description": hotdog.description,
-            "recipeYield": hotdog.recipe_yield || "1 serving",
+            "image": [hotdog.image],
+            "author": {
+              "@type": "Organization",
+              "name": "Hotdogs Around the World",
+              "url": siteUrl
+            },
+            "datePublished": hotdog.date_published || new Date().toISOString().split('T')[0],
             "prepTime": hotdog.prep_time || "PT10M",
             "cookTime": hotdog.cook_time || "PT5M",
             "totalTime": hotdog.total_time || "PT15M",
-            "recipeIngredient": recipeIngredientList,
-            "recipeInstructions": recipeInstructionList,
-            "recipeCategory": "Main course",
+            "recipeYield": hotdog.recipe_yield || "Serves 1",
+            "recipeCategory": "Street Food",
             "recipeCuisine": hotdog.country,
-            "keywords": `${hotdog.name}, ${hotdog.city}, ${hotdog.country}, hot dog recipe`,
+            "keywords": `${hotdog.name}, ${hotdog.city}, ${hotdog.country}, hot dog, street food, recipe`,
+            "recipeIngredient": allIngredients,
+            "recipeInstructions": instructions.map((step, index) => ({
+              "@type": "HowToStep",
+              "position": index + 1,
+              "text": step,
+              "name": `Step ${index + 1}`
+            })),
+            ...(hotdog.calories && {
+              "nutrition": {
+                "@type": "NutritionInformation",
+                "calories": `${hotdog.calories} calories`
+              }
+            }),
+            ...(hotdog.video_url && {
+              "video": {
+                "@type": "VideoObject",
+                "name": `How to Make ${hotdog.name}`,
+                "description": `Watch how to make authentic ${hotdog.name}`,
+                "thumbnailUrl": hotdog.image,
+                "contentUrl": hotdog.video_url,
+                "uploadDate": hotdog.date_published
+              }
+            })
           })}
         </script>
+
+        {/* Structured Data - BreadcrumbList */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://hotdogpassport.com/" },
-              { "@type": "ListItem", "position": 2, "name": "Hot Dogs", "item": "https://hotdogpassport.com/hotdogs" },
-              { "@type": "ListItem", "position": 3, "name": hotdog.name, "item": `https://hotdogpassport.com/hotdog/${hotdog.slug}` }
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": siteUrl
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": hotdog.name,
+                "item": pageUrl
+              }
             ]
           })}
         </script>
       </Helmet>
+      {/* Floating Back Button */}
+      <Button
+        onClick={() => navigate("/")}
+        className="fixed top-6 left-6 z-50 shadow-lg rounded-full px-6"
+        size="lg"
+      >
+        <ArrowLeft className="mr-2 h-5 w-5" />
+        Back to Map
+      </Button>
 
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5 py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <Button variant="ghost" onClick={() => navigate("/")} className="mb-6 hover:bg-primary/10">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Map
-          </Button>
+      {/* Passport Stamp Button */}
+      <PassportStamp hotdogId={hotdog.id} hotdogName={hotdog.name} />
 
-          <div className="mb-8">
-            <PassportStamp hotdogId={hotdog.id} />
+      {/* Hero Section */}
+      <section className="relative h-[60vh] min-h-[400px] bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
+        {/* Hero Image Background */}
+        {hotdog.image && (
+          <img 
+            src={hotdog.image} 
+            alt={hotdog.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center text-white z-10 px-4">
+            <Badge className="mb-4 text-lg px-6 py-2 bg-white/90 text-primary hover:bg-white">
+              <MapPin className="mr-2 h-4 w-4" />
+              {hotdog.city}, {hotdog.country}
+            </Badge>
+            <h1 className="font-heading text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">
+              {hotdog.name}
+            </h1>
+            <p className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto drop-shadow-md">
+              {hotdog.description}
+            </p>
           </div>
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/40" />
+        </div>
+      </section>
 
-          <Card className="overflow-hidden shadow-[var(--shadow-elevated)] border-2 mb-8">
-            <div className="relative h-64 md:h-96 overflow-hidden">
-              <img src={imageUrl} alt={`Authentic ${hotdog.name} from ${hotdog.city}`} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                <Badge variant="secondary" className="mb-3 flex items-center gap-1 w-fit">
-                  <MapPin className="h-3 w-3" />
-                  {hotdog.city}, {hotdog.country}
-                </Badge>
-                <h1 className="text-4xl md:text-5xl font-heading font-bold mb-3 text-white">{hotdog.name}</h1>
-                <p className="text-lg text-white/90 max-w-3xl">{hotdog.description}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 md:p-10 shadow-[var(--shadow-elevated)] border-2 mb-8">
-            <div className="inline-block mb-8 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">RECIPE</div>
-            
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-              {/* BASE - Upper Left */}
+      {/* Content Container */}
+      <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
+        
+        {/* Recipe Section */}
+        <Card className="relative p-10 md:p-12 shadow-[0_4px_20px_rgba(0,0,0,0.08)] bg-bun">
+          {/* Location Flag Badge - Stamp Style */}
+          <div className="absolute top-4 right-4 rotate-6 bg-tomato text-white px-4 py-2 rounded-lg shadow-lg font-display text-sm tracking-wider">
+            {hotdog.city.toUpperCase()}
+          </div>
+          
+          {/* Recipe Label - Compact Stamp Style */}
+          <div className="inline-block mb-8 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+            RECIPE
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+              {/* Ingredients Column */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-6">
                   <ShoppingBasket className="h-6 w-6 text-mustard" />
-                  <h3 className="font-display text-3xl tracking-wide text-poppy">BASE</h3>
+                  <h3 className="font-display text-3xl tracking-wide text-poppy">
+                    INGREDIENTS
+                  </h3>
                 </div>
-                {isStructuredIngredients && ingredientsData?.hotdog_and_bun && (
-                  <div>
-                    <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">HOTDOG AND BUN</div>
-                    <ul className="space-y-3">
-                      {ingredientsData.hotdog_and_bun.map((ingredient, index) => {
-                        const checkboxKey = `hotdog_and_bun-${index}`;
-                        return (
-                          <li key={checkboxKey} className="flex items-start gap-4 group">
-                            <Checkbox
-                              id={`ingredient-${checkboxKey}`}
-                              checked={checkedIngredients[checkboxKey] || false}
-                              onCheckedChange={(checked) => setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))}
-                              className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                            />
-                            <label htmlFor={`ingredient-${checkboxKey}`} className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${checkedIngredients[checkboxKey] ? 'line-through opacity-50' : 'text-poppy/90 group-hover:text-poppy'}`}>
-                              {ingredient}
-                            </label>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                
+                {isStructuredIngredients && ingredientsData ? (
+                  // Structured ingredients with subsections - dynamically render all groups
+                  <div className="space-y-6">
+                    {Object.entries(ingredientsData).map(([groupName, ingredients]) => {
+                      if (!Array.isArray(ingredients) || ingredients.length === 0) return null;
+                      
+                      return (
+                        <div key={groupName}>
+                          <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
+                            {formatCategoryName(groupName)}
+                          </div>
+                          <ul className="space-y-3">
+                            {ingredients.map((ingredient, index) => {
+                              const checkboxKey = `${groupName}-${index}`;
+                              return (
+                                <li key={checkboxKey} className="flex items-start gap-4 group">
+                                  <Checkbox
+                                    id={`ingredient-${checkboxKey}`}
+                                    checked={checkedIngredients[checkboxKey] || false}
+                                    onCheckedChange={(checked) => 
+                                      setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
+                                    }
+                                    className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                                  />
+                                  <label
+                                    htmlFor={`ingredient-${checkboxKey}`}
+                                    className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                      checkedIngredients[checkboxKey]
+                                        ? 'line-through opacity-50' 
+                                        : 'text-poppy/90 group-hover:text-poppy'
+                                    }`}
+                                  >
+                                    {ingredient}
+                                  </label>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      );
+                    })}
                   </div>
+                ) : (
+                  // Legacy array format
+                  <ul className="space-y-3">
+                    {ingredientsArray.map((ingredient, index) => {
+                      const needsTooltip = ingredient.toLowerCase().includes('sport pepper');
+                      const ingredientItem = (
+                        <li key={index} className="flex items-start gap-4 group">
+                          <Checkbox
+                            id={`ingredient-${index}`}
+                            checked={checkedIngredients[index] || false}
+                            onCheckedChange={(checked) => 
+                              setCheckedIngredients(prev => ({ ...prev, [index]: checked as boolean }))
+                            }
+                            className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                          />
+                          <label
+                            htmlFor={`ingredient-${index}`}
+                            className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                              checkedIngredients[index] 
+                                ? 'line-through opacity-50' 
+                                : 'text-poppy/90 group-hover:text-poppy'
+                            }`}
+                          >
+                            {ingredient}
+                          </label>
+                        </li>
+                      );
+
+                      if (needsTooltip) {
+                        return (
+                          <Tooltip key={index}>
+                            <TooltipTrigger asChild>
+                              {ingredientItem}
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs">
+                              <p className="text-sm">Small pickled peppers commonly used in Chicago-style hot dogs</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      }
+
+                      return ingredientItem;
+                    })}
+                  </ul>
                 )}
               </div>
 
-              {/* TOPPINGS - Upper Right */}
+              {/* Instructions Column */}
               <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-6">
-                  <ShoppingBasket className="h-6 w-6 text-mustard" />
-                  <h3 className="font-display text-3xl tracking-wide text-poppy">TOPPINGS</h3>
-                </div>
-                {isStructuredIngredients && ingredientsData?.toppings && (
-                  <div>
-                    <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">TOPPINGS</div>
-                    <ul className="space-y-3">
-                      {ingredientsData.toppings.map((ingredient, index) => {
-                        const checkboxKey = `toppings-${index}`;
-                        return (
-                          <li key={checkboxKey} className="flex items-start gap-4 group">
-                            <Checkbox
-                              id={`ingredient-${checkboxKey}`}
-                              checked={checkedIngredients[checkboxKey] || false}
-                              onCheckedChange={(checked) => setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))}
-                              className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                            />
-                            <label htmlFor={`ingredient-${checkboxKey}`} className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${checkedIngredients[checkboxKey] ? 'line-through opacity-50' : 'text-poppy/90 group-hover:text-poppy'}`}>
-                              {ingredient}
-                            </label>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </div>
-
-              {/* INSTRUCTIONS - Full Width Below */}
-              <div className="md:col-span-2 space-y-4 pt-8 border-t-2 border-dashed border-poppy/20">
                 <div className="flex items-center gap-3 mb-6">
                   <Utensils className="h-6 w-6 text-relish" />
-                  <h3 className="font-display text-3xl tracking-wide text-poppy">INSTRUCTIONS</h3>
+                  <h3 className="font-display text-3xl tracking-wide text-poppy">
+                    INSTRUCTIONS
+                  </h3>
                 </div>
+                
                 <ol className="space-y-4">
                   {instructions.map((step, index) => {
+                    // Parse step for technique tips/technical notes
                     const tipPattern = /(?:Technique tip|Technical note):\s*(.*?)(?=\n\n|$)/is;
                     const tipMatch = step.match(tipPattern);
+                    
+                    // Extract main content and tip if present
                     let mainContent = step;
                     let tipContent = null;
+                    
                     if (tipMatch) {
                       mainContent = step.substring(0, tipMatch.index).trim();
                       tipContent = tipMatch[1].trim();
                     }
+                    
+                    // Parse step title (e.g., "1. Build your onions like they matter")
                     const titleMatch = mainContent.match(/^(.+?)(?:\n\n|\n)/);
                     const stepTitle = titleMatch ? titleMatch[1] : mainContent.split('\n')[0];
                     const stepBody = titleMatch ? mainContent.substring(titleMatch[0].length).trim() : '';
@@ -236,12 +384,27 @@ const HotdogDetail = () => {
                         <Checkbox
                           id={`step-${index}`}
                           checked={checkedSteps[index] || false}
-                          onCheckedChange={(checked) => setCheckedSteps(prev => ({ ...prev, [index]: checked as boolean }))}
+                          onCheckedChange={(checked) => 
+                            setCheckedSteps(prev => ({ ...prev, [index]: checked as boolean }))
+                          }
                           className="mt-1 data-[state=checked]:bg-relish data-[state=checked]:border-relish"
                         />
-                        <label htmlFor={`step-${index}`} className={`flex-1 cursor-pointer transition-all ${checkedSteps[index] ? 'line-through opacity-50' : 'group-hover:opacity-90'}`}>
-                          <div className="font-bold text-relish text-lg mb-2">{stepTitle}</div>
-                          {stepBody && <div className="text-base leading-relaxed text-poppy/90 whitespace-pre-line">{stepBody}</div>}
+                        <label
+                          htmlFor={`step-${index}`}
+                          className={`flex-1 cursor-pointer transition-all ${
+                            checkedSteps[index] 
+                              ? 'line-through opacity-50' 
+                              : 'group-hover:opacity-90'
+                          }`}
+                        >
+                          <div className="font-bold text-relish text-lg mb-2">
+                            {stepTitle}
+                          </div>
+                          {stepBody && (
+                            <div className="text-base leading-relaxed text-poppy/90 whitespace-pre-line">
+                              {stepBody}
+                            </div>
+                          )}
                           {tipContent && <TechnicalNote>{tipContent}</TechnicalNote>}
                         </label>
                       </li>
@@ -251,66 +414,173 @@ const HotdogDetail = () => {
               </div>
             </div>
 
+            {/* Method and Soul Section - Inside Recipe Card */}
             {hotdog.method_and_soul && (
               <div className="mt-12 pt-10 border-t-2 border-dashed border-mustard/30">
-                <div className="inline-block mb-6 px-4 py-2 bg-relish text-white font-display text-lg tracking-wider shadow-md rotate-1">METHOD & SOUL</div>
-                <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{hotdog.method_and_soul}</p>
+                <div className="inline-block mb-6 px-4 py-2 bg-relish text-white font-display text-lg tracking-wider shadow-md rotate-1">
+                  METHOD & SOUL
+                </div>
+                
+                <div className="prose prose-lg max-w-none">
+                  {hotdog.method_and_soul.split('\n\n').map((paragraph, index) => (
+                    <p 
+                      key={index}
+                      className="text-poppy/80 leading-relaxed mb-4 last:mb-0 text-base md:text-lg"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </div>
             )}
-          </Card>
+        </Card>
 
-          {/* Fun Facts Section */}
-          <Card className="p-6 md:p-10 shadow-[var(--shadow-elevated)] border-2 mb-8">
-            <div className="inline-block mb-8 px-4 py-2 bg-carnation text-white font-display text-lg tracking-wider shadow-md -rotate-1">
-              FUN FACTS
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {funFacts.map((fact, index) => (
-                <FactFlipCard
-                  key={index}
-                  fact={fact}
-                  isRevealed={isRevealed(index)}
-                  onReveal={() => handleRevealFact(index)}
+        {/* Fun Facts Section - Interactive Flip Cards */}
+        <Card className="p-6 md:p-8 shadow-xl border-4 border-accent/10 bg-gradient-to-br from-bun to-mustard/10">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-3">
+              <div className="inline-block px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+                FUN FACTS & TRIVIA
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  {revealedIndices.length} / {funFacts.length} discovered
+                </span>
+                <Progress 
+                  value={(revealedIndices.length / funFacts.length) * 100} 
+                  className="w-24 h-2"
                 />
-              ))}
-            </div>
-            {funFacts.length > 0 && (
-              <div className="mt-6">
-                <Progress value={(revealedIndices.length / funFacts.length) * 100} />
               </div>
-            )}
-          </Card>
+            </div>
+            
+            <p className="text-sm text-muted-foreground font-display tracking-wide">
+              Tap cards to reveal facts
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+            {funFacts.map((fact, index) => (
+              <FactFlipCard
+                key={index}
+                fact={fact}
+                index={index}
+                isRevealed={isRevealed(index)}
+                onReveal={() => handleRevealFact(index)}
+              />
+            ))}
+          </div>
+        </Card>
 
-          {/* Origin Story Section */}
-          <Card className="p-6 md:p-10 shadow-[var(--shadow-elevated)] border-2 mb-8">
-            <div className="inline-block mb-8 px-4 py-2 bg-seafoam text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+        {/* Origin Story Section - Timeline Narrative */}
+        <Card 
+          id="origin-story"
+          className="relative p-6 md:p-8 shadow-xl border-4 border-primary/10 overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, hsl(var(--bun)) 0%, hsl(var(--background)) 100%)",
+          }}
+        >
+          {/* Vintage Paper Texture Overlay */}
+          <div 
+            className="absolute inset-0 opacity-5 pointer-events-none"
+            style={{
+              backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground)) 3px)",
+            }}
+          />
+          
+          <div className="relative z-10">
+            <div className="inline-block mb-8 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
               ORIGIN STORY
             </div>
-            <div className="space-y-4">
-              <GlobeIcon className="h-8 w-8 text-seafoam mb-4" />
-              <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{originStory}</p>
-            </div>
-          </Card>
 
-          {/* Explore More Section */}
-          <Card className="p-6 md:p-10 shadow-[var(--shadow-elevated)] border-2 mb-8">
-            <div className="inline-block mb-8 px-4 py-2 bg-sky text-white font-display text-lg tracking-wider shadow-md -rotate-1">
-              EXPLORE MORE
+            {/* Story Sections with Natural Flow */}
+            <div className="prose prose-lg max-w-none space-y-6">
+              {originStory.split('\n\n').map((paragraph, index) => {
+                // Define generic section metadata that works for any hotdog
+                const sections = [
+                  { icon: "🌟", heading: "The Beginning" },
+                  { icon: "🌆", heading: "The Era" },
+                  { icon: "🌭", heading: "The Evolution" },
+                  { icon: "❤️", heading: "The Legacy" },
+                ];
+                
+                const section = sections[index] || { icon: "📖", heading: `Chapter ${index + 1}` };
+                
+                // Detect and highlight key location/cultural terms dynamically
+                let highlightedParagraph = paragraph;
+                const cityTerms = [hotdog.city, hotdog.country, hotdog.name];
+                
+                cityTerms.forEach((term) => {
+                  if (term) {
+                    const regex = new RegExp(`\\b(${term})\\b`, "gi");
+                    highlightedParagraph = highlightedParagraph.replace(
+                      regex,
+                      `<span class="font-medium text-primary/90 underline decoration-primary/30">$1</span>`
+                    );
+                  }
+                });
+
+                return (
+                  <div key={index} className="mb-6 last:mb-0">
+                    <h3 className="flex items-center gap-2 font-display text-lg font-bold text-foreground mb-3">
+                      <span className="text-2xl">{section.icon}</span>
+                      {section.heading}
+                    </h3>
+                    <div 
+                      className="text-foreground/80 leading-relaxed text-base pl-8"
+                      dangerouslySetInnerHTML={{ __html: highlightedParagraph }}
+                    />
+                  </div>
+                );
+              })}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {exploreLinks.map((link, index) => (
-                <Button key={index} variant="secondary" asChild>
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full">
-                    {link.title}
-                    <ExternalLink className="h-4 w-4 ml-2" />
-                  </a>
-                </Button>
-              ))}
-            </div>
-          </Card>
-        </div>
+
+          </div>
+        </Card>
+
+        {/* Explore More Section */}
+        <Card className="p-6 md:p-8 shadow-xl border-4 border-accent/10 bg-white">
+          <div className="inline-block mb-6 px-4 py-2 bg-poppy text-white font-display text-lg tracking-wider shadow-md -rotate-1">
+            EXPLORE MORE
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4">
+            {exploreLinks.map((link, index) => {
+              // Determine icon based on title or URL
+              let icon = "🌐";
+              if (link.title.toLowerCase().includes("video") || link.title.toLowerCase().includes("youtube")) icon = "🎥";
+              else if (link.title.toLowerCase().includes("watch")) icon = "📺";
+              else if (link.title.toLowerCase().includes("place") || link.title.toLowerCase().includes("map")) icon = "📍";
+              else if (link.title.toLowerCase().includes("recipe")) icon = "👨‍🍳";
+              else if (link.title.toLowerCase().includes("history") || link.title.toLowerCase().includes("wikipedia")) icon = "📚";
+              
+              return (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group"
+                >
+                  <div className="p-6 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border-2 border-primary/10 hover:border-primary/30 transition-all hover:shadow-lg hover:-translate-y-1">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl">{icon}</span>
+                        <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                          {link.title}
+                        </span>
+                      </div>
+                      <ExternalLink className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </Card>
+
       </div>
-    </TooltipProvider>
+    </div>
   );
 };
 
