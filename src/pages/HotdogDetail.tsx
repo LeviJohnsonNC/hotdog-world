@@ -251,58 +251,54 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             RECIPE
           </div>
           
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-              {/* Ingredients Column */}
+          {/* Ingredients Section - Two Columns */}
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <ShoppingBasket className="h-6 w-6 text-mustard" />
+              <h3 className="font-display text-3xl tracking-wide text-poppy">
+                INGREDIENTS
+              </h3>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+              {/* Left Column: Hot Dog & Bun */}
               <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-6">
-                  <ShoppingBasket className="h-6 w-6 text-mustard" />
-                  <h3 className="font-display text-3xl tracking-wide text-poppy">
-                    INGREDIENTS
-                  </h3>
-                </div>
                 
                 {isStructuredIngredients && ingredientsData ? (
-                  // Structured ingredients with subsections - dynamically render all groups
-                  <div className="space-y-6">
-                    {Object.entries(ingredientsData).map(([groupName, ingredients]) => {
-                      if (!Array.isArray(ingredients) || ingredients.length === 0) return null;
-                      
+                  ingredientsData.hotdog_and_bun && (
+                  <div>
+                    <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
+                      BASE
+                    </div>
+                    <ul className="space-y-3">
+                    {ingredientsData.hotdog_and_bun.map((ingredient, index) => {
+                      const checkboxKey = `hotdog_and_bun-${index}`;
                       return (
-                        <div key={groupName}>
-                          <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
-                            {formatCategoryName(groupName)}
-                          </div>
-                          <ul className="space-y-3">
-                            {ingredients.map((ingredient, index) => {
-                              const checkboxKey = `${groupName}-${index}`;
-                              return (
-                                <li key={checkboxKey} className="flex items-start gap-4 group">
-                                  <Checkbox
-                                    id={`ingredient-${checkboxKey}`}
-                                    checked={checkedIngredients[checkboxKey] || false}
-                                    onCheckedChange={(checked) => 
-                                      setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
-                                    }
-                                    className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                                  />
-                                  <label
-                                    htmlFor={`ingredient-${checkboxKey}`}
-                                    className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                                      checkedIngredients[checkboxKey]
-                                        ? 'line-through opacity-50' 
-                                        : 'text-poppy/90 group-hover:text-poppy'
-                                    }`}
-                                  >
-                                    {ingredient}
-                                  </label>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
+                        <li key={checkboxKey} className="flex items-start gap-4 group">
+                          <Checkbox
+                            id={`ingredient-${checkboxKey}`}
+                            checked={checkedIngredients[checkboxKey] || false}
+                            onCheckedChange={(checked) => 
+                              setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
+                            }
+                            className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                          />
+                          <label
+                            htmlFor={`ingredient-${checkboxKey}`}
+                            className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                              checkedIngredients[checkboxKey]
+                                ? 'line-through opacity-50' 
+                                : 'text-poppy/90 group-hover:text-poppy'
+                            }`}
+                          >
+                            {ingredient}
+                          </label>
+                        </li>
                       );
                     })}
+                    </ul>
                   </div>
+                  )
                 ) : (
                   // Legacy array format
                   <ul className="space-y-3">
@@ -350,14 +346,58 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 )}
               </div>
 
-              {/* Instructions Column */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-6">
-                  <Utensils className="h-6 w-6 text-relish" />
-                  <h3 className="font-display text-3xl tracking-wide text-poppy">
-                    INSTRUCTIONS
-                  </h3>
-                </div>
+              {/* Right Column: Toppings */}
+              <div className="space-y-6">
+                {isStructuredIngredients && ingredientsData && Object.entries(ingredientsData).map(([groupName, ingredients]) => {
+                  if (groupName === 'hotdog_and_bun' || !Array.isArray(ingredients) || ingredients.length === 0) return null;
+                  
+                  return (
+                    <div key={groupName}>
+                      <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
+                        {formatCategoryName(groupName)}
+                      </div>
+                      <ul className="space-y-3">
+                        {ingredients.map((ingredient, index) => {
+                          const checkboxKey = `${groupName}-${index}`;
+                          return (
+                            <li key={checkboxKey} className="flex items-start gap-4 group">
+                              <Checkbox
+                                id={`ingredient-${checkboxKey}`}
+                                checked={checkedIngredients[checkboxKey] || false}
+                                onCheckedChange={(checked) => 
+                                  setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
+                                }
+                                className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                              />
+                              <label
+                                htmlFor={`ingredient-${checkboxKey}`}
+                                className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                  checkedIngredients[checkboxKey]
+                                    ? 'line-through opacity-50' 
+                                    : 'text-poppy/90 group-hover:text-poppy'
+                                }`}
+                              >
+                                {ingredient}
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Instructions Section - Full Width */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-6">
+              <Utensils className="h-6 w-6 text-relish" />
+              <h3 className="font-display text-3xl tracking-wide text-poppy">
+                INSTRUCTIONS
+              </h3>
+            </div>
                 
                 <ol className="space-y-4">
                   {instructions.map((step, index) => {
@@ -410,9 +450,8 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                       </li>
                     );
                   })}
-                </ol>
-              </div>
-            </div>
+            </ol>
+          </div>
 
             {/* Method and Soul Section - Inside Recipe Card */}
             {hotdog.method_and_soul && (
