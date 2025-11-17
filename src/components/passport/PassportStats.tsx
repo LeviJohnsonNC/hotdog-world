@@ -2,12 +2,16 @@ import { PassportStats as PassportStatsType } from '@/types/passport';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProgressRing } from './ProgressRing';
 import { Star, MapPin, Award } from 'lucide-react';
+import { BadgeCard } from './BadgeCard';
+import { BADGES } from '@/utils/badgeConfig';
+import { BadgeProgress } from '@/utils/badgeCalculator';
 
 interface PassportStatsProps {
   stats: PassportStatsType;
+  badges: BadgeProgress[];
 }
 
-export const PassportStats = ({ stats }: PassportStatsProps) => {
+export const PassportStats = ({ stats, badges }: PassportStatsProps) => {
   return (
     <div className="space-y-6">
       {/* Progress Ring */}
@@ -76,71 +80,28 @@ export const PassportStats = ({ stats }: PassportStatsProps) => {
         </Card>
       </div>
 
-      {/* Milestone Message */}
-      {stats.stamped === 0 && (
-        <Card className="bg-muted/50 border-dashed">
-          <CardContent className="pt-6 text-center">
-            <p className="text-lg font-medium text-foreground mb-2">
-              🎉 Ready to start your journey?
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Visit the map and try your first hot dog to get your first stamp!
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {stats.stamped > 0 && stats.stamped < 5 && (
-        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-          <CardContent className="pt-6 text-center">
-            <p className="text-lg font-medium text-foreground mb-2">
-              🌟 Great start!
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Try {5 - stats.stamped} more to unlock the "Taster" milestone!
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {stats.stamped >= 5 && stats.stamped < 10 && (
-        <Card className="bg-gradient-to-r from-accent/10 to-primary/10 border-accent/20">
-          <CardContent className="pt-6 text-center">
-            <p className="text-lg font-medium text-foreground mb-2">
-              🗺️ You're on a roll!
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Try {10 - stats.stamped} more to become a "Globetrotter"!
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {stats.stamped >= 10 && stats.stamped < stats.total && (
-        <Card className="bg-gradient-to-r from-secondary/10 to-accent/10 border-secondary/20">
-          <CardContent className="pt-6 text-center">
-            <p className="text-lg font-medium text-foreground mb-2">
-              🔥 Incredible progress!
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Only {stats.total - stats.stamped} more to complete your passport!
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {stats.stamped === stats.total && (
-        <Card className="bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 border-primary">
-          <CardContent className="pt-6 text-center">
-            <p className="text-2xl font-bold text-foreground mb-2">
-              👑 World Champion of Dogs! 👑
-            </p>
-            <p className="text-sm text-muted-foreground">
-              You've tried every single hot dog! Amazing achievement!
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Achievement Badges */}
+      <div className="space-y-4 mt-8">
+        <div className="text-center">
+          <h3 className="text-2xl font-heading font-bold text-foreground mb-2">
+            Achievement Badges
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Earn badges by completing special challenges on your hot dog journey
+          </p>
+        </div>
+        
+        {/* Badge Grid */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 md:gap-4 mt-6">
+          {BADGES.map((badge, index) => (
+            <BadgeCard 
+              key={badge.id} 
+              badge={badge} 
+              progress={badges[index]}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

@@ -39,6 +39,8 @@ export interface StampedHotdog {
   sprite_sheet_version?: number | null;
   spriteSheetUrl?: string | null;
   hasSpriteCoordinates?: boolean;
+  tags?: string[];
+  region?: string;
   stamp: HotdogStamp | null;
   isStamped: boolean;
 }
