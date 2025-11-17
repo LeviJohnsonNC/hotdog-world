@@ -12,6 +12,7 @@ import { ArrowLeft, ExternalLink, MapPin, ShoppingBasket, Utensils, Sparkles, Bo
 import { useState } from "react";
 import { FactFlipCard } from "@/components/FactFlipCard";
 import { PassportStamp } from "@/components/PassportStamp";
+import { TechnicalNote } from "@/components/TechnicalNote";
 import { formatCategoryName } from "@/lib/utils";
 
 const HotdogDetail = () => {
@@ -359,29 +360,56 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 </div>
                 
                 <ol className="space-y-4">
-                  {instructions.map((step, index) => (
-                    <li key={index} className="flex items-start gap-4 group">
-                      <Checkbox
-                        id={`step-${index}`}
-                        checked={checkedSteps[index] || false}
-                        onCheckedChange={(checked) => 
-                          setCheckedSteps(prev => ({ ...prev, [index]: checked as boolean }))
-                        }
-                        className="mt-1 data-[state=checked]:bg-relish data-[state=checked]:border-relish"
-                      />
-                      <label
-                        htmlFor={`step-${index}`}
-                        className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                          checkedSteps[index] 
-                            ? 'line-through opacity-50' 
-                            : 'text-poppy/90 group-hover:text-poppy'
-                        }`}
-                      >
-                        <span className="font-semibold text-relish mr-2">{index + 1}.</span>
-                        {step}
-                      </label>
-                    </li>
-                  ))}
+                  {instructions.map((step, index) => {
+                    // Parse step for technique tips/technical notes
+                    const tipPattern = /(?:Technique tip|Technical note):\s*(.*?)(?=\n\n|$)/is;
+                    const tipMatch = step.match(tipPattern);
+                    
+                    // Extract main content and tip if present
+                    let mainContent = step;
+                    let tipContent = null;
+                    
+                    if (tipMatch) {
+                      mainContent = step.substring(0, tipMatch.index).trim();
+                      tipContent = tipMatch[1].trim();
+                    }
+                    
+                    // Parse step title (e.g., "1. Build your onions like they matter")
+                    const titleMatch = mainContent.match(/^(.+?)(?:\n\n|\n)/);
+                    const stepTitle = titleMatch ? titleMatch[1] : mainContent.split('\n')[0];
+                    const stepBody = titleMatch ? mainContent.substring(titleMatch[0].length).trim() : '';
+                    
+                    return (
+                      <li key={index} className="flex items-start gap-4 group">
+                        <Checkbox
+                          id={`step-${index}`}
+                          checked={checkedSteps[index] || false}
+                          onCheckedChange={(checked) => 
+                            setCheckedSteps(prev => ({ ...prev, [index]: checked as boolean }))
+                          }
+                          className="mt-1 data-[state=checked]:bg-relish data-[state=checked]:border-relish"
+                        />
+                        <label
+                          htmlFor={`step-${index}`}
+                          className={`flex-1 cursor-pointer transition-all ${
+                            checkedSteps[index] 
+                              ? 'line-through opacity-50' 
+                              : 'group-hover:opacity-90'
+                          }`}
+                        >
+                          <div className="font-bold text-relish text-lg mb-2">
+                            {stepTitle}
+                          </div>
+                          {stepBody && (
+                            <div className="text-base leading-relaxed text-poppy/90 whitespace-pre-line">
+                              {stepBody}
+                            </div>
+                          )}
+                          {tipContent && <TechnicalNote>{tipContent}</TechnicalNote>}
+                        </label>
+                      </li>
+                    );
+                  })}
                 </ol>
               </div>
             </div>
