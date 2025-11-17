@@ -402,7 +402,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 <ol className="space-y-4">
                   {instructions.map((step, index) => {
                     // Parse step for technique tips/technical notes
-                    const tipPattern = /(?:Technique tip|Technical note):\s*(.*?)(?=\n\n|$)/is;
+                    const tipPattern = /(?:Technique tip|Technical note):\s*(.*?)$/is;
                     const tipMatch = step.match(tipPattern);
                     
                     // Extract main content and tip if present
@@ -414,10 +414,13 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                       tipContent = tipMatch[1].trim();
                     }
                     
-                    // Parse step title (e.g., "1. Build your onions like they matter")
-                    const titleMatch = mainContent.match(/^(.+?)(?:\n\n|\n)/);
-                    const stepTitle = titleMatch ? titleMatch[1] : mainContent.split('\n')[0];
-                    const stepBody = titleMatch ? mainContent.substring(titleMatch[0].length).trim() : '';
+                    // Parse step title - everything up to and including the first colon
+                    // e.g., "1. Heat the dog the Chicago way:"
+                    const titleMatch = mainContent.match(/^(\d+\.\s+[^:]+:)/);
+                    const stepTitle = titleMatch ? titleMatch[1] : mainContent.split(':')[0] + ':';
+                    const stepBody = titleMatch 
+                      ? mainContent.substring(titleMatch[0].length).trim() 
+                      : mainContent.substring(mainContent.indexOf(':') + 1).trim();
                     
                     return (
                       <li key={index} className="flex items-start gap-4 group">
@@ -441,7 +444,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                             {stepTitle}
                           </div>
                           {stepBody && (
-                            <div className="text-base leading-relaxed text-poppy/90 whitespace-pre-line">
+                            <div className="text-base leading-relaxed text-poppy/90">
                               {stepBody}
                             </div>
                           )}
