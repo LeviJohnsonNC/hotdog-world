@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -7,10 +7,12 @@ import { ArrowLeft } from "lucide-react";
 import { useHotdogs } from "@/hooks/useHotdogs";
 import { useStamps } from "@/hooks/useStamps";
 import { calculatePassportStats, sortHotdogs } from "@/utils/passportHelpers";
+import { calculateBadgeProgress } from "@/utils/badgeCalculator";
 import { StampCard } from "@/components/passport/StampCard";
 import { StampDetailModal } from "@/components/passport/StampDetailModal";
 import { PassportStats } from "@/components/passport/PassportStats";
 import { StampedHotdog } from "@/types/passport";
+import { toast } from "@/hooks/use-toast";
 
 const Passport = () => {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ const Passport = () => {
   const { stamps, loading: stampsLoading } = useStamps();
   const [selectedHotdog, setSelectedHotdog] = useState<StampedHotdog | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const previousBadgesRef = useRef<Set<string>>(new Set());
 
   // Combine hotdog data with stamps
   const stampedHotdogs = useMemo(() => {
@@ -35,6 +38,42 @@ const Passport = () => {
   const stats = useMemo(() => {
     return calculatePassportStats(stampedHotdogs);
   }, [stampedHotdogs]);
+
+  // Calculate badges
+  const badges = useMemo(() => {
+    return calculateBadgeProgress(stampedHotdogs);
+  }, [stampedHotdogs]);
+
+  // Track and notify for newly earned badges
+  useEffect(() => {
+    const currentEarnedBadges = new Set(
+      badges.filter(b => b.earned).map(b => b.badgeId)
+    );
+
+    // Check for newly earned badges
+    if (previousBadgesRef.current.size > 0) {
+      currentEarnedBadges.forEach(badgeId => {
+        if (!previousBadgesRef.current.has(badgeId)) {
+          const badge = badges.find(b => b.badgeId === badgeId);
+          if (badge) {
+            const badgeInfo = require('@/utils/badgeConfig').BADGES.find(
+              (b: any) => b.id === badgeId
+            );
+            if (badgeInfo) {
+              toast({
+                title: "🎉 Badge Earned!",
+                description: `You've unlocked: ${badgeInfo.name}`,
+                duration: 5000,
+              });
+            }
+          }
+        }
+      });
+    }
+
+    // Update ref with current badges
+    previousBadgesRef.current = currentEarnedBadges;
+  }, [badges]);
 
   // Sort: stamped first, then unstamped
   const sortedHotdogs = useMemo(() => {
@@ -160,7 +199,7 @@ const Passport = () => {
 
           {/* Stats Tab */}
           <TabsContent value="stats">
-            <PassportStats stats={stats} />
+            <PassportStats stats={stats} badges={badges} />
           </TabsContent>
         </Tabs>
       </main>

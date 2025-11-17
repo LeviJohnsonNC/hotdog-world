@@ -75,12 +75,14 @@ export type Database = {
           origin_story: string | null
           prep_time: string | null
           recipe_yield: string | null
+          region: string | null
           slug: string
           sprite_height: number | null
           sprite_sheet_version: number | null
           sprite_width: number | null
           sprite_x: number | null
           sprite_y: number | null
+          tags: string[] | null
           total_time: string | null
           video_url: string | null
         }
@@ -105,12 +107,14 @@ export type Database = {
           origin_story?: string | null
           prep_time?: string | null
           recipe_yield?: string | null
+          region?: string | null
           slug: string
           sprite_height?: number | null
           sprite_sheet_version?: number | null
           sprite_width?: number | null
           sprite_x?: number | null
           sprite_y?: number | null
+          tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
         }
@@ -135,12 +139,14 @@ export type Database = {
           origin_story?: string | null
           prep_time?: string | null
           recipe_yield?: string | null
+          region?: string | null
           slug?: string
           sprite_height?: number | null
           sprite_sheet_version?: number | null
           sprite_width?: number | null
           sprite_x?: number | null
           sprite_y?: number | null
+          tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
         }

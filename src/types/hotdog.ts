@@ -34,4 +34,7 @@ export interface Hotdog {
   date_published?: string;
   calories?: number;
   video_url?: string;
+  // Badge-related categorization
+  tags?: string[];
+  region?: string;
 }
