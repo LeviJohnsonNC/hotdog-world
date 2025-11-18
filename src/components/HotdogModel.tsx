@@ -17,9 +17,31 @@ export function HotdogModel({ hovered, imageUrl, position }: HotdogModelProps) {
   useFrame(() => {
     if (!spriteRef.current) return;
     
-    // Calculate screen position using actual world position after globe rotation
+    // Get world position of the sprite
     const worldPos = new THREE.Vector3();
     spriteRef.current.getWorldPosition(worldPos);
+    
+    // Calculate if this hotdog is facing the camera (backface culling)
+    // Surface normal at hotdog position (normalized position vector from origin)
+    const surfaceNormal = worldPos.clone().normalize();
+    
+    // Vector from hotdog to camera
+    const toCamera = camera.position.clone().sub(worldPos).normalize();
+    
+    // Dot product: positive = facing camera, negative = facing away
+    const dotProduct = surfaceNormal.dot(toCamera);
+    
+    // Hide pins on the back side (with small threshold for smooth transition)
+    const isVisible = dotProduct > -0.1;
+    spriteRef.current.visible = isVisible;
+    
+    // Only calculate edge fade if visible (performance optimization)
+    if (!isVisible) {
+      setEdgeFade(0);
+      return;
+    }
+    
+    // Calculate screen position for edge fade
     const screenPos = worldPos.clone().project(camera);
     
     // Calculate distance from edges (0 = edge, 1 = center)
