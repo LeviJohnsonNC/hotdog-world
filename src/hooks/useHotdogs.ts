@@ -99,19 +99,10 @@ export function useHotdogs() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("hotdogs")
-        .select("id, slug, name, city, country, description, latitude, longitude, ingredients, instructions, fun_facts, origin_story, method_and_soul, explore_links, sprite_x, sprite_y, sprite_width, sprite_height, sprite_sheet_version, prep_time, cook_time, total_time, recipe_yield, date_published, calories, video_url")
+        .select("id, slug, name, city, country, description, latitude, longitude, ingredients, instructions, fun_facts, origin_story, method_and_soul, explore_links, prep_time, cook_time, total_time, recipe_yield, date_published, calories, video_url")
         .order("name");
 
       if (error) throw error;
-
-      // Fetch the latest sprite sheet from database
-      const { data: spriteSheet } = await supabase
-        .from("sprite_sheets")
-        .select("image_data, version")
-        .eq("name", "hotdog-sprite-sheet")
-        .order("version", { ascending: false })
-        .limit(1)
-        .maybeSingle();
 
       // Use single hotdog pin image for all cities
       const hotdogPinImage = '/hotdogs/hotdog-pin.png';
@@ -154,13 +145,11 @@ export function useHotdogs() {
         'Dar es Salaam': '/images/mishkaki-hotdog.png',
       };
 
-      // Add 3D position, sprite coordinates, and fallback image to each hotdog
+      // Add 3D position and fallback image to each hotdog
       const hotdogsWithPositions = (data || []).map((hotdog) => ({
         ...hotdog,
         position: latLngToVector3(Number(hotdog.latitude), Number(hotdog.longitude)),
         image: cityImageMap[hotdog.city] || hotdogPinImage,
-        spriteSheetUrl: spriteSheet?.image_data || null,
-        hasSpriteCoordinates: !!(hotdog.sprite_x !== null && hotdog.sprite_y !== null && spriteSheet?.image_data),
         explore_links: Array.isArray(hotdog.explore_links) 
           ? hotdog.explore_links as Array<{ title: string; url: string }>
           : []

@@ -8,7 +8,6 @@ import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useSpriteSheetGenerator } from "@/hooks/useSpriteSheetGenerator";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertDialog,
@@ -32,36 +31,6 @@ const AccountSettings = () => {
   const [isClearingData, setIsClearingData] = useState(false);
   const [isPopulatingMetadata, setIsPopulatingMetadata] = useState(false);
   const [metadataResults, setMetadataResults] = useState<any>(null);
-  const { generateSprites, isGenerating } = useSpriteSheetGenerator();
-
-  // Fetch hotdog count for sprite status
-  const { data: hotdogCount } = useQuery({
-    queryKey: ['hotdog-count'],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from('hotdogs')
-        .select('*', { count: 'exact', head: true });
-      
-      if (error) throw error;
-      return count || 0;
-    },
-  });
-
-  // Fetch sprite sheet status
-  const { data: spriteStatus } = useQuery({
-    queryKey: ['sprite-status'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('hotdogs')
-        .select('sprite_sheet_version')
-        .not('sprite_sheet_version', 'is', null)
-        .limit(1)
-        .single();
-      
-      if (error || !data) return null;
-      return data.sprite_sheet_version;
-    },
-  });
 
   const isAdmin = user?.email === 'levijohnson@gmail.com';
 
@@ -325,42 +294,6 @@ const AccountSettings = () => {
               </AlertDialogContent>
             </AlertDialog>
           </div>
-
-          {/* Performance Optimization - Admin Only */}
-          {isAdmin && (
-            <div className="bg-card rounded-lg p-6 shadow-md border-2 border-primary/20">
-              <h2 className="text-xl font-semibold text-foreground mb-2">Performance Optimization</h2>
-              <p className="text-sm text-muted-foreground mb-4">
-                Generate optimized sprite sheets for faster globe loading
-              </p>
-              
-              <div className="space-y-4">
-                {/* Sprite Status Display */}
-                <div className="bg-primary/5 rounded-md p-3 border border-primary/10">
-                  <p className="text-sm text-foreground">
-                    {spriteStatus 
-                      ? `Sprite sheet active (v${spriteStatus}, ${hotdogCount || 0} hotdogs)` 
-                      : 'No sprite sheet generated yet'}
-                  </p>
-                </div>
-                
-                {/* Generate Button */}
-                <Button 
-                  onClick={generateSprites}
-                  disabled={isGenerating}
-                  variant="secondary"
-                  className="w-full sm:w-auto"
-                >
-                  {isGenerating ? 'Generating...' : 'Generate Sprite Sheet'}
-                </Button>
-                
-                <p className="text-xs text-muted-foreground">
-                  This will create optimized images for all {hotdogCount || 0} hotdogs. 
-                  Takes ~30-60 seconds. Re-run this when you add new hotdogs.
-                </p>
-              </div>
-            </div>
-          )}
 
           {/* Recipe Metadata Population - Admin Only */}
           {isAdmin && (

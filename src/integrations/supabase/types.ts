@@ -71,17 +71,11 @@ export type Database = {
           longitude: number
           method_and_soul: string | null
           name: string
-          needs_sprite_update: boolean | null
           origin_story: string | null
           prep_time: string | null
           recipe_yield: string | null
           region: string | null
           slug: string
-          sprite_height: number | null
-          sprite_sheet_version: number | null
-          sprite_width: number | null
-          sprite_x: number | null
-          sprite_y: number | null
           tags: string[] | null
           total_time: string | null
           video_url: string | null
@@ -103,17 +97,11 @@ export type Database = {
           longitude: number
           method_and_soul?: string | null
           name: string
-          needs_sprite_update?: boolean | null
           origin_story?: string | null
           prep_time?: string | null
           recipe_yield?: string | null
           region?: string | null
           slug: string
-          sprite_height?: number | null
-          sprite_sheet_version?: number | null
-          sprite_width?: number | null
-          sprite_x?: number | null
-          sprite_y?: number | null
           tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
@@ -135,17 +123,11 @@ export type Database = {
           longitude?: number
           method_and_soul?: string | null
           name?: string
-          needs_sprite_update?: boolean | null
           origin_story?: string | null
           prep_time?: string | null
           recipe_yield?: string | null
           region?: string | null
           slug?: string
-          sprite_height?: number | null
-          sprite_sheet_version?: number | null
-          sprite_width?: number | null
-          sprite_x?: number | null
-          sprite_y?: number | null
           tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
@@ -173,45 +155,6 @@ export type Database = {
           hotdog_id?: string
           id?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      sprite_sheets: {
-        Row: {
-          created_at: string | null
-          grid_size: number
-          hotdogs_count: number
-          id: string
-          image_data: string
-          name: string
-          sheet_size: number
-          sprite_size: number
-          updated_at: string | null
-          version: number
-        }
-        Insert: {
-          created_at?: string | null
-          grid_size: number
-          hotdogs_count: number
-          id?: string
-          image_data: string
-          name: string
-          sheet_size: number
-          sprite_size: number
-          updated_at?: string | null
-          version: number
-        }
-        Update: {
-          created_at?: string | null
-          grid_size?: number
-          hotdogs_count?: number
-          id?: string
-          image_data?: string
-          name?: string
-          sheet_size?: number
-          sprite_size?: number
-          updated_at?: string | null
-          version?: number
         }
         Relationships: []
       }
