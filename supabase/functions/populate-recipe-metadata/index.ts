@@ -6,9 +6,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper function to create a simple hash from ingredients
+// Helper function to create a simple hash from ingredients (UTF-8 safe)
 function hashIngredients(ingredients: any): string {
-  return btoa(JSON.stringify(ingredients || {}));
+  const jsonString = JSON.stringify(ingredients || {});
+  const encoder = new TextEncoder();
+  const data = encoder.encode(jsonString);
+  
+  // Convert to base64 using Uint8Array
+  const base64 = btoa(String.fromCharCode(...data));
+  return base64;
 }
 
 serve(async (req) => {
