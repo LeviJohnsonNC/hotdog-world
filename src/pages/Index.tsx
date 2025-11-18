@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Globe } from "@/components/Globe";
 import { LoadingGlobe } from "@/components/LoadingGlobe";
-import { useHotdogs } from "@/hooks/useHotdogs";
+import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useAuth } from "@/contexts/AuthContext";
 import passportIcon from "@/assets/passport-icon.png";
 import leaderboardIcon from "@/assets/leaderboard-icon.png";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { data: hotdogs = [], isLoading } = useHotdogs();
+  const { data: hotdogs = [], isLoading } = useHotdogsLight();
   const { user, signOut } = useAuth();
 
   const handleHotdogClick = (hotdogSlug: string) => {

@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useHotdogs } from "@/hooks/useHotdogs";
+import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const BrowseHotdogs = () => {
   const navigate = useNavigate();
-  const { data: hotdogs = [], isLoading } = useHotdogs();
+  const { data: hotdogs = [], isLoading } = useHotdogsLight();
   const siteUrl = window.location.origin;
 
   const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
