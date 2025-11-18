@@ -29,4 +29,14 @@ export interface Hotdog {
   // Badge-related categorization
   tags?: string[];
   region?: string;
+  // Detailed nutrition information
+  fat_total_g?: number;
+  fat_saturated_g?: number;
+  fat_trans_g?: number;
+  carbs_total_g?: number;
+  carbs_fiber_g?: number;
+  carbs_sugars_g?: number;
+  protein_g?: number;
+  sodium_mg?: number;
+  cholesterol_mg?: number;
 }
