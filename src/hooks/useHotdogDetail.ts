@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
+import { getHotdogImage } from "@/utils/imageMapping";
 
 // Utility function to convert lat/lng to 3D vector position on a sphere
 function latLngToVector3(
@@ -32,8 +33,7 @@ export function useHotdogDetail(slug: string) {
       if (!hotdog) return null;
 
       const position = latLngToVector3(hotdog.latitude, hotdog.longitude);
-      const citySlug = hotdog.city.toLowerCase().replace(/\s+/g, "-");
-      const imageUrl = `/images/${citySlug}-hotdog.png`;
+      const imageUrl = getHotdogImage(hotdog.city);
 
       return {
         id: hotdog.id,
