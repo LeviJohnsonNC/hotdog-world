@@ -25,13 +25,13 @@ const Index = () => {
         <title>Hotdogs Around the World - Discover Global Street Food Cultures</title>
         <meta 
           name="description" 
-          content="Explore iconic hot dog recipes from around the world. Learn authentic recipes, discover origin stories, and collect passport stamps from global street food destinations." 
+          content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." 
         />
         <link rel="canonical" href={siteUrl} />
         
         {/* Open Graph tags */}
         <meta property="og:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
-        <meta property="og:description" content="Explore iconic hot dog recipes from around the world. Learn authentic recipes, discover origin stories, and collect passport stamps from global street food destinations." />
+        <meta property="og:description" content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={siteUrl} />
         <meta property="og:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
@@ -41,7 +41,7 @@ const Index = () => {
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
-        <meta name="twitter:description" content="Explore iconic hot dog recipes from around the world. Learn authentic recipes, discover origin stories, and collect passport stamps from global street food destinations." />
+        <meta name="twitter:description" content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." />
         <meta name="twitter:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
 
         {/* Structured Data - Organization */}
