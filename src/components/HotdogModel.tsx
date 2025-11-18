@@ -46,7 +46,7 @@ export function HotdogModel({ hovered, imageUrl, position }: HotdogModelProps) {
         transparent 
         opacity={edgeFade}
         sizeAttenuation={true}
-        depthTest={true}
+        depthTest={false}
         depthWrite={false}
       />
     </sprite>
