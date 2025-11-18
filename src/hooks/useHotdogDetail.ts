@@ -7,7 +7,7 @@ import { getHotdogImage } from "@/utils/imageMapping";
 function latLngToVector3(
   lat: number,
   lng: number,
-  radius: number = 2.01
+  radius: number = 2.08
 ): [number, number, number] {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
