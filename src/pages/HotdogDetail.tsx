@@ -13,6 +13,7 @@ import { useState } from "react";
 import { FactFlipCard } from "@/components/FactFlipCard";
 import { PassportStamp } from "@/components/PassportStamp";
 import { TechnicalNote } from "@/components/TechnicalNote";
+import { NutritionLabel } from "@/components/recipe/NutritionLabel";
 import { formatCategoryName } from "@/lib/utils";
 
 const HotdogDetail = () => {
@@ -271,7 +272,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">
               {/* Left Column: Hot Dog & Bun */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 
                 {isStructuredIngredients && ingredientsData ? (
                   ingredientsData.hotdog_and_bun && (
@@ -281,7 +282,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                     </div>
                     <ul className="space-y-3">
                     {ingredientsData.hotdog_and_bun.map((ingredient, index) => {
-                      const checkboxKey = `hotdog_and_bun-${index}`;
+                      const checkboxKey = `base-${index}`;
                       return (
                         <li key={checkboxKey} className="flex items-start gap-4 group">
                           <Checkbox
@@ -295,7 +296,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                           <label
                             htmlFor={`ingredient-${checkboxKey}`}
                             className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                              checkedIngredients[checkboxKey]
+                              checkedIngredients[checkboxKey] 
                                 ? 'line-through opacity-50' 
                                 : 'text-poppy/90 group-hover:text-poppy'
                             }`}
@@ -353,6 +354,20 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                     })}
                   </ul>
                 )}
+                
+                {/* Nutrition Label */}
+                <NutritionLabel
+                  calories={hotdog.calories}
+                  fat_total_g={hotdog.fat_total_g}
+                  fat_saturated_g={hotdog.fat_saturated_g}
+                  fat_trans_g={hotdog.fat_trans_g}
+                  carbs_total_g={hotdog.carbs_total_g}
+                  carbs_fiber_g={hotdog.carbs_fiber_g}
+                  carbs_sugars_g={hotdog.carbs_sugars_g}
+                  protein_g={hotdog.protein_g}
+                  sodium_mg={hotdog.sodium_mg}
+                  cholesterol_mg={hotdog.cholesterol_mg}
+                />
               </div>
 
               {/* Right Column: Toppings */}
