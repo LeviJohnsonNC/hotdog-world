@@ -56,6 +56,10 @@ export type Database = {
       hotdogs: {
         Row: {
           calories: number | null
+          carbs_fiber_g: number | null
+          carbs_sugars_g: number | null
+          carbs_total_g: number | null
+          cholesterol_mg: number | null
           city: string
           cook_time: string | null
           country: string
@@ -63,9 +67,13 @@ export type Database = {
           date_published: string | null
           description: string
           explore_links: Json | null
+          fat_saturated_g: number | null
+          fat_total_g: number | null
+          fat_trans_g: number | null
           fun_facts: string[] | null
           id: string
           ingredients: Json | null
+          ingredients_hash: string | null
           instructions: string[] | null
           latitude: number
           longitude: number
@@ -73,15 +81,21 @@ export type Database = {
           name: string
           origin_story: string | null
           prep_time: string | null
+          protein_g: number | null
           recipe_yield: string | null
           region: string | null
           slug: string
+          sodium_mg: number | null
           tags: string[] | null
           total_time: string | null
           video_url: string | null
         }
         Insert: {
           calories?: number | null
+          carbs_fiber_g?: number | null
+          carbs_sugars_g?: number | null
+          carbs_total_g?: number | null
+          cholesterol_mg?: number | null
           city: string
           cook_time?: string | null
           country: string
@@ -89,9 +103,13 @@ export type Database = {
           date_published?: string | null
           description: string
           explore_links?: Json | null
+          fat_saturated_g?: number | null
+          fat_total_g?: number | null
+          fat_trans_g?: number | null
           fun_facts?: string[] | null
           id?: string
           ingredients?: Json | null
+          ingredients_hash?: string | null
           instructions?: string[] | null
           latitude: number
           longitude: number
@@ -99,15 +117,21 @@ export type Database = {
           name: string
           origin_story?: string | null
           prep_time?: string | null
+          protein_g?: number | null
           recipe_yield?: string | null
           region?: string | null
           slug: string
+          sodium_mg?: number | null
           tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
         }
         Update: {
           calories?: number | null
+          carbs_fiber_g?: number | null
+          carbs_sugars_g?: number | null
+          carbs_total_g?: number | null
+          cholesterol_mg?: number | null
           city?: string
           cook_time?: string | null
           country?: string
@@ -115,9 +139,13 @@ export type Database = {
           date_published?: string | null
           description?: string
           explore_links?: Json | null
+          fat_saturated_g?: number | null
+          fat_total_g?: number | null
+          fat_trans_g?: number | null
           fun_facts?: string[] | null
           id?: string
           ingredients?: Json | null
+          ingredients_hash?: string | null
           instructions?: string[] | null
           latitude?: number
           longitude?: number
@@ -125,9 +153,11 @@ export type Database = {
           name?: string
           origin_story?: string | null
           prep_time?: string | null
+          protein_g?: number | null
           recipe_yield?: string | null
           region?: string | null
           slug?: string
+          sodium_mg?: number | null
           tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
