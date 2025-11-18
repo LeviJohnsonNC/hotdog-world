@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
-import { useHotdogs } from "@/hooks/useHotdogs";
+import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useStamps } from "@/hooks/useStamps";
 import { calculatePassportStats, sortHotdogs } from "@/utils/passportHelpers";
 import { calculateBadgeProgress } from "@/utils/badgeCalculator";
@@ -16,7 +16,7 @@ import { toast } from "@/hooks/use-toast";
 
 const Passport = () => {
   const navigate = useNavigate();
-  const { data: hotdogs = [], isLoading: hotdogsLoading } = useHotdogs();
+  const { data: hotdogs = [], isLoading: hotdogsLoading } = useHotdogsLight();
   const { stamps, loading: stampsLoading } = useStamps();
   const [selectedHotdog, setSelectedHotdog] = useState<StampedHotdog | null>(null);
   const [modalOpen, setModalOpen] = useState(false);

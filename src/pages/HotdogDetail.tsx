@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { useHotdogs } from "@/hooks/useHotdogs";
+import { useHotdogDetail } from "@/hooks/useHotdogDetail";
 import { useRevealedFacts } from "@/hooks/useRevealedFacts";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,9 +18,7 @@ import { formatCategoryName } from "@/lib/utils";
 const HotdogDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { data: hotdogs = [] } = useHotdogs();
-  
-  const hotdog = hotdogs.find((h) => h.slug === slug);
+  const { data: hotdog, isLoading } = useHotdogDetail(slug || "");
   const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(hotdog?.id || '');
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
@@ -30,6 +28,17 @@ const HotdogDetail = () => {
     await revealFact(index);
   };
 
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-foreground/60">Loading hot dog details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!hotdog) {
     return (
