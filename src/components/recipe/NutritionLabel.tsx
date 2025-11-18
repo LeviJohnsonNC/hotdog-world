@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,7 +7,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 
 interface NutritionLabelProps {
   calories?: number;
@@ -23,218 +21,165 @@ interface NutritionLabelProps {
   cholesterol_mg?: number;
 }
 
-export function NutritionLabel({
-  calories,
-  fat_total_g,
-  fat_saturated_g,
-  fat_trans_g,
-  carbs_total_g,
-  carbs_fiber_g,
-  carbs_sugars_g,
-  protein_g,
-  sodium_mg,
-  cholesterol_mg,
-}: NutritionLabelProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  // If no nutrition data available, don't render
-  if (!calories && !fat_total_g && !carbs_total_g && !protein_g) {
+export function NutritionLabel(props: NutritionLabelProps) {
+  // Only render if we have nutrition data
+  if (!props.calories && !props.fat_total_g && !props.carbs_total_g && !props.protein_g) {
     return null;
   }
 
+  // Calculate daily value percentages (based on 2000 calorie diet)
+  const dailyValues = {
+    fat: props.fat_total_g ? Math.round((props.fat_total_g / 78) * 100) : 0,
+    saturatedFat: props.fat_saturated_g ? Math.round((props.fat_saturated_g / 20) * 100) : 0,
+    cholesterol: props.cholesterol_mg ? Math.round((props.cholesterol_mg / 300) * 100) : 0,
+    sodium: props.sodium_mg ? Math.round((props.sodium_mg / 2300) * 100) : 0,
+    carbs: props.carbs_total_g ? Math.round((props.carbs_total_g / 275) * 100) : 0,
+    fiber: props.carbs_fiber_g ? Math.round((props.carbs_fiber_g / 28) * 100) : 0,
+    protein: props.protein_g ? Math.round((props.protein_g / 50) * 100) : 0,
+  };
+
   return (
-    <Card className="p-4 bg-background border-2">
-      <div className="space-y-2">
-        <div className="border-b-8 border-foreground pb-1">
-          <h3 className="text-2xl font-bold">Nutrition Facts</h3>
-          <p className="text-sm">Per hot dog</p>
+    <Card className="border border-border/50">
+      <CardContent className="p-4">
+        {/* Compact horizontal view */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-px flex-1 bg-border/50" />
+            <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase whitespace-nowrap">
+              Nutrition Facts (Per Serving)
+            </h3>
+            <div className="h-px flex-1 bg-border/50" />
+          </div>
+          
+          <div className="flex items-center justify-center gap-3 text-sm">
+            <span className="font-semibold">
+              {props.calories || 0} <span className="text-xs uppercase tracking-wider text-muted-foreground">Calories</span>
+            </span>
+            <span className="text-border">|</span>
+            <span className="font-semibold">
+              {props.fat_total_g || 0}g <span className="text-xs uppercase tracking-wider text-muted-foreground">Fat</span>
+            </span>
+            <span className="text-border">|</span>
+            <span className="font-semibold">
+              {props.carbs_total_g || 0}g <span className="text-xs uppercase tracking-wider text-muted-foreground">Carbs</span>
+            </span>
+            <span className="text-border">|</span>
+            <span className="font-semibold">
+              {props.protein_g || 0}g <span className="text-xs uppercase tracking-wider text-muted-foreground">Protein</span>
+            </span>
+          </div>
         </div>
 
-        <Separator className="bg-foreground h-[2px]" />
-
-        {calories !== undefined && (
-          <>
-            <div className="flex justify-between items-end py-1">
-              <span className="font-bold text-3xl">Calories</span>
-              <span className="font-bold text-4xl">{Math.round(calories)}</span>
-            </div>
-            <Separator className="bg-foreground h-[6px]" />
-          </>
-        )}
-
-        <div className="text-xs text-right font-semibold pb-1">% Daily Value*</div>
-
-        <div className="space-y-1 text-sm">
-          {fat_total_g !== undefined && (
-            <>
-              <div className="flex justify-between border-t border-foreground/20 pt-1">
-                <span className="font-bold">Total Fat</span>
-                <span className="font-bold">{fat_total_g}g</span>
-              </div>
-              {fat_saturated_g !== undefined && (
-                <div className="flex justify-between pl-4 text-foreground/90">
-                  <span>Saturated Fat</span>
-                  <span>{fat_saturated_g}g</span>
-                </div>
-              )}
-              {fat_trans_g !== undefined && (
-                <div className="flex justify-between pl-4 text-foreground/90 italic">
-                  <span>Trans Fat</span>
-                  <span>{fat_trans_g}g</span>
-                </div>
-              )}
-            </>
-          )}
-
-          {cholesterol_mg !== undefined && (
-            <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-              <span>Cholesterol</span>
-              <span>{cholesterol_mg}mg</span>
-            </div>
-          )}
-
-          {sodium_mg !== undefined && (
-            <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-              <span>Sodium</span>
-              <span>{sodium_mg}mg</span>
-            </div>
-          )}
-
-          {carbs_total_g !== undefined && (
-            <>
-              <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-                <span>Total Carbohydrate</span>
-                <span>{carbs_total_g}g</span>
-              </div>
-              {carbs_fiber_g !== undefined && (
-                <div className="flex justify-between pl-4 text-foreground/90">
-                  <span>Dietary Fiber</span>
-                  <span>{carbs_fiber_g}g</span>
-                </div>
-              )}
-              {carbs_sugars_g !== undefined && (
-                <div className="flex justify-between pl-4 text-foreground/90">
-                  <span>Total Sugars</span>
-                  <span>{carbs_sugars_g}g</span>
-                </div>
-              )}
-            </>
-          )}
-
-          {protein_g !== undefined && (
-            <div className="flex justify-between border-t-8 border-foreground pt-1 font-bold">
-              <span>Protein</span>
-              <span>{protein_g}g</span>
-            </div>
-          )}
-        </div>
-
-        <Separator className="bg-foreground h-[6px] mt-2" />
-
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        {/* Dialog with full nutrition details */}
+        <Dialog>
           <DialogTrigger asChild>
-            <Button variant="link" className="w-full text-xs p-0 h-auto font-semibold">
-              Show Full Nutrition Label →
+            <Button variant="outline" className="w-full mt-4" size="sm">
+              Show Full Nutrition Label
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Complete Nutrition Information</DialogTitle>
+              <DialogTitle>Nutrition Facts</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <Card className="p-4 bg-background border-2">
-                <div className="space-y-2 text-sm">
-                  <div className="border-b-8 border-foreground pb-2">
-                    <h3 className="text-2xl font-bold">Nutrition Facts</h3>
-                    <p className="text-sm">Per hot dog</p>
-                  </div>
-
-                  {calories !== undefined && (
-                    <>
-                      <div className="flex justify-between items-end py-2 border-t-2 border-foreground">
-                        <span className="font-bold text-2xl">Calories</span>
-                        <span className="font-bold text-3xl">{Math.round(calories)}</span>
-                      </div>
-                      <Separator className="bg-foreground h-[4px]" />
-                    </>
-                  )}
-
-                  <div className="text-xs text-right font-semibold">% Daily Value*</div>
-
-                  <div className="space-y-1">
-                    {fat_total_g !== undefined && (
-                      <>
-                        <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-                          <span>Total Fat {fat_total_g}g</span>
-                          <span>{Math.round((fat_total_g / 78) * 100)}%</span>
-                        </div>
-                        {fat_saturated_g !== undefined && (
-                          <div className="flex justify-between pl-4">
-                            <span>Saturated Fat {fat_saturated_g}g</span>
-                            <span>{Math.round((fat_saturated_g / 20) * 100)}%</span>
-                          </div>
-                        )}
-                        {fat_trans_g !== undefined && (
-                          <div className="flex justify-between pl-4 italic">
-                            <span>Trans Fat {fat_trans_g}g</span>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    {cholesterol_mg !== undefined && (
-                      <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-                        <span>Cholesterol {cholesterol_mg}mg</span>
-                        <span>{Math.round((cholesterol_mg / 300) * 100)}%</span>
-                      </div>
-                    )}
-
-                    {sodium_mg !== undefined && (
-                      <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-                        <span>Sodium {sodium_mg}mg</span>
-                        <span>{Math.round((sodium_mg / 2300) * 100)}%</span>
-                      </div>
-                    )}
-
-                    {carbs_total_g !== undefined && (
-                      <>
-                        <div className="flex justify-between border-t border-foreground/20 pt-1 font-bold">
-                          <span>Total Carbohydrate {carbs_total_g}g</span>
-                          <span>{Math.round((carbs_total_g / 275) * 100)}%</span>
-                        </div>
-                        {carbs_fiber_g !== undefined && (
-                          <div className="flex justify-between pl-4">
-                            <span>Dietary Fiber {carbs_fiber_g}g</span>
-                            <span>{Math.round((carbs_fiber_g / 28) * 100)}%</span>
-                          </div>
-                        )}
-                        {carbs_sugars_g !== undefined && (
-                          <div className="flex justify-between pl-4">
-                            <span>Total Sugars {carbs_sugars_g}g</span>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    {protein_g !== undefined && (
-                      <div className="flex justify-between border-t-8 border-foreground pt-2 font-bold">
-                        <span>Protein {protein_g}g</span>
-                        <span>{Math.round((protein_g / 50) * 100)}%</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <Separator className="bg-foreground h-[6px]" />
-
-                  <div className="text-xs pt-2 space-y-1">
-                    <p>* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs.</p>
-                  </div>
+            
+            <div className="space-y-2 max-h-[70vh] overflow-y-auto">
+              <div className="border-b-8 border-foreground pb-1">
+                <h3 className="text-3xl font-bold">Nutrition Facts</h3>
+                <p className="text-sm">Per hot dog</p>
+              </div>
+              
+              <div className="border-b-4 border-foreground py-2">
+                <div className="flex justify-between items-end">
+                  <span className="text-sm font-semibold">Calories</span>
+                  <span className="text-4xl font-bold">{props.calories || 0}</span>
                 </div>
-              </Card>
+              </div>
+
+              <div className="border-b border-foreground pt-1">
+                <div className="text-xs text-right font-bold">% Daily Value*</div>
+              </div>
+
+              {/* Total Fat */}
+              <div className="flex justify-between border-b border-muted py-1">
+                <span className="font-semibold">
+                  <span className="font-bold">Total Fat</span> {props.fat_total_g || 0}g
+                </span>
+                <span className="font-bold">{dailyValues.fat}%</span>
+              </div>
+
+              {/* Saturated Fat */}
+              {props.fat_saturated_g !== null && props.fat_saturated_g !== undefined && (
+                <div className="flex justify-between border-b border-muted py-1 pl-4">
+                  <span>Saturated Fat {props.fat_saturated_g}g</span>
+                  <span className="font-bold">{dailyValues.saturatedFat}%</span>
+                </div>
+              )}
+
+              {/* Trans Fat */}
+              {props.fat_trans_g !== null && props.fat_trans_g !== undefined && (
+                <div className="border-b border-muted py-1 pl-4">
+                  <span className="italic">Trans Fat {props.fat_trans_g}g</span>
+                </div>
+              )}
+
+              {/* Cholesterol */}
+              {props.cholesterol_mg !== null && props.cholesterol_mg !== undefined && (
+                <div className="flex justify-between border-b border-muted py-1">
+                  <span>
+                    <span className="font-bold">Cholesterol</span> {props.cholesterol_mg}mg
+                  </span>
+                  <span className="font-bold">{dailyValues.cholesterol}%</span>
+                </div>
+              )}
+
+              {/* Sodium */}
+              {props.sodium_mg !== null && props.sodium_mg !== undefined && (
+                <div className="flex justify-between border-b border-muted py-1">
+                  <span>
+                    <span className="font-bold">Sodium</span> {props.sodium_mg}mg
+                  </span>
+                  <span className="font-bold">{dailyValues.sodium}%</span>
+                </div>
+              )}
+
+              {/* Total Carbohydrate */}
+              <div className="flex justify-between border-b border-muted py-1">
+                <span>
+                  <span className="font-bold">Total Carbohydrate</span> {props.carbs_total_g || 0}g
+                </span>
+                <span className="font-bold">{dailyValues.carbs}%</span>
+              </div>
+
+              {/* Dietary Fiber */}
+              {props.carbs_fiber_g !== null && props.carbs_fiber_g !== undefined && (
+                <div className="flex justify-between border-b border-muted py-1 pl-4">
+                  <span>Dietary Fiber {props.carbs_fiber_g}g</span>
+                  <span className="font-bold">{dailyValues.fiber}%</span>
+                </div>
+              )}
+
+              {/* Total Sugars */}
+              {props.carbs_sugars_g !== null && props.carbs_sugars_g !== undefined && (
+                <div className="border-b border-muted py-1 pl-4">
+                  <span>Total Sugars {props.carbs_sugars_g}g</span>
+                </div>
+              )}
+
+              {/* Protein */}
+              <div className="flex justify-between border-b-8 border-foreground py-1">
+                <span>
+                  <span className="font-bold">Protein</span> {props.protein_g || 0}g
+                </span>
+                <span className="font-bold">{dailyValues.protein}%</span>
+              </div>
+
+              <div className="pt-2 text-xs">
+                <p>* The % Daily Value tells you how much a nutrient in a serving of food contributes to a daily diet. 2,000 calories a day is used for general nutrition advice.</p>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </CardContent>
     </Card>
   );
 }
