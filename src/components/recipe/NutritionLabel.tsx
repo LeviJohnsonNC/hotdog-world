@@ -46,7 +46,7 @@ export function NutritionLabel(props: NutritionLabelProps) {
           <div className="flex items-center gap-2">
             <div className="h-px flex-1 bg-border/50" />
             <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase whitespace-nowrap">
-              Nutrition Facts (Per Serving)
+              Nutrition Facts (Per Hot Dog)
             </h3>
             <div className="h-px flex-1 bg-border/50" />
           </div>
