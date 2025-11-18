@@ -6,6 +6,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to create a simple hash from ingredients
+function hashIngredients(ingredients: any): string {
+  return btoa(JSON.stringify(ingredients || {}));
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -54,10 +59,10 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Fetch all hotdogs
+    // Fetch all hotdogs with nutrition data
     const { data: hotdogs, error: fetchError } = await supabase
       .from('hotdogs')
-      .select('id, name, description, ingredients, instructions');
+      .select('id, name, description, ingredients, instructions, calories, fat_total_g, ingredients_hash');
 
     if (fetchError) {
       console.error("Error fetching hotdogs:", fetchError);
@@ -70,6 +75,21 @@ serve(async (req) => {
 
     for (const hotdog of hotdogs || []) {
       try {
+        // Calculate current ingredients hash
+        const currentHash = hashIngredients(hotdog.ingredients);
+        
+        // Skip if nutrition data exists and ingredients haven't changed
+        if (hotdog.calories && hotdog.fat_total_g && hotdog.ingredients_hash === currentHash) {
+          console.log(`Skipping ${hotdog.name} - nutrition data is current`);
+          results.push({ 
+            id: hotdog.id, 
+            name: hotdog.name, 
+            skipped: true,
+            reason: "Nutrition data is current"
+          });
+          continue;
+        }
+
         // Prepare ingredients text
         let ingredientsText = "";
         if (Array.isArray(hotdog.ingredients)) {
@@ -84,7 +104,7 @@ serve(async (req) => {
           ? hotdog.instructions.join(" ") 
           : "";
 
-        const userMessage = `Analyze this hotdog recipe and extract accurate cooking times and nutritional information:
+        const userMessage = `Analyze this hotdog recipe and extract accurate cooking times and detailed nutritional information:
 
 **Recipe Name:** ${hotdog.name}
 **Description:** ${hotdog.description}
@@ -96,8 +116,19 @@ Please provide:
 - Cook time (actual cooking/grilling time)
 - Total time (prep + cook)
 - Recipe yield (usually "Serves 1" for a single hotdog)
-- Estimated calories (consider the sausage, bun, and all toppings)
+- Detailed nutritional information PER HOT DOG:
+  * Total calories
+  * Total fat (g)
+  * Saturated fat (g)
+  * Trans fat (g)
+  * Total carbohydrates (g)
+  * Dietary fiber (g)
+  * Sugars (g)
+  * Protein (g)
+  * Sodium (mg)
+  * Cholesterol (mg)
 
+Consider all ingredients including the sausage, bun, and toppings. Be realistic and accurate based on typical portions.
 Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 hour 30 minutes).`;
 
         // Call Lovable AI with tool calling
@@ -112,7 +143,7 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
             messages: [
               {
                 role: "system",
-                content: "You are a culinary expert analyzing hotdog recipes. Extract accurate preparation times, cooking times, and nutritional information based on the ingredients and cooking methods described."
+                content: "You are a culinary and nutrition expert analyzing hotdog recipes. Extract accurate preparation times, cooking times, and detailed nutritional information based on the ingredients and cooking methods described. Be precise and realistic with nutrition values."
               },
               {
                 role: "user",
@@ -124,7 +155,7 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
                 type: "function",
                 function: {
                   name: "extract_recipe_metadata",
-                  description: "Extract cooking times and nutritional information from a hotdog recipe",
+                  description: "Extract cooking times and detailed nutritional information from a hotdog recipe",
                   parameters: {
                     type: "object",
                     properties: {
@@ -146,10 +177,51 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
                       },
                       calories: {
                         type: "number",
-                        description: "Estimated total calories for the dish"
+                        description: "Total calories per hot dog"
+                      },
+                      fat_total_g: {
+                        type: "number",
+                        description: "Total fat in grams"
+                      },
+                      fat_saturated_g: {
+                        type: "number",
+                        description: "Saturated fat in grams"
+                      },
+                      fat_trans_g: {
+                        type: "number",
+                        description: "Trans fat in grams"
+                      },
+                      carbs_total_g: {
+                        type: "number",
+                        description: "Total carbohydrates in grams"
+                      },
+                      carbs_fiber_g: {
+                        type: "number",
+                        description: "Dietary fiber in grams"
+                      },
+                      carbs_sugars_g: {
+                        type: "number",
+                        description: "Sugars in grams"
+                      },
+                      protein_g: {
+                        type: "number",
+                        description: "Protein in grams"
+                      },
+                      sodium_mg: {
+                        type: "number",
+                        description: "Sodium in milligrams"
+                      },
+                      cholesterol_mg: {
+                        type: "number",
+                        description: "Cholesterol in milligrams"
                       }
                     },
-                    required: ["prep_time", "cook_time", "total_time", "recipe_yield", "calories"],
+                    required: [
+                      "prep_time", "cook_time", "total_time", "recipe_yield", 
+                      "calories", "fat_total_g", "fat_saturated_g", "fat_trans_g",
+                      "carbs_total_g", "carbs_fiber_g", "carbs_sugars_g", 
+                      "protein_g", "sodium_mg", "cholesterol_mg"
+                    ],
                     additionalProperties: false
                   }
                 }
@@ -192,7 +264,7 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
 
         const metadata = JSON.parse(toolCall.function.arguments);
 
-        // Update database
+        // Update database with all nutrition fields
         const { error: updateError } = await supabase
           .from('hotdogs')
           .update({
@@ -200,15 +272,25 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
             cook_time: metadata.cook_time,
             total_time: metadata.total_time,
             recipe_yield: metadata.recipe_yield,
-            calories: metadata.calories
+            calories: metadata.calories,
+            fat_total_g: metadata.fat_total_g,
+            fat_saturated_g: metadata.fat_saturated_g,
+            fat_trans_g: metadata.fat_trans_g,
+            carbs_total_g: metadata.carbs_total_g,
+            carbs_fiber_g: metadata.carbs_fiber_g,
+            carbs_sugars_g: metadata.carbs_sugars_g,
+            protein_g: metadata.protein_g,
+            sodium_mg: metadata.sodium_mg,
+            cholesterol_mg: metadata.cholesterol_mg,
+            ingredients_hash: currentHash
           })
           .eq('id', hotdog.id);
 
         if (updateError) {
           console.error(`Error updating ${hotdog.name}:`, updateError);
-          results.push({ id: hotdog.id, name: hotdog.name, error: "Database update failed" });
+          results.push({ id: hotdog.id, name: hotdog.name, error: updateError.message });
         } else {
-          console.log(`Successfully updated ${hotdog.name}`);
+          console.log(`Successfully updated ${hotdog.name} with nutrition data`);
           results.push({ 
             id: hotdog.id, 
             name: hotdog.name, 
@@ -232,6 +314,7 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
 
     const successCount = results.filter(r => r.success).length;
     const errorCount = results.filter(r => r.error).length;
+    const skippedCount = results.filter(r => r.skipped).length;
 
     return new Response(
       JSON.stringify({ 
@@ -239,6 +322,7 @@ Format times as ISO 8601 durations (e.g., PT15M for 15 minutes, PT1H30M for 1 ho
         total: hotdogs?.length || 0,
         successCount,
         errorCount,
+        skippedCount,
         results 
       }),
       { 
