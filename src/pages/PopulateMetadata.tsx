@@ -75,18 +75,34 @@ export default function PopulateMetadata() {
 
             {results && (
               <div className="mt-6 space-y-4">
-                <div className="border rounded-lg p-4 bg-muted/50">
-                  <h3 className="font-semibold mb-2">Processing Status</h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {results.message}
-                  </p>
-                  <p className="text-sm">
-                    Processing <strong>{results.total}</strong> hotdogs in the background.
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    💡 Check the edge function logs below for real-time progress. Refresh this page in 2-3 minutes to see updated nutrition data.
-                  </p>
-                </div>
+                {results.message?.includes("All nutrition data is current") || results.total === 0 ? (
+                  <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-semibold text-green-900 dark:text-green-100 mb-1">
+                          All Nutrition Data is Up-to-Date!
+                        </h3>
+                        <p className="text-sm text-green-800 dark:text-green-200">
+                          All {results.total || 40} hotdogs already have complete nutrition information. No updates needed.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="border rounded-lg p-4 bg-muted/50">
+                    <h3 className="font-semibold mb-2">Processing Status</h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {results.message}
+                    </p>
+                    <p className="text-sm">
+                      Processing <strong>{results.total}</strong> hotdogs in the background.
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      💡 Check the edge function logs below for real-time progress. Refresh this page in 2-3 minutes to see updated nutrition data.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
