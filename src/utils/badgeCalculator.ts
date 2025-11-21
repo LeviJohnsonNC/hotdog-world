@@ -48,11 +48,15 @@ export const calculateBadgeProgress = (
         break;
 
       case "purist":
-        current = stampedDogs.filter((h) => h.tags?.includes("classic")).length;
+        current = stampedDogs.filter((h) => 
+          h.tags?.some(tag => tag.includes("classic") || tag.includes("traditional"))
+        ).length;
         break;
 
       case "international-rebel":
-        current = stampedDogs.filter((h) => h.tags?.includes("fusion")).length;
+        current = stampedDogs.filter((h) => 
+          h.tags?.some(tag => tag.includes("fusion") || tag.includes("unconventional"))
+        ).length;
         break;
 
       case "photojournalist":
@@ -62,11 +66,15 @@ export const calculateBadgeProgress = (
         break;
 
       case "flavor-detective":
-        current = stampedDogs.filter((h) => h.tags?.includes("uncommon")).length;
+        current = stampedDogs.filter((h) => 
+          h.tags?.some(tag => tag.includes("uncommon"))
+        ).length;
         break;
 
       case "tailgater":
-        current = stampedDogs.filter((h) => h.tags?.includes("grilled")).length;
+        current = stampedDogs.filter((h) => 
+          h.tags?.some(tag => tag.includes("grilled") || tag.includes("charred"))
+        ).length;
         break;
 
       case "globetrotter":
