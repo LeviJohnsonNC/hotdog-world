@@ -30,48 +30,95 @@ function distance3D(
   return Math.sqrt(dx * dx + dy * dy + dz * dz);
 }
 
-// Apply offsets to separate overlapping hotdogs on the sphere
+// Multi-pass iterative relaxation with geographic anchoring
 function applyOverlapOffsets(
-  hotdogs: Array<{ position: [number, number, number]; [key: string]: any }>,
-  threshold: number = 0.25,
-  offsetStrength: number = 0.15,
-  sphereRadius: number = 2.01
+  hotdogs: Array<{ position: [number, number, number]; latitude: number; longitude: number; [key: string]: any }>,
+  threshold: number = 0.10,
+  initialOffsetStrength: number = 0.08,
+  sphereRadius: number = 2.01,
+  iterations: number = 10,
+  decayRate: number = 0.008,
+  maxDisplacement: number = 0.05,
+  springStrength: number = 0.03
 ): void {
-  const positions = hotdogs.map((h) => h.position);
+  // Store original positions for geographic anchoring
+  const originalPositions = hotdogs.map((h) => 
+    latLngToVector3(h.latitude, h.longitude, sphereRadius)
+  );
+  
+  const positions = hotdogs.map((h) => [...h.position] as [number, number, number]);
 
-  for (let i = 0; i < positions.length; i++) {
-    let offsetX = 0;
-    let offsetY = 0;
-    let offsetZ = 0;
+  // Multi-pass relaxation
+  for (let iteration = 0; iteration < iterations; iteration++) {
+    const currentOffsetStrength = initialOffsetStrength - (decayRate * iteration);
+    
+    // Calculate offsets for this iteration
+    for (let i = 0; i < positions.length; i++) {
+      let offsetX = 0;
+      let offsetY = 0;
+      let offsetZ = 0;
 
-    for (let j = 0; j < positions.length; j++) {
-      if (i === j) continue;
+      // Calculate repulsion forces from nearby hotdogs
+      for (let j = 0; j < positions.length; j++) {
+        if (i === j) continue;
 
-      const dist = distance3D(positions[i], positions[j]);
+        const dist = distance3D(positions[i], positions[j]);
 
-      if (dist < threshold) {
-        const dx = positions[i][0] - positions[j][0];
-        const dy = positions[i][1] - positions[j][1];
-        const dz = positions[i][2] - positions[j][2];
+        if (dist < threshold) {
+          const dx = positions[i][0] - positions[j][0];
+          const dy = positions[i][1] - positions[j][1];
+          const dz = positions[i][2] - positions[j][2];
 
-        const magnitude = Math.sqrt(dx * dx + dy * dy + dz * dz) || 0.001;
-        offsetX += (dx / magnitude) * offsetStrength;
-        offsetY += (dy / magnitude) * offsetStrength;
-        offsetZ += (dz / magnitude) * offsetStrength;
+          const magnitude = Math.sqrt(dx * dx + dy * dy + dz * dz) || 0.001;
+          offsetX += (dx / magnitude) * currentOffsetStrength;
+          offsetY += (dy / magnitude) * currentOffsetStrength;
+          offsetZ += (dz / magnitude) * currentOffsetStrength;
+        }
       }
+
+      // Cap displacement to prevent flyaways
+      const displacementMag = Math.sqrt(offsetX * offsetX + offsetY * offsetY + offsetZ * offsetZ);
+      if (displacementMag > maxDisplacement) {
+        const scale = maxDisplacement / displacementMag;
+        offsetX *= scale;
+        offsetY *= scale;
+        offsetZ *= scale;
+      }
+
+      // Apply offset
+      positions[i][0] += offsetX;
+      positions[i][1] += offsetY;
+      positions[i][2] += offsetZ;
+
+      // Normalize back to sphere surface
+      const length = Math.sqrt(
+        positions[i][0] ** 2 + positions[i][1] ** 2 + positions[i][2] ** 2
+      );
+      positions[i][0] = (positions[i][0] / length) * sphereRadius;
+      positions[i][1] = (positions[i][1] / length) * sphereRadius;
+      positions[i][2] = (positions[i][2] / length) * sphereRadius;
+
+      // Apply geographic spring force (pull back toward original position)
+      const dx = originalPositions[i][0] - positions[i][0];
+      const dy = originalPositions[i][1] - positions[i][1];
+      const dz = originalPositions[i][2] - positions[i][2];
+
+      positions[i][0] += dx * springStrength;
+      positions[i][1] += dy * springStrength;
+      positions[i][2] += dz * springStrength;
+
+      // Normalize again after spring force
+      const finalLength = Math.sqrt(
+        positions[i][0] ** 2 + positions[i][1] ** 2 + positions[i][2] ** 2
+      );
+      positions[i][0] = (positions[i][0] / finalLength) * sphereRadius;
+      positions[i][1] = (positions[i][1] / finalLength) * sphereRadius;
+      positions[i][2] = (positions[i][2] / finalLength) * sphereRadius;
     }
+  }
 
-    positions[i][0] += offsetX;
-    positions[i][1] += offsetY;
-    positions[i][2] += offsetZ;
-
-    const length = Math.sqrt(
-      positions[i][0] ** 2 + positions[i][1] ** 2 + positions[i][2] ** 2
-    );
-    positions[i][0] = (positions[i][0] / length) * sphereRadius;
-    positions[i][1] = (positions[i][1] / length) * sphereRadius;
-    positions[i][2] = (positions[i][2] / length) * sphereRadius;
-
+  // Update hotdog positions
+  for (let i = 0; i < hotdogs.length; i++) {
     hotdogs[i].position = positions[i];
   }
 }
