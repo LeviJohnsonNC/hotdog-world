@@ -89,21 +89,21 @@ const BrowseHotdogs = () => {
           
           <div className="w-24" /> {/* Spacer for centering */}
         </div>
-
-        {/* Search Bar */}
-        <div className="container mx-auto px-4 py-4">
-          <div className="relative max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search by name or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-background/60 backdrop-blur-sm border-border/50 focus:border-primary"
-            />
-          </div>
-        </div>
       </header>
+
+      {/* Search Bar */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="relative max-w-md mx-auto">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search by name or location..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 bg-background/60 backdrop-blur-sm border-border/50 focus:border-primary"
+          />
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
