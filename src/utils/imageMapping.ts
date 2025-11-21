@@ -43,6 +43,7 @@ export const cityToImageMap: Record<string, string> = {
   "Philippines": "philippines-hotdog.png",
   "Michigan": "michigan-hotdog.png",
   "Pennsylvania": "pennsylvania-hotdog.png",
+  "Bogotá": "colombia-hotdog.png",
 };
 
 export function getHotdogImage(city: string): string {
