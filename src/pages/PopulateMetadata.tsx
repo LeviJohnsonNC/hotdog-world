@@ -23,8 +23,9 @@ export default function PopulateMetadata() {
 
       setResults(data);
       toast({
-        title: "Success!",
-        description: `Updated ${data.successCount} of ${data.total} hotdogs`,
+        title: "Processing Started!",
+        description: data.note || "Recipe metadata is being populated in the background. This will take 2-3 minutes. Check the edge function logs for progress.",
+        duration: 10000,
       });
     } catch (error) {
       console.error("Error populating metadata:", error);
@@ -74,40 +75,17 @@ export default function PopulateMetadata() {
 
             {results && (
               <div className="mt-6 space-y-4">
-                <div className="flex gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span>{results.successCount} successful</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-red-600" />
-                    <span>{results.errorCount} errors</span>
-                  </div>
-                </div>
-
-                <div className="border rounded-lg p-4 max-h-96 overflow-y-auto">
-                  <h3 className="font-semibold mb-2">Results:</h3>
-                  <div className="space-y-2">
-                    {results.results?.map((result: any, index: number) => (
-                      <div 
-                        key={index} 
-                        className={`p-2 rounded text-sm ${
-                          result.success ? 'bg-green-50 dark:bg-green-950' : 'bg-red-50 dark:bg-red-950'
-                        }`}
-                      >
-                        <div className="font-medium">{result.name}</div>
-                        {result.success && result.metadata && (
-                          <div className="text-xs text-muted-foreground mt-1">
-                            Prep: {result.metadata.prep_time}, Cook: {result.metadata.cook_time}, 
-                            Calories: {result.metadata.calories}
-                          </div>
-                        )}
-                        {result.error && (
-                          <div className="text-xs text-red-600 mt-1">Error: {result.error}</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                <div className="border rounded-lg p-4 bg-muted/50">
+                  <h3 className="font-semibold mb-2">Processing Status</h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {results.message}
+                  </p>
+                  <p className="text-sm">
+                    Processing <strong>{results.total}</strong> hotdogs in the background.
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    💡 Check the edge function logs below for real-time progress. Refresh this page in 2-3 minutes to see updated nutrition data.
+                  </p>
                 </div>
               </div>
             )}
