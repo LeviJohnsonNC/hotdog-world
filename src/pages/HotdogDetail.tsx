@@ -227,7 +227,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             alt={hotdog.name}
             className="absolute inset-0 w-full h-full object-cover"
             style={{ 
-              objectPosition: hotdog.slug === 'tako-san-wieners' ? 'center top' : 'center center' 
+              objectPosition: hotdog.slug === 'tako-san-wieners' ? 'center 20%' : 'center center' 
             }}
           />
         )}
