@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { ArrowLeft } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const BrowseHotdogs = () => {
   const navigate = useNavigate();
@@ -47,35 +48,32 @@ const BrowseHotdogs = () => {
       </Helmet>
 
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <a
-              href="/"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/");
-              }}
-              className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
-              aria-label="Back to Globe"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Globe</span>
-            </a>
+      <header className="sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border shadow-sm">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <Button
+            onClick={() => navigate("/")}
+            variant="ghost"
+            size="sm"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Map
+          </Button>
+          
+          <div className="text-center flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+              Browse All Hotdogs
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {hotdogs.length} iconic recipes from around the world
+            </p>
           </div>
+          
+          <div className="w-24" /> {/* Spacer for centering */}
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="font-heading text-4xl md:text-5xl font-bold text-primary mb-3">
-            Browse All Hotdogs
-          </h1>
-          <p className="text-foreground/70 text-lg max-w-2xl mx-auto">
-            Explore {hotdogs.length} iconic hot dog recipes from around the world
-          </p>
-        </div>
 
         {/* Hotdog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
