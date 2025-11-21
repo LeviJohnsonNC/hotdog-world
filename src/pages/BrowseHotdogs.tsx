@@ -1,19 +1,38 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState, useMemo } from "react";
 
 const BrowseHotdogs = () => {
   const navigate = useNavigate();
   const { data: hotdogs = [], isLoading } = useHotdogsLight();
   const siteUrl = window.location.origin;
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
     e.preventDefault();
     navigate(`/hotdog/${hotdogSlug}`);
   };
+
+  // Sort alphabetically and filter by search query
+  const filteredHotdogs = useMemo(() => {
+    const sorted = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
+    
+    if (!searchQuery.trim()) {
+      return sorted;
+    }
+    
+    const query = searchQuery.toLowerCase();
+    return sorted.filter((hotdog) => {
+      const nameMatch = hotdog.name.toLowerCase().includes(query);
+      const locationMatch = `${hotdog.city}, ${hotdog.country}`.toLowerCase().includes(query);
+      return nameMatch || locationMatch;
+    });
+  }, [hotdogs, searchQuery]);
 
   if (isLoading) {
     return (
@@ -70,14 +89,35 @@ const BrowseHotdogs = () => {
           
           <div className="w-24" /> {/* Spacer for centering */}
         </div>
+
+        {/* Search Bar */}
+        <div className="container mx-auto px-4 py-4">
+          <div className="relative max-w-md mx-auto">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by name or location..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-background/60 backdrop-blur-sm border-border/50 focus:border-primary"
+            />
+          </div>
+        </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
 
+        {/* Results Count */}
+        {searchQuery && (
+          <p className="text-sm text-muted-foreground mb-4">
+            Showing {filteredHotdogs.length} of {hotdogs.length} hotdogs
+          </p>
+        )}
+
         {/* Hotdog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {hotdogs.map((hotdog) => (
+          {filteredHotdogs.map((hotdog) => (
             <a
               key={hotdog.id}
               href={`/hotdog/${hotdog.slug}`}
