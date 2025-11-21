@@ -51,6 +51,7 @@ export const cityToImageMap: Record<string, string> = {
   "Tehran": "iran-hotdog.png",
   "Finland": "finland-hotdog.png",
   "Kabul": "afghanistan-hotdog.png",
+  "Melbourne": "dagwood-dog.png",
 };
 
 export function getHotdogImage(city: string): string {
