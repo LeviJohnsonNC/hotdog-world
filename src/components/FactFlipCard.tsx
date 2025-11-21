@@ -18,10 +18,16 @@ const parseFactContent = (fact: string): { teaser: string; reveal: string } => {
     return { teaser, reveal };
   }
   
-  // Fallback: generate teaser from first 4-6 words
-  const words = fact.split(" ");
-  const teaser = words.slice(0, Math.min(6, words.length)).join(" ") + "...";
-  return { teaser, reveal: fact };
+  // Check if fact is in Q&A format (question? answer)
+  const questionMarkIndex = fact.indexOf("?");
+  if (questionMarkIndex !== -1) {
+    const question = fact.substring(0, questionMarkIndex + 1).trim();
+    const answer = fact.substring(questionMarkIndex + 1).trim();
+    return { teaser: question, reveal: answer };
+  }
+  
+  // Fallback: use full fact for both
+  return { teaser: fact, reveal: fact };
 };
 
 const getCardColor = (index: number): string => {
