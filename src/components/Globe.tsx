@@ -195,7 +195,7 @@ function Earth({
       </Sphere>
       
       {/* Hotdogs - disable clicks during spin */}
-      {hotdogs.map((hotdog) => {
+      {hotdogs.map((hotdog, index) => {
         const shouldPulse = ftuxPulsingPins.has(hotdog.id);
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
         const pulseDelay = pulseIndex >= 0 ? pulseIndex * 200 : 0;

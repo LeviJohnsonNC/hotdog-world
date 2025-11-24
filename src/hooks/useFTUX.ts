@@ -27,16 +27,16 @@ export const useFTUX = (prefersReducedMotion: boolean) => {
       }, 400);
       setTimeout(() => {
         setFTUXPhase('pulsing');
-        console.log('FTUX: Phase = pulsing');
+        console.log('FTUX: Phase = pulsing (pins start pulsing)');
       }, 600);
       setTimeout(() => {
         setFTUXPhase('hinting');
         console.log('FTUX: Phase = hinting');
-      }, 1200);
+      }, 1400); // Show hint after pins finish pulsing (600ms + 800ms = 1400ms)
       setTimeout(() => {
         setFTUXPhase('complete');
         console.log('FTUX: Phase = complete');
-      }, 4700); // Hint appears at 1200ms, stays for 3500ms total
+      }, 4900); // Hint stays for 3500ms (1400ms + 3500ms = 4900ms)
     }
   }, [hasSeenFTUX, prefersReducedMotion]);
 

@@ -246,7 +246,7 @@ const Index = () => {
             {showHint && (
               <div 
                 className="
-                  fixed top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
+                  fixed top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
                   px-6 py-3 rounded-full
                   bg-background/60 backdrop-blur-lg
                   border border-border/40
