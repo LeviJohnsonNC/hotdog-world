@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import { Group } from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogModel } from "./HotdogModel";
 
@@ -7,13 +9,46 @@ interface HotdogPinProps {
   position: [number, number, number];
   onClick: () => void;
   hotdog: Hotdog;
+  shouldPulse?: boolean;
+  pulseDelay?: number;
 }
 
-export function HotdogPin({ position, onClick, hotdog }: HotdogPinProps) {
+export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, pulseDelay = 0 }: HotdogPinProps) {
   const [hovered, setHovered] = useState(false);
+  const groupRef = useRef<Group>(null);
+  const pulseStartTime = useRef<number | null>(null);
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  useEffect(() => {
+    if (shouldPulse && !pulseStartTime.current) {
+      setTimeout(() => {
+        pulseStartTime.current = Date.now();
+        setIsPulsing(true);
+      }, pulseDelay);
+    }
+  }, [shouldPulse, pulseDelay]);
+
+  useFrame(() => {
+    if (!isPulsing || !groupRef.current || !pulseStartTime.current) return;
+
+    const elapsed = Date.now() - pulseStartTime.current;
+    const duration = 800; // 800ms pulse duration
+
+    if (elapsed > duration) {
+      groupRef.current.scale.setScalar(1);
+      setIsPulsing(false);
+      return;
+    }
+
+    // Breathing animation: 1.0 -> 1.04 -> 1.0
+    const progress = elapsed / duration;
+    const scale = 1 + 0.04 * Math.sin(progress * Math.PI);
+    groupRef.current.scale.setScalar(scale);
+  });
 
   return (
     <group 
+      ref={groupRef}
       position={position}
       onClick={(e) => {
         e.stopPropagation();
