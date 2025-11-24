@@ -1,10 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useOnboardingNudges } from "@/hooks/useOnboardingNudges";
-import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { toast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// Storage keys for localStorage
+const STORAGE_KEYS = {
+  FIRST_BADGE: 'onboarding_first_badge_shown',
+  PROGRESS_3: 'onboarding_progress_3_shown',
+  PROGRESS_7: 'onboarding_progress_7_session',
+  PROGRESS_ENABLED: 'onboarding_progress_nudges_enabled',
+} as const;
 
 interface OnboardingNudgeProps {
   isFirstVisit: boolean;
@@ -14,67 +20,27 @@ interface OnboardingNudgeProps {
 
 export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: OnboardingNudgeProps) => {
   const navigate = useNavigate();
-  const reducedMotion = useReducedMotion();
-  const {
-    hasShownFirstBadgeToast,
-    markFirstBadgeShown,
-    hasShownProgress3Toast,
-    markProgress3Shown,
-    hasShownProgress7InSession,
-    markProgress7Shown,
-    areProgressNudgesEnabled,
-    disableProgressNudges,
-  } = useOnboardingNudges();
-
-  const [scrollProgress, setScrollProgress] = useState(0);
   const [showProgress3Banner, setShowProgress3Banner] = useState(false);
   const hasTriggeredRef = useRef(false);
 
-  // Track scroll position
+  // Single effect to trigger nudges - minimal dependencies
   useEffect(() => {
-    if (reducedMotion) return;
+    // Guard: skip if already triggered, not a new visit, or initial state
+    if (hasTriggeredRef.current || !isNewVisit || visitCount === 0) {
+      return;
+    }
 
-    const handleScroll = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      console.log('Scroll detected:', { scrollTop, docHeight, progress });
-      setScrollProgress(progress);
-    };
+    const timeoutId = setTimeout(() => {
+      // Double-check we haven't triggered (in case of race condition)
+      if (hasTriggeredRef.current) return;
+      hasTriggeredRef.current = true;
 
-    // Check initial position
-    handleScroll();
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    document.addEventListener('scroll', handleScroll, { passive: true });
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('scroll', handleScroll);
-    };
-  }, [reducedMotion]);
+      console.log('Onboarding nudge triggered:', { isFirstVisit, visitCount });
 
-  // Trigger appropriate nudge based on milestone
-  useEffect(() => {
-    if (hasTriggeredRef.current || !isNewVisit || visitCount === 0) return;
-
-    // Lower threshold for first badge to ensure it shows
-    const scrollThreshold = isFirstVisit ? 5 : 20; // 5% for first badge, 20% for others
-
-    const checkTrigger = () => {
-      // Calculate scroll progress at check time
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const currentProgress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-      
-      console.log('Onboarding check:', { scrollProgress: currentProgress, scrollThreshold, isFirstVisit, visitCount });
-      
-      if (currentProgress >= scrollThreshold) {
-        hasTriggeredRef.current = true;
-        console.log('Triggering nudge for visit count:', visitCount);
-
-        // First visit - show "Passport Opened" badge toast
-        if (isFirstVisit && !hasShownFirstBadgeToast()) {
+      // First visit - show "Passport Opened" badge toast
+      if (isFirstVisit) {
+        const alreadyShown = localStorage.getItem(STORAGE_KEYS.FIRST_BADGE) === 'true';
+        if (!alreadyShown) {
           console.log('Showing first badge toast');
           toast({
             title: "🎉 New Badge Earned: Passport Opened",
@@ -89,60 +55,64 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
               </button>
             ),
           });
-          markFirstBadgeShown();
+          localStorage.setItem(STORAGE_KEYS.FIRST_BADGE, 'true');
         }
-        // 3 dogs - show progress banner
-        else if (visitCount === 3 && !hasShownProgress3Toast() && areProgressNudgesEnabled()) {
+        return;
+      }
+
+      // 3 dogs - show progress banner
+      if (visitCount === 3) {
+        const alreadyShown = localStorage.getItem(STORAGE_KEYS.PROGRESS_3) === 'true';
+        const enabled = localStorage.getItem(STORAGE_KEYS.PROGRESS_ENABLED) !== 'false';
+        if (!alreadyShown && enabled) {
           setShowProgress3Banner(true);
-          markProgress3Shown();
+          localStorage.setItem(STORAGE_KEYS.PROGRESS_3, 'true');
         }
-        // 7 dogs - show foreshadowing toast
-        else if (visitCount === 7 && !hasShownProgress7InSession() && areProgressNudgesEnabled()) {
+        return;
+      }
+
+      // 7 dogs - foreshadowing toast
+      if (visitCount === 7) {
+        const enabled = localStorage.getItem(STORAGE_KEYS.PROGRESS_ENABLED) !== 'false';
+        const sessionTimestamp = localStorage.getItem(STORAGE_KEYS.PROGRESS_7);
+        const fourHoursMs = 4 * 60 * 60 * 1000;
+        const shownRecently = sessionTimestamp && (Date.now() - parseInt(sessionTimestamp, 10)) < fourHoursMs;
+        
+        if (enabled && !shownRecently) {
           toast({
             title: "You're close…",
             description: "Only 3 dogs until the Librarian badge!",
             duration: 3000,
           });
-          markProgress7Shown();
+          localStorage.setItem(STORAGE_KEYS.PROGRESS_7, Date.now().toString());
         }
-        // 10 dogs - celebration!
-        else if (visitCount === 10) {
-          toast({
-            title: "🥳 Badge Earned: The Librarian!",
-            description: "Your passport just got upgraded.",
-            duration: 5000,
-            action: (
-              <button
-                onClick={() => navigate("/passport?tab=stats")}
-                className="text-primary hover:text-primary/80 font-medium text-sm"
-              >
-                View
-              </button>
-            ),
-          });
-        }
+        return;
       }
-    };
 
-    const timeoutId = setTimeout(checkTrigger, 1500);
+      // 10 dogs - celebration!
+      if (visitCount === 10) {
+        toast({
+          title: "🥳 Badge Earned: The Librarian!",
+          description: "Your passport just got upgraded.",
+          duration: 5000,
+          action: (
+            <button
+              onClick={() => navigate("/passport?tab=stats")}
+              className="text-primary hover:text-primary/80 font-medium text-sm"
+            >
+              View
+            </button>
+          ),
+        });
+      }
+    }, 1500);
+
     return () => clearTimeout(timeoutId);
-  }, [
-    isFirstVisit,
-    isNewVisit,
-    visitCount,
-    hasShownFirstBadgeToast,
-    markFirstBadgeShown,
-    hasShownProgress3Toast,
-    markProgress3Shown,
-    hasShownProgress7InSession,
-    markProgress7Shown,
-    areProgressNudgesEnabled,
-    navigate,
-  ]);
+  }, [isFirstVisit, isNewVisit, visitCount, navigate]);
 
   const handleDismissProgress3 = () => {
     setShowProgress3Banner(false);
-    disableProgressNudges();
+    localStorage.setItem(STORAGE_KEYS.PROGRESS_ENABLED, 'false');
   };
 
   if (!showProgress3Banner) return null;
