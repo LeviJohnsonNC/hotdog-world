@@ -50,14 +50,18 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
     if (hasTriggeredRef.current || !isNewVisit) return;
 
     const triggerDelay = 1500; // 1.5 seconds base delay
-    const scrollThreshold = 20; // 20% scroll
+    // Lower threshold for first badge to ensure it shows
+    const scrollThreshold = isFirstVisit ? 5 : 20; // 5% for first badge, 20% for others
 
     const checkTrigger = () => {
+      console.log('Onboarding check:', { scrollProgress, scrollThreshold, isFirstVisit, visitCount });
       if (scrollProgress >= scrollThreshold) {
         hasTriggeredRef.current = true;
+        console.log('Triggering nudge for visit count:', visitCount);
 
         // First visit - show "Passport Opened" badge toast
         if (isFirstVisit && !hasShownFirstBadgeToast()) {
+          console.log('Showing first badge toast');
           setTimeout(() => {
             toast({
               title: "🎉 New Badge Earned: Passport Opened",
