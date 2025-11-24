@@ -248,6 +248,7 @@ const Index = () => {
               onHotdogClick={handleHotdogClick}
               enableAutoRotation={!shouldShowFTUX || ftuxPhase !== 'static'}
               ftuxPulsingPins={ftuxPulsingPins}
+              ftuxPhase={ftuxPhase}
             />
             
             {/* FTUX Micro-hint */}

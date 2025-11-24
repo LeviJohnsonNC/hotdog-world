@@ -20,7 +20,8 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
   const [isPulsing, setIsPulsing] = useState(false);
 
   useEffect(() => {
-    if (shouldPulse && !pulseStartTime.current) {
+    // Only start pulsing when shouldPulse becomes true
+    if (shouldPulse && !pulseStartTime.current && !isPulsing) {
       console.log(`Pin "${hotdog.name}" will pulse in ${pulseDelay}ms`);
       setTimeout(() => {
         pulseStartTime.current = Date.now();
@@ -28,7 +29,7 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
         console.log(`Pin "${hotdog.name}" PULSING NOW!`);
       }, pulseDelay);
     }
-  }, [shouldPulse, pulseDelay, hotdog.name]);
+  }, [shouldPulse, pulseDelay, hotdog.name, isPulsing]);
 
   useFrame(() => {
     if (!isPulsing || !groupRef.current || !pulseStartTime.current) return;
