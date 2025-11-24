@@ -34,9 +34,9 @@ const easeInOutQuart = (t: number) =>
   t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
 
 // Animation constants
-const SPIN_DURATION = 1.6; // seconds
-const ZOOM_DURATION = 1.0; // seconds
-const MAX_TOTAL = 3.0; // safety net
+const SPIN_DURATION = 3.2; // seconds
+const ZOOM_DURATION = 2.0; // seconds
+const MAX_TOTAL = 6.0; // safety net
 
 function Earth({ 
   hotdogs, 
