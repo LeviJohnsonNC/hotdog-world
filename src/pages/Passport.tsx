@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +16,8 @@ import { toast } from "@/hooks/use-toast";
 
 const Passport = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tabParam = searchParams.get('tab') || 'stamps';
   const { data: hotdogs = [], isLoading: hotdogsLoading } = useHotdogsLight();
   const { stamps, loading: stampsLoading } = useStamps();
   const [selectedHotdog, setSelectedHotdog] = useState<StampedHotdog | null>(null);
@@ -150,7 +152,7 @@ const Passport = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="stamps" className="w-full">
+        <Tabs value={tabParam} onValueChange={(value) => navigate(`/passport?tab=${value}`)} className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
             <TabsTrigger value="stamps">Hot Dogs Tried</TabsTrigger>
             <TabsTrigger value="stats">My Badges</TabsTrigger>
