@@ -7,6 +7,8 @@ import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+type AnimationPhase = "idle" | "spinning" | "zooming";
+
 interface EarthProps {
   hotdogs: Hotdog[];
   onHotdogClick: (hotdogSlug: string) => void;
@@ -14,17 +16,27 @@ interface EarthProps {
   isSpinning: boolean;
   targetHotdog: Hotdog | null;
   earthGroupRef: React.RefObject<THREE.Group>;
-  angularVelocityRef: { current: THREE.Vector3 };
-  targetQuaternionRef: { current: THREE.Quaternion };
-  animationStartTime: number;
-  isZoomingRef: { current: boolean };
-  zoomStartTimeRef: { current: number };
+  angularVelocityRef: React.MutableRefObject<THREE.Vector3>;
+  phaseRef: React.MutableRefObject<AnimationPhase>;
+  spinStartRef: React.MutableRefObject<number>;
+  zoomStartRef: React.MutableRefObject<number>;
+  targetQuaternionRef: React.MutableRefObject<THREE.Quaternion>;
+  zoomSlugRef: React.MutableRefObject<string | null>;
+  cameraStartRef: React.MutableRefObject<THREE.Vector3>;
+  cameraEndRef: React.MutableRefObject<THREE.Vector3>;
+  targetStartRef: React.MutableRefObject<THREE.Vector3>;
+  targetEndRef: React.MutableRefObject<THREE.Vector3>;
   controlsRef: React.RefObject<any>;
 }
 
 // Easing function for zoom
 const easeInOutQuart = (t: number) => 
   t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+
+// Animation constants
+const SPIN_DURATION = 1.6; // seconds
+const ZOOM_DURATION = 1.0; // seconds
+const MAX_TOTAL = 3.0; // safety net
 
 function Earth({ 
   hotdogs, 
@@ -34,10 +46,15 @@ function Earth({
   targetHotdog,
   earthGroupRef,
   angularVelocityRef,
+  phaseRef,
+  spinStartRef,
+  zoomStartRef,
   targetQuaternionRef,
-  animationStartTime,
-  isZoomingRef,
-  zoomStartTimeRef,
+  zoomSlugRef,
+  cameraStartRef,
+  cameraEndRef,
+  targetStartRef,
+  targetEndRef,
   controlsRef
 }: EarthProps) {
   const isMobile = useIsMobile();
@@ -51,85 +68,92 @@ function Earth({
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     if (!earthGroupRef.current) return;
 
-    if (isSpinning && targetHotdog) {
-      const elapsed = (performance.now() - animationStartTime) / 1000;
+    const phase = phaseRef.current;
+
+    // SPINNING PHASE: Time-bounded physics with guaranteed alignment
+    if (phase === "spinning" && targetHotdog) {
+      const t = (performance.now() - spinStartRef.current) / 1000;
+      const spinProgress = Math.min(t / SPIN_DURATION, 1);
       
-      // Physics constants
-      const decayFactor = isMobile ? 0.94 : 0.96;
-      const alignmentStrength = Math.min(elapsed / 2.5, 1.0);
+      // Apply friction to quickly damp the spin
+      const friction = isMobile ? 3.5 : 2.8;
+      const damping = Math.max(0, 1 - friction * delta);
+      angularVelocityRef.current!.multiplyScalar(damping);
       
-      // Calculate current forward direction
-      const currentForward = new THREE.Vector3(0, 0, 1)
-        .applyQuaternion(earthGroupRef.current.quaternion);
+      // Magnetic alignment: ramp up strength as time progresses
+      const alignmentStrength = spinProgress;
+      const currentQ = earthGroupRef.current.quaternion;
+      currentQ.slerp(targetQuaternionRef.current!, alignmentStrength * 0.08);
       
-      // Calculate target forward direction (towards hotdog)
-      const targetPos = new THREE.Vector3(...targetHotdog.position);
-      const targetForward = targetPos.clone().normalize();
+      // Apply remaining angular velocity for "flick" feel
+      const w = angularVelocityRef.current!.length();
+      if (w > 0.0005) {
+        const axis = angularVelocityRef.current!.clone().normalize();
+        earthGroupRef.current.rotateOnAxis(axis, w);
+      }
       
-      // Calculate correction force using cross product
-      const correctionAxis = new THREE.Vector3()
-        .crossVectors(currentForward, targetForward);
-      const correctionAngle = Math.acos(
-        THREE.MathUtils.clamp(currentForward.dot(targetForward), -1, 1)
+      // Phase transition: guaranteed alignment at SPIN_DURATION
+      if (spinProgress >= 1 || t > MAX_TOTAL) {
+        // Force exact alignment
+        earthGroupRef.current.quaternion.copy(targetQuaternionRef.current!);
+        
+        // Setup zoom endpoints
+        cameraStartRef.current!.copy(camera.position);
+        const orbitTarget = controlsRef.current?.target ?? new THREE.Vector3(0, 0, 0);
+        targetStartRef.current!.copy(orbitTarget);
+        
+        // Compute hotdog world direction after rotation
+        const hotdogLocal = new THREE.Vector3(...targetHotdog.position);
+        const hotdogWorld = hotdogLocal.clone()
+          .normalize()
+          .applyQuaternion(earthGroupRef.current.quaternion);
+        
+        // Set zoom endpoints
+        const cameraDistance = isMobile ? 3.4 : 3.0;
+        cameraEndRef.current!.copy(hotdogWorld).multiplyScalar(cameraDistance);
+        
+        const targetDistance = 2.0;
+        targetEndRef.current!.copy(hotdogWorld).multiplyScalar(targetDistance);
+        
+        // Transition to zoom phase
+        phaseRef.current = "zooming";
+        zoomStartRef.current = performance.now();
+      }
+    }
+    
+    // ZOOMING PHASE: Smooth cinematic camera movement
+    else if (phase === "zooming") {
+      const t = (performance.now() - zoomStartRef.current) / 1000;
+      const zoomProgress = Math.min(t / ZOOM_DURATION, 1);
+      const eased = easeInOutQuart(zoomProgress);
+      
+      // Interpolate camera position
+      camera.position.lerpVectors(
+        cameraStartRef.current!,
+        cameraEndRef.current!,
+        eased
       );
       
-      // Apply magnetic alignment force
-      const alignmentForce = correctionAxis
-        .multiplyScalar(correctionAngle * alignmentStrength * 0.15);
-      
-      // Apply physics: friction + magnetic pull
-      angularVelocityRef.current
-        .multiplyScalar(decayFactor)
-        .add(alignmentForce);
-      
-      // Apply rotation
-      const rotationSpeed = angularVelocityRef.current.length();
-      if (rotationSpeed > 0.001) {
-        const axis = angularVelocityRef.current.clone().normalize();
-        earthGroupRef.current.rotateOnAxis(axis, rotationSpeed);
+      // Interpolate orbit target
+      if (controlsRef.current) {
+        controlsRef.current.target.lerpVectors(
+          targetStartRef.current!,
+          targetEndRef.current!,
+          eased
+        );
       }
       
-      // Check if settled → start zoom
-      if (!isZoomingRef.current && rotationSpeed < 0.002 && correctionAngle < 0.05) {
-        isZoomingRef.current = true;
-        zoomStartTimeRef.current = performance.now();
+      // Complete: navigate to hotdog page
+      if (zoomProgress >= 1 && zoomSlugRef.current) {
+        phaseRef.current = "idle";
+        onHotdogClick(zoomSlugRef.current);
       }
-      
-      // Zoom phase
-      if (isZoomingRef.current) {
-        const zoomElapsed = (performance.now() - zoomStartTimeRef.current) / 1000;
-        const zoomDuration = isMobile ? 1.0 : 1.2;
-        
-        if (zoomElapsed < zoomDuration) {
-          const progress = zoomElapsed / zoomDuration;
-          const eased = easeInOutQuart(progress);
-          
-          // Calculate target positions
-          const hotdogWorldPos = new THREE.Vector3(...targetHotdog.position);
-          const surfaceNormal = hotdogWorldPos.clone().normalize();
-          const targetCameraPos = surfaceNormal.clone().multiplyScalar(3.0);
-          const targetOrbitPos = surfaceNormal.clone().multiplyScalar(2.0);
-          
-          // Spring overshoot for polish
-          const spring = 1.0 + (Math.sin(eased * Math.PI) * 0.05);
-          
-          camera.position.lerp(
-            targetCameraPos.multiplyScalar(spring), 
-            0.08
-          );
-          
-          if (controlsRef.current) {
-            controlsRef.current.target.lerp(targetOrbitPos, 0.08);
-          }
-        } else {
-          // Zoom complete - will be handled by parent
-        }
-      }
-    } 
-    // Normal auto-rotation when not spinning
+    }
+    
+    // IDLE PHASE: Normal auto-rotation
     else if (!isInteracting && !isSpinning) {
       earthGroupRef.current.rotation.y += 0.001;
     }
@@ -186,35 +210,37 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
   const [isInteracting, setIsInteracting] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [targetHotdog, setTargetHotdog] = useState<Hotdog | null>(null);
-  const [animationStartTime, setAnimationStartTime] = useState(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const controlsRef = useRef<any>(null);
   const earthGroupRef = useRef<THREE.Group>(null);
   const isMobile = useIsMobile();
   
-  // Physics state refs
-  const angularVelocityRef = { current: new THREE.Vector3() };
-  const targetQuaternionRef = { current: new THREE.Quaternion() };
-  const isZoomingRef = { current: false };
-  const zoomStartTimeRef = { current: 0 };
-  const animationCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Physics state refs (proper useRef hooks)
+  const angularVelocityRef = useRef(new THREE.Vector3());
+  const phaseRef = useRef<AnimationPhase>("idle");
+  const spinStartRef = useRef(0);
+  const zoomStartRef = useRef(0);
+  const targetQuaternionRef = useRef(new THREE.Quaternion());
+  const zoomSlugRef = useRef<string | null>(null);
+  
+  // Zoom path refs
+  const cameraStartRef = useRef(new THREE.Vector3());
+  const cameraEndRef = useRef(new THREE.Vector3());
+  const targetStartRef = useRef(new THREE.Vector3());
+  const targetEndRef = useRef(new THREE.Vector3());
   
   const cameraZ = isMobile ? 8 : 4.5;
   const minZoom = isMobile ? 6.5 : 4;
 
   const resetAnimation = () => {
+    phaseRef.current = "idle";
     setIsSpinning(false);
     setTargetHotdog(null);
-    isZoomingRef.current = false;
+    zoomSlugRef.current = null;
     angularVelocityRef.current.set(0, 0, 0);
     
     if (controlsRef.current) {
       controlsRef.current.enabled = true;
-    }
-    
-    if (animationCheckIntervalRef.current) {
-      clearInterval(animationCheckIntervalRef.current);
-      animationCheckIntervalRef.current = null;
     }
   };
 
@@ -222,58 +248,55 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
   useImperativeHandle(ref, () => ({
     spinToHotdog: (hotdogSlug: string) => {
       const hotdog = hotdogs.find(h => h.slug === hotdogSlug);
-      if (!hotdog) return;
+      if (!hotdog || !earthGroupRef.current) return;
 
       // Reset any previous animation
       resetAnimation();
 
-      // Initialize physics with random 3D angular velocity
-      const velocityScale = isMobile ? 0.7 : 1.0;
-      angularVelocityRef.current.set(
-        (Math.random() - 0.5) * 0.35 * velocityScale,
-        (Math.random() - 0.5) * 0.35 * velocityScale,
-        (Math.random() - 0.5) * 0.35 * velocityScale
-      );
+      // Capture current earth orientation
+      const currentQ = earthGroupRef.current.quaternion.clone();
+      
+      // Compute target orientation: rotate hotdog to front (+Z)
+      const hotdogLocal = new THREE.Vector3(...hotdog.position).normalize();
+      const front = new THREE.Vector3(0, 0, 1);
+      const hotdogWorldNow = hotdogLocal.clone().applyQuaternion(currentQ);
+      const qDelta = new THREE.Quaternion().setFromUnitVectors(hotdogWorldNow, front);
+      const targetQ = qDelta.multiply(currentQ);
+      targetQuaternionRef.current.copy(targetQ);
+      
+      // Initialize random 3D angular velocity with saner magnitude
+      const baseSpeed = isMobile ? 0.18 : 0.22;
+      const randomAxis = new THREE.Vector3(
+        Math.random() - 0.5,
+        Math.random() - 0.5,
+        Math.random() - 0.5
+      ).normalize();
+      angularVelocityRef.current.copy(randomAxis.multiplyScalar(baseSpeed));
 
+      // Set state and timing
+      phaseRef.current = "spinning";
+      spinStartRef.current = performance.now();
+      zoomSlugRef.current = hotdog.slug;
       setIsSpinning(true);
       setTargetHotdog(hotdog);
-      setAnimationStartTime(performance.now());
 
       // Disable controls during animation
       if (controlsRef.current) {
         controlsRef.current.enabled = false;
       }
-
-      // Check for zoom completion
-      animationCheckIntervalRef.current = setInterval(() => {
-        if (isZoomingRef.current) {
-          const zoomElapsed = (performance.now() - zoomStartTimeRef.current) / 1000;
-          const zoomDuration = isMobile ? 1.0 : 1.2;
-          
-          if (zoomElapsed >= zoomDuration) {
-            if (animationCheckIntervalRef.current) {
-              clearInterval(animationCheckIntervalRef.current);
-            }
-            onHotdogClick(hotdog.slug);
-            // Small delay before reset
-            setTimeout(() => resetAnimation(), 100);
-          }
-        }
-      }, 50);
     }
   }));
 
   // Cleanup on unmount or interruption
   useEffect(() => {
     return () => {
-      if (isSpinning) {
-        resetAnimation();
-      }
+      phaseRef.current = "idle";
+      angularVelocityRef.current.set(0, 0, 0);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isSpinning]);
+  }, []);
 
   const handleInteractionStart = () => {
     if (!isSpinning) {
@@ -338,10 +361,15 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           targetHotdog={targetHotdog}
           earthGroupRef={earthGroupRef}
           angularVelocityRef={angularVelocityRef}
+          phaseRef={phaseRef}
+          spinStartRef={spinStartRef}
+          zoomStartRef={zoomStartRef}
           targetQuaternionRef={targetQuaternionRef}
-          animationStartTime={animationStartTime}
-          isZoomingRef={isZoomingRef}
-          zoomStartTimeRef={zoomStartTimeRef}
+          zoomSlugRef={zoomSlugRef}
+          cameraStartRef={cameraStartRef}
+          cameraEndRef={cameraEndRef}
+          targetStartRef={targetStartRef}
+          targetEndRef={targetEndRef}
           controlsRef={controlsRef}
         />
         
