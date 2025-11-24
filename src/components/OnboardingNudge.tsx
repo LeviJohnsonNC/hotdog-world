@@ -4,8 +4,6 @@ import { toast } from "@/hooks/use-toast";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTriviaBadges } from "@/hooks/useTriviaBadges";
-import { useStamps } from "@/hooks/useStamps";
-import { useOnboardingNudges } from "@/hooks/useOnboardingNudges";
 
 // Storage keys for localStorage
 const STORAGE_KEYS = {
@@ -26,8 +24,6 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
   const [showProgress3Banner, setShowProgress3Banner] = useState(false);
   const hasTriggeredRef = useRef(false);
   const { getTriviaClickCount, hasShownFirstTriviaBadgeToast, markFirstTriviaBadgeToastShown } = useTriviaBadges();
-  const { stamps } = useStamps();
-  const { hasShownFirstStampBadgeToast, markFirstStampBadgeShown } = useOnboardingNudges();
 
   // Effect to check for first trivia badge (runs on mount and when trivia count changes)
   useEffect(() => {
@@ -51,28 +47,6 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
       }, 800);
     }
   }, [getTriviaClickCount, hasShownFirstTriviaBadgeToast, markFirstTriviaBadgeToastShown, navigate]);
-
-  // Effect to check for first stamp badge
-  useEffect(() => {
-    if (stamps.length >= 1 && !hasShownFirstStampBadgeToast()) {
-      setTimeout(() => {
-        toast({
-          title: "🎉 New Badge Earned: First Bite Taken",
-          description: "Tap to view your badges",
-          duration: 10000,
-          action: (
-            <button
-              onClick={() => navigate("/passport?tab=stats")}
-              className="text-primary hover:text-primary/80 font-medium text-sm"
-            >
-              View
-            </button>
-          ),
-        });
-        markFirstStampBadgeShown();
-      }, 800);
-    }
-  }, [stamps.length, hasShownFirstStampBadgeToast, markFirstStampBadgeShown, navigate]);
 
   // Single effect to trigger nudges - minimal dependencies
   useEffect(() => {
