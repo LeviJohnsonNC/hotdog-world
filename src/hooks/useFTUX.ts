@@ -15,11 +15,27 @@ export const useFTUX = (prefersReducedMotion: boolean) => {
       setFTUXPhase('loading');
       
       // Choreographed timeline
-      setTimeout(() => setFTUXPhase('static'), 0);
-      setTimeout(() => setFTUXPhase('rotating'), 400);
-      setTimeout(() => setFTUXPhase('pulsing'), 600);
-      setTimeout(() => setFTUXPhase('hinting'), 1200);
-      setTimeout(() => setFTUXPhase('complete'), 6000); // Auto-complete after full sequence
+      console.log('FTUX: Starting sequence');
+      setTimeout(() => {
+        setFTUXPhase('static');
+        console.log('FTUX: Phase = static');
+      }, 50);
+      setTimeout(() => {
+        setFTUXPhase('rotating');
+        console.log('FTUX: Phase = rotating');
+      }, 400);
+      setTimeout(() => {
+        setFTUXPhase('pulsing');
+        console.log('FTUX: Phase = pulsing');
+      }, 600);
+      setTimeout(() => {
+        setFTUXPhase('hinting');
+        console.log('FTUX: Phase = hinting');
+      }, 1200);
+      setTimeout(() => {
+        setFTUXPhase('complete');
+        console.log('FTUX: Phase = complete');
+      }, 4700); // Hint appears at 1200ms, stays for 3500ms total
     }
   }, [prefersReducedMotion]);
 
