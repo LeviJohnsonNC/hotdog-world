@@ -15,23 +15,32 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const globeRef = useRef<GlobeHandle>(null);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [canSpin, setCanSpin] = useState(true);
 
   const handleHotdogClick = (hotdogSlug: string) => {
     navigate(`/hotdog/${hotdogSlug}`);
   };
 
   const handleSpinClick = () => {
-    if (!hotdogs.length || isSpinning) return;
+    if (!hotdogs.length || isSpinning || !canSpin) return;
     
     // Select random hotdog
     const randomIndex = Math.floor(Math.random() * hotdogs.length);
     const randomHotdog = hotdogs[randomIndex];
     
     setIsSpinning(true);
+    setCanSpin(false);
     globeRef.current?.spinToHotdog(randomHotdog.slug);
     
     // Reset spinning state after animation
-    setTimeout(() => setIsSpinning(false), 4000);
+    setTimeout(() => {
+      setIsSpinning(false);
+    }, 5000);
+    
+    // 5 second cooldown
+    setTimeout(() => {
+      setCanSpin(true);
+    }, 5000);
   };
 
   const siteUrl = window.location.origin;
@@ -109,7 +118,7 @@ const Index = () => {
       <div className="fixed top-24 left-6 sm:top-24 sm:left-4 md:top-28 md:left-6 z-20 flex flex-row items-center bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
         <button
           onClick={handleSpinClick}
-          disabled={isSpinning || !hotdogs.length}
+          disabled={isSpinning || !hotdogs.length || !canSpin}
           className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 ${
             isSpinning || !hotdogs.length 
               ? 'opacity-50 cursor-not-allowed' 
