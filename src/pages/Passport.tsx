@@ -152,8 +152,8 @@ const Passport = () => {
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="stamps" className="w-full">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-            <TabsTrigger value="stamps">Your Stamps</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
+            <TabsTrigger value="stamps">Hot Dogs Tried</TabsTrigger>
+            <TabsTrigger value="stats">My Badges</TabsTrigger>
           </TabsList>
 
           {/* Stamps Tab */}
