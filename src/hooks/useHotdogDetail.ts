@@ -33,7 +33,7 @@ export function useHotdogDetail(slug: string) {
       if (!hotdog) return null;
 
       const position = latLngToVector3(hotdog.latitude, hotdog.longitude);
-      const imageUrl = getHotdogImage(hotdog.city);
+      const imageUrl = getHotdogImage(hotdog.city, hotdog.slug);
 
       return {
         id: hotdog.id,

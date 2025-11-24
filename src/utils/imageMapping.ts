@@ -1,3 +1,9 @@
+// Map slugs to their actual image filenames (takes priority over city mapping)
+export const slugToImageMap: Record<string, string> = {
+  "bangkok-spicy-street-dog": "bangkok-hotdog.png",
+  "khanom-tokiao-hot-dog-crepe": "thailand-hotdog.png",
+};
+
 // Map city names to their actual image filenames
 export const cityToImageMap: Record<string, string> = {
   "Atlanta": "atlanta-hotdog.png",
@@ -54,7 +60,13 @@ export const cityToImageMap: Record<string, string> = {
   "Melbourne": "dagwood-dog.png",
 };
 
-export function getHotdogImage(city: string): string {
+export function getHotdogImage(city: string, slug?: string): string {
+  // First try slug-based mapping (for cities with multiple hot dogs)
+  if (slug && slugToImageMap[slug]) {
+    return `/images/${slugToImageMap[slug]}`;
+  }
+  
+  // Then try city-based mapping
   const imageName = cityToImageMap[city];
   if (imageName) {
     return `/images/${imageName}`;
