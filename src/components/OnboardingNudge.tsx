@@ -56,69 +56,77 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
 
   // Trigger appropriate nudge based on milestone
   useEffect(() => {
-    if (hasTriggeredRef.current || !isNewVisit) return;
+    if (hasTriggeredRef.current || !isNewVisit || visitCount === 0) return;
 
-    const triggerDelay = 1500; // 1.5 seconds base delay
     // Lower threshold for first badge to ensure it shows
     const scrollThreshold = isFirstVisit ? 5 : 20; // 5% for first badge, 20% for others
 
     const checkTrigger = () => {
-      console.log('Onboarding check:', { scrollProgress, scrollThreshold, isFirstVisit, visitCount });
-      if (scrollProgress >= scrollThreshold) {
+      // Calculate scroll progress at check time
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const currentProgress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      
+      console.log('Onboarding check:', { scrollProgress: currentProgress, scrollThreshold, isFirstVisit, visitCount });
+      
+      if (currentProgress >= scrollThreshold) {
         hasTriggeredRef.current = true;
         console.log('Triggering nudge for visit count:', visitCount);
 
         // First visit - show "Passport Opened" badge toast
         if (isFirstVisit && !hasShownFirstBadgeToast()) {
           console.log('Showing first badge toast');
-          setTimeout(() => {
-            toast({
-              title: "🎉 New Badge Earned: Passport Opened",
-              description: "Tap to view your Passport",
-              duration: 4000,
-              onClick: () => navigate("/passport?tab=stats"),
-              className: "cursor-pointer",
-            });
-            markFirstBadgeShown();
-          }, triggerDelay);
+          toast({
+            title: "🎉 New Badge Earned: Passport Opened",
+            description: "Tap to view your Passport",
+            duration: 4000,
+            action: (
+              <button
+                onClick={() => navigate("/passport?tab=stats")}
+                className="text-primary hover:text-primary/80 font-medium text-sm"
+              >
+                View
+              </button>
+            ),
+          });
+          markFirstBadgeShown();
         }
         // 3 dogs - show progress banner
         else if (visitCount === 3 && !hasShownProgress3Toast() && areProgressNudgesEnabled()) {
-          setTimeout(() => {
-            setShowProgress3Banner(true);
-            markProgress3Shown();
-          }, triggerDelay);
+          setShowProgress3Banner(true);
+          markProgress3Shown();
         }
         // 7 dogs - show foreshadowing toast
         else if (visitCount === 7 && !hasShownProgress7InSession() && areProgressNudgesEnabled()) {
-          setTimeout(() => {
-            toast({
-              title: "You're close…",
-              description: "Only 3 dogs until the Librarian badge!",
-              duration: 3000,
-            });
-            markProgress7Shown();
-          }, triggerDelay);
+          toast({
+            title: "You're close…",
+            description: "Only 3 dogs until the Librarian badge!",
+            duration: 3000,
+          });
+          markProgress7Shown();
         }
         // 10 dogs - celebration!
         else if (visitCount === 10) {
-          setTimeout(() => {
-            toast({
-              title: "🥳 Badge Earned: The Librarian!",
-              description: "Your passport just got upgraded.",
-              duration: 5000,
-              onClick: () => navigate("/passport?tab=stats"),
-              className: "cursor-pointer",
-            });
-          }, triggerDelay);
+          toast({
+            title: "🥳 Badge Earned: The Librarian!",
+            description: "Your passport just got upgraded.",
+            duration: 5000,
+            action: (
+              <button
+                onClick={() => navigate("/passport?tab=stats")}
+                className="text-primary hover:text-primary/80 font-medium text-sm"
+              >
+                View
+              </button>
+            ),
+          });
         }
       }
     };
 
-    const timeoutId = setTimeout(checkTrigger, triggerDelay);
+    const timeoutId = setTimeout(checkTrigger, 1500);
     return () => clearTimeout(timeoutId);
   }, [
-    scrollProgress,
     isFirstVisit,
     isNewVisit,
     visitCount,
