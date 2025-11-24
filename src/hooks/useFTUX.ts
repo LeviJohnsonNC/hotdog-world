@@ -5,13 +5,14 @@ const FTUX_STORAGE_KEY = 'hasSeenFTUX';
 type FTUXPhase = 'loading' | 'static' | 'rotating' | 'pulsing' | 'hinting' | 'complete';
 
 export const useFTUX = (prefersReducedMotion: boolean) => {
-  const [hasSeenFTUX, setHasSeenFTUX] = useState(true); // Default to true until we check
+  // Check localStorage synchronously to avoid flash
+  const [hasSeenFTUX, setHasSeenFTUX] = useState(() => {
+    return localStorage.getItem(FTUX_STORAGE_KEY) === 'true';
+  });
   const [ftuxPhase, setFTUXPhase] = useState<FTUXPhase>('complete');
 
   useEffect(() => {
-    const seen = localStorage.getItem(FTUX_STORAGE_KEY);
-    if (!seen && !prefersReducedMotion) {
-      setHasSeenFTUX(false);
+    if (!hasSeenFTUX && !prefersReducedMotion) {
       setFTUXPhase('loading');
       
       // Choreographed timeline
@@ -37,7 +38,7 @@ export const useFTUX = (prefersReducedMotion: boolean) => {
         console.log('FTUX: Phase = complete');
       }, 4700); // Hint appears at 1200ms, stays for 3500ms total
     }
-  }, [prefersReducedMotion]);
+  }, [hasSeenFTUX, prefersReducedMotion]);
 
   const markFTUXComplete = useCallback(() => {
     localStorage.setItem(FTUX_STORAGE_KEY, 'true');
