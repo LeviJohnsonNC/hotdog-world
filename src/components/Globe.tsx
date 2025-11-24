@@ -31,6 +31,7 @@ interface EarthProps {
   playZoomSound: () => void;
   enableAutoRotation?: boolean;
   ftuxPulsingPins?: Set<string>;
+  ftuxPhase?: string;
 }
 
 // Easing function for zoom
@@ -62,7 +63,8 @@ function Earth({
   controlsRef,
   playZoomSound,
   enableAutoRotation = true,
-  ftuxPulsingPins = new Set()
+  ftuxPulsingPins = new Set(),
+  ftuxPhase = 'complete'
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
@@ -196,7 +198,7 @@ function Earth({
       
       {/* Hotdogs - disable clicks during spin */}
       {hotdogs.map((hotdog, index) => {
-        const shouldPulse = ftuxPulsingPins.has(hotdog.id);
+        const shouldPulse = ftuxPhase === 'pulsing' && ftuxPulsingPins.has(hotdog.id);
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
         const pulseDelay = pulseIndex >= 0 ? pulseIndex * 300 : 0; // 300ms between each pulse
         
@@ -224,9 +226,10 @@ interface GlobeProps {
   onHotdogClick: (hotdogSlug: string) => void;
   enableAutoRotation?: boolean;
   ftuxPulsingPins?: Set<string>;
+  ftuxPhase?: string;
 }
 
-export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogClick, enableAutoRotation = true, ftuxPulsingPins = new Set() }, ref) => {
+export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogClick, enableAutoRotation = true, ftuxPulsingPins = new Set(), ftuxPhase = 'complete' }, ref) => {
   const [isInteracting, setIsInteracting] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [targetHotdog, setTargetHotdog] = useState<Hotdog | null>(null);
@@ -401,6 +404,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           playZoomSound={playZoomSound}
           enableAutoRotation={enableAutoRotation}
           ftuxPulsingPins={ftuxPulsingPins}
+          ftuxPhase={ftuxPhase}
         />
         
         <OrbitControls
