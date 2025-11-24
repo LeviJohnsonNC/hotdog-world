@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -9,6 +10,8 @@ import { HotdogStamp } from "@/types/passport";
 import { useStamps } from "@/hooks/useStamps";
 import { compressImageToBase64, checkStorageSpace } from "@/utils/imageCompression";
 import { toast } from "sonner";
+import { toast as shadcnToast } from "@/hooks/use-toast";
+import { useOnboardingNudges } from "@/hooks/useOnboardingNudges";
 
 interface PassportStampProps {
   hotdogId: string;
@@ -16,7 +19,9 @@ interface PassportStampProps {
 }
 
 export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
-  const { getStamp, saveStamp: saveStampToStorage, deleteStamp: deleteStampFromStorage } = useStamps();
+  const navigate = useNavigate();
+  const { getStamp, saveStamp: saveStampToStorage, deleteStamp: deleteStampFromStorage, stamps } = useStamps();
+  const { hasShownFirstStampBadgeToast, markFirstStampBadgeShown } = useOnboardingNudges();
   const [isExpanded, setIsExpanded] = useState(false);
   const [stamp, setStamp] = useState<HotdogStamp | null>(null);
   const [tried, setTried] = useState(false);
@@ -68,9 +73,32 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
     if (success) {
       setStamp(newStamp);
       setIsExpanded(false);
-      toast.success("Stamped to your passport!", {
-        description: `${hotdogName} has been added to your collection.`,
-      });
+      
+      // Check if this is the first stamp (was 0 stamps before saving)
+      const isFirstStamp = stamps.length === 0;
+      
+      if (isFirstStamp && !hasShownFirstStampBadgeToast()) {
+        // Show "First Bite Taken" badge toast
+        shadcnToast({
+          title: "🎉 New Badge Earned: First Bite Taken",
+          description: "Tap to view your badges",
+          duration: 10000,
+          action: (
+            <button
+              onClick={() => navigate("/passport?tab=stats")}
+              className="text-primary hover:text-primary/80 font-medium text-sm"
+            >
+              View
+            </button>
+          ),
+        });
+        markFirstStampBadgeShown();
+      } else {
+        // Show regular stamp toast
+        toast.success("Stamped to your passport!", {
+          description: `${hotdogName} has been added to your collection.`,
+        });
+      }
     } else {
       toast.error("Failed to save stamp!", {
         description: "Please try again.",
