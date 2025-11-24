@@ -21,16 +21,15 @@ const Index = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
 
-  // Select 3 well-spaced pins for FTUX pulsing - prioritize very front-facing
+  // Select 6-8 well-spaced pins for FTUX pulsing - be generous to make globe feel alive
   const ftuxPulsingPins = useMemo(() => {
     if (!shouldShowFTUX || hotdogs.length === 0) return new Set<string>();
 
-    // Filter ONLY very front-facing pins (prime visibility zone)
+    // Wider zone: more pins visible from front
     const frontFacing = hotdogs.filter(h => {
       const lng = h.longitude;
       const lat = h.latitude;
-      // Only select pins in the VERY FRONT: narrow longitude range, avoid extreme latitudes
-      return lng > -40 && lng < 40 && lat > -45 && lat < 45;
+      return lng > -60 && lng < 60 && lat > -60 && lat < 60;
     });
 
     console.log('FTUX: Front-facing hotdogs:', frontFacing.map(h => `${h.name} (lng: ${h.longitude}, lat: ${h.latitude})`));
@@ -40,18 +39,18 @@ const Index = () => {
       return new Set<string>();
     }
 
-    // Select up to 3 geographically distributed pins
+    // Select up to 8 geographically distributed pins for a lively feel
     const selected: typeof hotdogs = [];
     selected.push(frontFacing[0]);
 
     for (const hotdog of frontFacing) {
-      if (selected.length >= 3) break;
+      if (selected.length >= 8) break;
       
       // Check if this hotdog is far enough from already selected ones
       const isFarEnough = selected.every(s => {
         const latDiff = Math.abs(s.latitude - hotdog.latitude);
         const lngDiff = Math.abs(s.longitude - hotdog.longitude);
-        return latDiff > 15 || lngDiff > 15; // Moderate spacing
+        return latDiff > 10 || lngDiff > 10; // Closer spacing is fine
       });
 
       if (isFarEnough) {
@@ -59,8 +58,8 @@ const Index = () => {
       }
     }
 
-    // Fallback: if we don't have 3, just take the first 3 front-facing
-    while (selected.length < 3 && selected.length < frontFacing.length) {
+    // Fallback: if we don't have 8, just take the first 8 front-facing
+    while (selected.length < 8 && selected.length < frontFacing.length) {
       const next = frontFacing[selected.length];
       if (!selected.includes(next)) {
         selected.push(next);

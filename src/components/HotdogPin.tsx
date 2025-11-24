@@ -35,18 +35,23 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
     if (!isPulsing || !groupRef.current || !pulseStartTime.current) return;
 
     const elapsed = Date.now() - pulseStartTime.current;
-    const duration = 1200; // 1200ms pulse duration (even longer)
+    const duration = 1000; // Faster pulse: 1000ms
 
     if (elapsed > duration) {
-      groupRef.current.scale.setScalar(1);
-      setIsPulsing(false);
-      console.log(`Pin "${hotdog.name}" pulse complete`);
+      // Loop the pulse continuously during FTUX
+      if (shouldPulse) {
+        pulseStartTime.current = Date.now(); // Restart pulse immediately
+      } else {
+        groupRef.current.scale.setScalar(1);
+        setIsPulsing(false);
+        console.log(`Pin "${hotdog.name}" pulse complete`);
+      }
       return;
     }
 
-    // VERY dramatic breathing animation: 1.0 -> 1.3 -> 1.0 (30% size increase!)
+    // VERY dramatic breathing animation: 1.0 -> 1.4 -> 1.0 (40% size increase!)
     const progress = elapsed / duration;
-    const scale = 1 + 0.3 * Math.sin(progress * Math.PI);
+    const scale = 1 + 0.4 * Math.sin(progress * Math.PI);
     groupRef.current.scale.setScalar(scale);
   });
 
