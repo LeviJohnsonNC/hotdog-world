@@ -48,7 +48,7 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
             duration: 10000,
             action: (
               <button
-                onClick={() => navigate("/passport?tab=badges")}
+                onClick={() => navigate("/passport?tab=stats")}
                 className="text-primary hover:text-primary/80 font-medium text-sm"
               >
                 View
