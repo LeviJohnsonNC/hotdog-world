@@ -242,8 +242,9 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                     <button
                       key={value}
                       type="button"
-                      onClick={() => setRating(value)}
-                      className="text-4xl transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-mustard rounded"
+                      onClick={() => tried && setRating(value)}
+                      disabled={!tried}
+                      className="text-4xl transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-mustard rounded disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label={`Rate ${value} out of 5`}
                     >
                       <span className={rating >= value ? "opacity-100" : "opacity-30"}>
@@ -256,7 +257,8 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                   <button
                     type="button"
                     onClick={() => setRating(0)}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    disabled={!tried}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Clear rating
                   </button>
@@ -276,6 +278,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                   maxLength={500}
                   rows={4}
                   className="resize-none"
+                  disabled={!tried}
                 />
                 <div className="text-xs text-muted-foreground text-right">
                   {review.length}/500
@@ -296,7 +299,8 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                       <button
                         type="button"
                         onClick={handleRemovePhoto}
-                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md hover:scale-110 transition-transform"
+                        disabled={!tried}
+                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md hover:scale-110 transition-transform disabled:cursor-not-allowed disabled:opacity-50"
                         aria-label="Remove photo"
                       >
                         <X className="h-4 w-4" />
@@ -305,8 +309,9 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-24 h-24 rounded-full border-4 border-dashed border-mustard/50 hover:border-mustard transition-colors flex items-center justify-center bg-background/50 hover:bg-background group"
+                      onClick={() => tried && fileInputRef.current?.click()}
+                      disabled={!tried}
+                      className="w-24 h-24 rounded-full border-4 border-dashed border-mustard/50 hover:border-mustard transition-colors flex items-center justify-center bg-background/50 hover:bg-background group disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <Camera className="h-8 w-8 text-muted-foreground group-hover:text-mustard transition-colors" />
                     </button>
@@ -317,6 +322,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                     accept="image/*"
                     onChange={handlePhotoUpload}
                     className="hidden"
+                    disabled={!tried}
                   />
                   <div className="flex-1 text-sm text-muted-foreground">
                     {photoDataUrl ? "Change photo" : "Add a photo of your hotdog experience"}
@@ -328,7 +334,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
               <div className="flex gap-3 pt-4">
                 <Button
                   onClick={handleSave}
-                  disabled={isSaving}
+                  disabled={isSaving || !tried}
                   className="flex-1 bg-relish text-white hover:bg-relish/90"
                   size="lg"
                 >
