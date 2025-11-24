@@ -28,7 +28,7 @@ const Index = () => {
     // Filter front-facing pins (approximate front hemisphere)
     const frontFacing = hotdogs.filter(h => {
       const lng = h.longitude;
-      return lng > -90 && lng < 90;
+      return lng > -60 && lng < 60; // Narrower range for better visibility
     });
 
     if (frontFacing.length === 0) return new Set<string>();
@@ -44,7 +44,7 @@ const Index = () => {
       const isFarEnough = selected.every(s => {
         const latDiff = Math.abs(s.latitude - hotdog.latitude);
         const lngDiff = Math.abs(s.longitude - hotdog.longitude);
-        return latDiff > 30 || lngDiff > 30; // At least 30 degrees apart
+        return latDiff > 20 || lngDiff > 20; // Closer spacing for better grouping
       });
 
       if (isFarEnough) {
@@ -60,6 +60,7 @@ const Index = () => {
       }
     }
 
+    console.log('FTUX: Selected pins for pulsing:', selected.map(h => h.name));
     return new Set(selected.map(h => h.id));
   }, [shouldShowFTUX, hotdogs]);
 
@@ -253,12 +254,22 @@ const Index = () => {
                   shadow-xl
                   text-sm md:text-base font-medium text-foreground
                   pointer-events-none
-                  animate-fade-in
+                  opacity-0
                 "
+                style={{
+                  animation: 'fadeIn 0.5s ease-out forwards'
+                }}
               >
                 Spin or tap a hot dog to explore.
               </div>
             )}
+            
+            <style>{`
+              @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+              }
+            `}</style>
           </Suspense>
         )}
       </div>
