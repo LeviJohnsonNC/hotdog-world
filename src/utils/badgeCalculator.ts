@@ -1,6 +1,17 @@
 import { StampedHotdog } from "@/types/passport";
 import { BADGES } from "./badgeConfig";
 
+const VISITED_HOTDOGS_KEY = 'visited_hotdogs';
+
+const getVisitedHotdogsCount = (): number => {
+  try {
+    const stored = localStorage.getItem(VISITED_HOTDOGS_KEY);
+    return stored ? JSON.parse(stored).length : 0;
+  } catch {
+    return 0;
+  }
+};
+
 export interface BadgeProgress {
   badgeId: string;
   earned: boolean;
@@ -80,6 +91,14 @@ export const calculateBadgeProgress = (
       case "globetrotter":
         const uniqueCountries = new Set(stampedDogs.map((h) => h.country));
         current = uniqueCountries.size;
+        break;
+
+      case "passport-opened":
+        current = getVisitedHotdogsCount();
+        break;
+
+      case "librarian":
+        current = getVisitedHotdogsCount();
         break;
 
       default:
