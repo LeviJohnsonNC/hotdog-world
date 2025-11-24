@@ -12,6 +12,7 @@ import { BADGES } from "@/utils/badgeConfig";
 import { StampCard } from "@/components/passport/StampCard";
 import { StampDetailModal } from "@/components/passport/StampDetailModal";
 import { PassportStats } from "@/components/passport/PassportStats";
+import { LevelProgressionCard } from "@/components/passport/LevelProgressionCard";
 import { StampedHotdog } from "@/types/passport";
 import { toast } from "@/hooks/use-toast";
 
@@ -175,6 +176,9 @@ const Passport = () => {
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Level Progression Card */}
+                <LevelProgressionCard stampCount={stats.stamped} />
+                
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-semibold text-foreground">
                     Your Collection
