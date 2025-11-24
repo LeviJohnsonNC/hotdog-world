@@ -170,7 +170,7 @@ const Passport = () => {
             ) : (
               <div className="space-y-4">
                 {/* Level Progression Card */}
-                <LevelProgressionCard stampCount={stats.stamped} />
+                <LevelProgressionCard stampCount={stats.stamped} stampedHotdogs={stampedHotdogs} />
                 
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-semibold text-foreground">
