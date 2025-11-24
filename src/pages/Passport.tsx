@@ -16,6 +16,8 @@ import { LevelProgressionCard } from "@/components/passport/LevelProgressionCard
 import { StampedHotdog } from "@/types/passport";
 import { toast } from "@/hooks/use-toast";
 import { useOnboardingNudges } from "@/hooks/useOnboardingNudges";
+import { LEVEL_BADGES } from "@/utils/levelBadgeConfig";
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from "recharts";
 
 const Passport = () => {
   const navigate = useNavigate();
@@ -154,18 +156,66 @@ const Passport = () => {
           {/* Stamps Tab */}
           <TabsContent value="stamps" className="space-y-6">
             {stats.stamped === 0 ? (
-              <div className="text-center py-16 space-y-4">
-                <div className="text-6xl mb-4">🌭</div>
-                <h2 className="text-2xl font-bold text-foreground">
-                  Start Your Journey!
-                </h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
-                  Visit the map to explore and try your first hot dog. 
-                  Each one you try will appear here as a colorful stamp!
-                </p>
-                <Button onClick={() => navigate("/")} size="lg" className="mt-4">
-                  Explore the Map
-                </Button>
+              <div className="text-center py-12 space-y-8 max-w-2xl mx-auto">
+                {/* Hero Badge Display - The Empty Bun */}
+                <div className="space-y-4">
+                  <img 
+                    src={LEVEL_BADGES[0].image} 
+                    alt={LEVEL_BADGES[0].name}
+                    className="w-32 h-32 mx-auto drop-shadow-lg"
+                  />
+                  <h2 className="text-2xl font-bold text-foreground">
+                    {LEVEL_BADGES[0].name}
+                  </h2>
+                  <p className="text-sm text-muted-foreground italic max-w-md mx-auto">
+                    "{LEVEL_BADGES[0].description}"
+                  </p>
+                </div>
+
+                {/* Faded Radar Chart Placeholder */}
+                <div className="space-y-3">
+                  <div className="relative w-full h-64 opacity-15">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <RadarChart data={[
+                        { axis: 'Regions', value: 1 },
+                        { axis: 'Spice', value: 1 },
+                        { axis: 'Style', value: 1 },
+                        { axis: 'Complexity', value: 1 },
+                        { axis: 'Indulgence', value: 1 },
+                        { axis: 'Variety', value: 1 },
+                      ]}>
+                        <PolarGrid stroke="hsl(var(--muted-foreground))" />
+                        <PolarAngleAxis 
+                          dataKey="axis" 
+                          tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                        />
+                        <Radar
+                          dataKey="value"
+                          stroke="hsl(var(--primary))"
+                          fill="hsl(var(--primary))"
+                          fillOpacity={0.3}
+                        />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Your Food Adventure Profile unlocks after your first hot dog tried.
+                  </p>
+                </div>
+
+                {/* Call to Action */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-foreground">
+                    Start Your Journey!
+                  </h3>
+                  <p className="text-muted-foreground max-w-lg mx-auto">
+                    Trying your first hot dog will unlock your Food Adventure Profile and your first level badge. 
+                    Explore the map to record your first dog!
+                  </p>
+                  <Button onClick={() => navigate("/")} size="lg" className="mt-4">
+                    Explore the Map
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
