@@ -120,6 +120,10 @@ export const calculateBadgeProgress = (
         current = getTriviaClicksCount();
         break;
 
+      case "first-bite-taken":
+        current = stampedDogs.length;
+        break;
+
       default:
         current = 0;
     }

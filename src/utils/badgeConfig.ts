@@ -14,6 +14,7 @@ import worldGourmetImg from "@/assets/badges/world-gourmet.png";
 import curiousClickerImg from "@/assets/badges/curious-clicker.png";
 import factForagerImg from "@/assets/badges/fact-forager.png";
 import triviaTrailblazerImg from "@/assets/badges/trivia-trailblazer.png";
+import firstBiteTakenImg from "@/assets/badges/first-bite-taken.png";
 
 export interface Badge {
   id: string;
@@ -29,6 +30,13 @@ export const BADGES: Badge[] = [
     name: "Passport Opened",
     description: "Open your first hot dog detail page",
     image: passportOpenedImg,
+    requirement: 1,
+  },
+  {
+    id: "first-bite-taken",
+    name: "First Bite Taken",
+    description: "Stamp your first hot dog",
+    image: firstBiteTakenImg,
     requirement: 1,
   },
   {
