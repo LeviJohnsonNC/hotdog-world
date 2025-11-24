@@ -1,9 +1,14 @@
 import { LEVEL_BADGES, LevelBadge } from "@/utils/levelBadgeConfig";
 import { Progress } from "@/components/ui/progress";
 import { Card } from "@/components/ui/card";
+import { StampedHotdog } from "@/types/passport";
+import { calculateSpiderGraphData } from "@/utils/spiderGraphCalculator";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
+import { useMemo } from "react";
 
 interface LevelProgressionCardProps {
   stampCount: number;
+  stampedHotdogs: StampedHotdog[];
 }
 
 // Helper: Get current level badge based on stamp count
@@ -50,10 +55,13 @@ const getProgressToNextLevel = (stampCount: number): { current: number; target: 
   };
 };
 
-export const LevelProgressionCard = ({ stampCount }: LevelProgressionCardProps) => {
+export const LevelProgressionCard = ({ stampCount, stampedHotdogs }: LevelProgressionCardProps) => {
   const currentLevel = getCurrentLevel(stampCount);
   const nextLevel = getNextLevel(stampCount);
   const progress = getProgressToNextLevel(stampCount);
+  
+  // Calculate spider graph data
+  const spiderData = useMemo(() => calculateSpiderGraphData(stampedHotdogs), [stampedHotdogs]);
 
   return (
     <Card className="relative overflow-hidden bg-card/80 backdrop-blur-md border-2 border-primary/20 shadow-xl mb-8">
@@ -122,12 +130,35 @@ export const LevelProgressionCard = ({ stampCount }: LevelProgressionCardProps) 
           )}
         </div>
 
-        {/* Spider Graph Placeholder - Future Enhancement */}
+        {/* Spider Graph - Exploration Profile */}
         <div className="border-t border-border/50 pt-6">
-          <div className="flex items-center justify-center h-32 bg-muted/20 rounded-lg border border-dashed border-border/50">
-            <p className="text-sm text-muted-foreground/60">
-              {/* Spider graph visualization coming soon */}
-            </p>
+          <h3 className="text-center text-sm font-semibold text-muted-foreground mb-4">
+            What kinds of hot dogs did I explore?
+          </h3>
+          <div className="w-full h-80 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={spiderData}>
+                <PolarGrid stroke="hsl(var(--border))" strokeOpacity={0.3} />
+                <PolarAngleAxis 
+                  dataKey="axis" 
+                  tick={{ fill: "hsl(var(--foreground))", fontSize: 12, fontWeight: 500 }}
+                />
+                <PolarRadiusAxis 
+                  angle={90} 
+                  domain={[0, 5]} 
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                  tickCount={6}
+                />
+                <Radar
+                  name="Your Profile"
+                  dataKey="value"
+                  stroke="hsl(30, 40%, 35%)"
+                  fill="hsl(30, 40%, 35%)"
+                  fillOpacity={0.4}
+                  strokeWidth={2}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

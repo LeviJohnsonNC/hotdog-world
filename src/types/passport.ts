@@ -41,6 +41,7 @@ export interface StampedHotdog {
   hasSpriteCoordinates?: boolean;
   tags?: string[];
   region?: string;
+  calories?: number;
   stamp: HotdogStamp | null;
   isStamped: boolean;
 }
