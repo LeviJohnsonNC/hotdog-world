@@ -38,9 +38,8 @@ const getProgressToNextLevel = (stampCount: number): { current: number; target: 
     return { current: stampCount, target: currentLevel.dogsTried, percentage: 100, remaining: 0 };
   }
   
-  const progressInLevel = stampCount - currentLevel.dogsTried;
-  const levelRange = nextLevel.dogsTried - currentLevel.dogsTried;
-  const percentage = (progressInLevel / levelRange) * 100;
+  // Calculate absolute progress toward target (e.g., 1/3 = 33.33%)
+  const percentage = (stampCount / nextLevel.dogsTried) * 100;
   const remaining = nextLevel.dogsTried - stampCount;
   
   return {
@@ -88,7 +87,7 @@ export const LevelProgressionCard = ({ stampCount }: LevelProgressionCardProps) 
                     <span className="text-muted-foreground">Progress to next level</span>
                     <span className="font-bold text-foreground">{progress.current}/{progress.target}</span>
                   </div>
-                  <Progress value={progress.percentage} className="h-3" />
+                  <Progress value={progress.percentage} className="h-3 bg-muted" indicatorClassName="bg-[hsl(30,40%,35%)]" />
                 </div>
                 <p className="text-sm text-center text-muted-foreground">
                   <span className="font-semibold text-primary">{progress.remaining} more</span> {progress.remaining === 1 ? 'dog' : 'dogs'} to reach <span className="font-semibold">{nextLevel.name}</span>
