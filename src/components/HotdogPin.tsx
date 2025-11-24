@@ -32,7 +32,7 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
     if (!isPulsing || !groupRef.current || !pulseStartTime.current) return;
 
     const elapsed = Date.now() - pulseStartTime.current;
-    const duration = 800; // 800ms pulse duration
+    const duration = 1000; // 1000ms pulse duration (longer, more noticeable)
 
     if (elapsed > duration) {
       groupRef.current.scale.setScalar(1);
@@ -40,9 +40,9 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
       return;
     }
 
-    // Breathing animation: 1.0 -> 1.04 -> 1.0
+    // More dramatic breathing animation: 1.0 -> 1.15 -> 1.0
     const progress = elapsed / duration;
-    const scale = 1 + 0.04 * Math.sin(progress * Math.PI);
+    const scale = 1 + 0.15 * Math.sin(progress * Math.PI);
     groupRef.current.scale.setScalar(scale);
   });
 

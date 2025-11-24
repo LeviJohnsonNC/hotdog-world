@@ -198,7 +198,7 @@ function Earth({
       {hotdogs.map((hotdog, index) => {
         const shouldPulse = ftuxPulsingPins.has(hotdog.id);
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
-        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 200 : 0;
+        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 300 : 0; // 300ms between each pulse
         
         return (
           <HotdogPin
