@@ -1,10 +1,12 @@
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Globe, GlobeHandle } from "@/components/Globe";
 import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFTUX } from "@/hooks/useFTUX";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import passportIcon from "@/assets/passport-icon.png";
 import leaderboardIcon from "@/assets/leaderboard-icon.png";
 import spinGlobeIcon from "@/assets/spin-globe-icon.png";
@@ -13,16 +15,63 @@ const Index = () => {
   const navigate = useNavigate();
   const { data: hotdogs = [], isLoading } = useHotdogsLight();
   const { user, signOut } = useAuth();
+  const prefersReducedMotion = useReducedMotion();
+  const { hasSeenFTUX, ftuxPhase, markFTUXComplete, shouldShowFTUX } = useFTUX(prefersReducedMotion);
   const globeRef = useRef<GlobeHandle>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
 
+  // Select 3 well-spaced pins for FTUX pulsing
+  const ftuxPulsingPins = useMemo(() => {
+    if (!shouldShowFTUX || hotdogs.length === 0) return new Set<string>();
+
+    // Filter front-facing pins (approximate front hemisphere)
+    const frontFacing = hotdogs.filter(h => {
+      const lng = h.longitude;
+      return lng > -90 && lng < 90;
+    });
+
+    if (frontFacing.length === 0) return new Set<string>();
+
+    // Select 3 geographically distributed pins
+    const selected: typeof hotdogs = [];
+    selected.push(frontFacing[0]);
+
+    for (const hotdog of frontFacing) {
+      if (selected.length >= 3) break;
+      
+      // Check if this hotdog is far enough from already selected ones
+      const isFarEnough = selected.every(s => {
+        const latDiff = Math.abs(s.latitude - hotdog.latitude);
+        const lngDiff = Math.abs(s.longitude - hotdog.longitude);
+        return latDiff > 30 || lngDiff > 30; // At least 30 degrees apart
+      });
+
+      if (isFarEnough) {
+        selected.push(hotdog);
+      }
+    }
+
+    // Fallback: if we don't have 3, just take the first 3 front-facing
+    while (selected.length < 3 && selected.length < frontFacing.length) {
+      const next = frontFacing[selected.length];
+      if (!selected.includes(next)) {
+        selected.push(next);
+      }
+    }
+
+    return new Set(selected.map(h => h.id));
+  }, [shouldShowFTUX, hotdogs]);
+
   const handleHotdogClick = (hotdogSlug: string) => {
+    markFTUXComplete();
     navigate(`/hotdog/${hotdogSlug}`);
   };
 
   const handleSpinClick = () => {
     if (!hotdogs.length || isSpinning || !canSpin) return;
+    
+    markFTUXComplete();
     
     // Select random hotdog
     const randomIndex = Math.floor(Math.random() * hotdogs.length);
@@ -44,9 +93,14 @@ const Index = () => {
   };
 
   const siteUrl = window.location.origin;
+  const showHint = shouldShowFTUX && (ftuxPhase === 'hinting' || ftuxPhase === 'pulsing');
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div 
+      className={`relative w-full h-screen overflow-hidden transition-opacity duration-200 ${
+        shouldShowFTUX && ftuxPhase === 'loading' ? 'opacity-0' : 'opacity-100'
+      }`}
+    >
       <Helmet>
         <title>Hotdogs Around the World - Discover Global Street Food Cultures</title>
         <meta 
@@ -177,7 +231,34 @@ const Index = () => {
           <LoadingGlobe />
         ) : (
           <Suspense fallback={<LoadingGlobe />}>
-            <Globe ref={globeRef} hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
+            <Globe 
+              ref={globeRef} 
+              hotdogs={hotdogs} 
+              onHotdogClick={handleHotdogClick}
+              enableAutoRotation={!shouldShowFTUX || ftuxPhase !== 'static'}
+              ftuxPulsingPins={ftuxPulsingPins}
+            />
+            
+            {/* FTUX Micro-hint */}
+            {showHint && (
+              <div 
+                className={`
+                  fixed top-32 left-1/2 -translate-x-1/2 z-50
+                  px-4 py-2 rounded-full
+                  bg-background/40 backdrop-blur-lg
+                  border border-border/30
+                  shadow-lg
+                  text-sm md:text-base font-medium text-foreground
+                  pointer-events-none
+                  ${ftuxPhase === 'hinting' ? 'animate-fade-in' : 'animate-fade-out'}
+                `}
+                style={{
+                  animationDelay: ftuxPhase === 'hinting' ? '0ms' : '2300ms',
+                }}
+              >
+                Spin or tap a hot dog to explore.
+              </div>
+            )}
           </Suspense>
         )}
       </div>

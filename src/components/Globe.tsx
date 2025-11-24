@@ -29,6 +29,8 @@ interface EarthProps {
   targetEndRef: React.MutableRefObject<THREE.Vector3>;
   controlsRef: React.RefObject<any>;
   playZoomSound: () => void;
+  enableAutoRotation?: boolean;
+  ftuxPulsingPins?: Set<string>;
 }
 
 // Easing function for zoom
@@ -41,9 +43,9 @@ const ZOOM_DURATION = 2.0; // seconds
 const MAX_TOTAL = 6.0; // safety net
 
 function Earth({ 
-  hotdogs, 
-  onHotdogClick, 
-  isInteracting, 
+  hotdogs,
+  onHotdogClick,
+  isInteracting,
   isSpinning,
   targetHotdog,
   earthGroupRef,
@@ -58,7 +60,9 @@ function Earth({
   targetStartRef,
   targetEndRef,
   controlsRef,
-  playZoomSound
+  playZoomSound,
+  enableAutoRotation = true,
+  ftuxPulsingPins = new Set()
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
@@ -159,8 +163,8 @@ function Earth({
       }
     }
     
-    // IDLE PHASE: Normal auto-rotation
-    else if (!isInteracting && !isSpinning) {
+    // IDLE PHASE: Normal auto-rotation (only if enabled)
+    else if (enableAutoRotation && !isInteracting && !isSpinning) {
       earthGroupRef.current.rotation.y += 0.001;
     }
   });
@@ -191,14 +195,22 @@ function Earth({
       </Sphere>
       
       {/* Hotdogs - disable clicks during spin */}
-      {hotdogs.map((hotdog) => (
-        <HotdogPin
-          key={hotdog.id}
-          position={hotdog.position}
-          onClick={() => !isSpinning && onHotdogClick(hotdog.slug)}
-          hotdog={hotdog}
-        />
-      ))}
+      {hotdogs.map((hotdog) => {
+        const shouldPulse = ftuxPulsingPins.has(hotdog.id);
+        const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
+        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 200 : 0;
+        
+        return (
+          <HotdogPin
+            key={hotdog.id}
+            position={hotdog.position}
+            onClick={() => !isSpinning && onHotdogClick(hotdog.slug)}
+            hotdog={hotdog}
+            shouldPulse={shouldPulse}
+            pulseDelay={pulseDelay}
+          />
+        );
+      })}
     </group>
   );
 }
@@ -210,9 +222,11 @@ export interface GlobeHandle {
 interface GlobeProps {
   hotdogs: Hotdog[];
   onHotdogClick: (hotdogSlug: string) => void;
+  enableAutoRotation?: boolean;
+  ftuxPulsingPins?: Set<string>;
 }
 
-export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogClick }, ref) => {
+export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogClick, enableAutoRotation = true, ftuxPulsingPins = new Set() }, ref) => {
   const [isInteracting, setIsInteracting] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [targetHotdog, setTargetHotdog] = useState<Hotdog | null>(null);
@@ -385,6 +399,8 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           targetEndRef={targetEndRef}
           controlsRef={controlsRef}
           playZoomSound={playZoomSound}
+          enableAutoRotation={enableAutoRotation}
+          ftuxPulsingPins={ftuxPulsingPins}
         />
         
         <OrbitControls
