@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   PROGRESS_3: 'onboarding_progress_3_shown',
   PROGRESS_7: 'onboarding_progress_7_session',
   PROGRESS_ENABLED: 'onboarding_progress_nudges_enabled',
+  SHOWN_BADGE_TOASTS: 'shown_badge_celebration_toasts',
 } as const;
 
 export const useOnboardingNudges = () => {
@@ -94,6 +95,29 @@ export const useOnboardingNudges = () => {
     }
   };
 
+  const getShownBadgeToasts = (): Set<string> => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.SHOWN_BADGE_TOASTS);
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  };
+
+  const markBadgeToastShown = (badgeId: string) => {
+    try {
+      const shown = getShownBadgeToasts();
+      shown.add(badgeId);
+      localStorage.setItem(STORAGE_KEYS.SHOWN_BADGE_TOASTS, JSON.stringify([...shown]));
+    } catch (error) {
+      console.error('Failed to mark badge toast shown:', error);
+    }
+  };
+
+  const hasBadgeToastBeenShown = (badgeId: string): boolean => {
+    return getShownBadgeToasts().has(badgeId);
+  };
+
   return {
     hasShownFirstBadgeToast,
     markFirstBadgeShown,
@@ -105,5 +129,8 @@ export const useOnboardingNudges = () => {
     markProgress7Shown,
     areProgressNudgesEnabled,
     disableProgressNudges,
+    getShownBadgeToasts,
+    markBadgeToastShown,
+    hasBadgeToastBeenShown,
   };
 };

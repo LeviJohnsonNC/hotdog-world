@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { PassportStats } from "@/components/passport/PassportStats";
 import { LevelProgressionCard } from "@/components/passport/LevelProgressionCard";
 import { StampedHotdog } from "@/types/passport";
 import { toast } from "@/hooks/use-toast";
+import { useOnboardingNudges } from "@/hooks/useOnboardingNudges";
 
 const Passport = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Passport = () => {
   const { stamps, loading: stampsLoading } = useStamps();
   const [selectedHotdog, setSelectedHotdog] = useState<StampedHotdog | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const previousBadgesRef = useRef<Set<string>>(new Set());
+  const { hasBadgeToastBeenShown, markBadgeToastShown } = useOnboardingNudges();
 
   // Combine hotdog data with stamps
   const stampedHotdogs = useMemo(() => {
@@ -48,34 +49,26 @@ const Passport = () => {
     return calculateBadgeProgress(stampedHotdogs);
   }, [stampedHotdogs]);
 
-  // Track and notify for newly earned badges
+  // Track and notify for newly earned badges (only show toast once per badge)
   useEffect(() => {
-    const currentEarnedBadges = new Set(
-      badges.filter(b => b.earned).map(b => b.badgeId)
-    );
-
-    // Check for newly earned badges
-    if (previousBadgesRef.current.size > 0) {
-      currentEarnedBadges.forEach(badgeId => {
-        if (!previousBadgesRef.current.has(badgeId)) {
-          const badge = badges.find(b => b.badgeId === badgeId);
-          if (badge) {
-            const badgeInfo = BADGES.find(b => b.id === badgeId);
-            if (badgeInfo) {
-              toast({
-                title: "🎉 Badge Earned!",
-                description: `You've unlocked: ${badgeInfo.name}`,
-                duration: 5000,
-              });
-            }
+    badges.forEach(badge => {
+      if (badge.earned && !hasBadgeToastBeenShown(badge.badgeId)) {
+        const badgeInfo = BADGES.find(b => b.id === badge.badgeId);
+        if (badgeInfo) {
+          // Skip toasts for special badges that have their own celebration logic
+          const specialBadges = ['passport-opened', 'first-bite-taken', 'curious-clicker'];
+          if (!specialBadges.includes(badge.badgeId)) {
+            toast({
+              title: "🎉 Badge Earned!",
+              description: `You've unlocked: ${badgeInfo.name}`,
+              duration: 5000,
+            });
           }
+          markBadgeToastShown(badge.badgeId);
         }
-      });
-    }
-
-    // Update ref with current badges
-    previousBadgesRef.current = currentEarnedBadges;
-  }, [badges]);
+      }
+    });
+  }, [badges, hasBadgeToastBeenShown, markBadgeToastShown]);
 
   // Sort: stamped first, then unstamped
   const sortedHotdogs = useMemo(() => {
