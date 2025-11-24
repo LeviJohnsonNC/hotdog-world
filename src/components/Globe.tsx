@@ -222,8 +222,8 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
   const isMobile = useIsMobile();
   
   // Sound effects
-  const playSpinSound = useSound('/sounds/spin.mp3', 0.2);
-  const playZoomSound = useSound('/sounds/zoom.mp3', 0.25);
+  const playSpinSound = useSound('/sounds/spin.mp3', 0.15);
+  const playZoomSound = useSound('/sounds/zoom.mp3', 0.15);
   
   // Physics state refs (proper useRef hooks)
   const angularVelocityRef = useRef(new THREE.Vector3());
