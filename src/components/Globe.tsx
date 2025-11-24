@@ -198,9 +198,10 @@ function Earth({
       
       {/* Hotdogs - disable clicks during spin */}
       {hotdogs.map((hotdog, index) => {
-        const shouldPulse = ftuxPhase === 'pulsing' && ftuxPulsingPins.has(hotdog.id);
+        // Allow pulsing during both 'pulsing' AND 'hinting' phases (extends from 600ms to 4900ms)
+        const shouldPulse = (ftuxPhase === 'pulsing' || ftuxPhase === 'hinting') && ftuxPulsingPins.has(hotdog.id);
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
-        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 300 : 0; // 300ms between each pulse
+        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 200 : 0; // Faster stagger: 200ms between each
         
         return (
           <HotdogPin
