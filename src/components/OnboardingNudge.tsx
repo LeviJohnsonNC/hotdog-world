@@ -35,14 +35,23 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
     if (reducedMotion) return;
 
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      console.log('Scroll detected:', { scrollTop, docHeight, progress });
       setScrollProgress(progress);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Check initial position
+    handleScroll();
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('scroll', handleScroll);
+    };
   }, [reducedMotion]);
 
   // Trigger appropriate nudge based on milestone
