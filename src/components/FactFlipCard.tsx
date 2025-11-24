@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Sparkles } from "lucide-react";
+import { useTriviaBadges } from "@/hooks/useTriviaBadges";
 
 interface FactFlipCardProps {
   fact: string;
@@ -63,6 +64,7 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
   const [isFlipped, setIsFlipped] = useState(isRevealed);
   const [showSparkle, setShowSparkle] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const { incrementTriviaClick } = useTriviaBadges();
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -86,6 +88,7 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
     if (isFlipped || isRevealed) return;
     
     onReveal();
+    incrementTriviaClick();
     setIsFlipped(true);
     setShowSparkle(true);
     setTimeout(() => setShowSparkle(false), 1000);

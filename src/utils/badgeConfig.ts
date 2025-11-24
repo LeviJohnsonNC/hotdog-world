@@ -11,6 +11,9 @@ import globetrotterImg from "@/assets/badges/globetrotter.png";
 import passportOpenedImg from "@/assets/badges/passport-opened.png";
 import librarianImg from "@/assets/badges/librarian.png";
 import worldGourmetImg from "@/assets/badges/world-gourmet.png";
+import curiousClickerImg from "@/assets/badges/curious-clicker.png";
+import factForagerImg from "@/assets/badges/fact-forager.png";
+import triviaTrailblazerImg from "@/assets/badges/trivia-trailblazer.png";
 
 export interface Badge {
   id: string;
@@ -111,5 +114,26 @@ export const BADGES: Badge[] = [
     description: "Try 7 dogs from different countries",
     image: globetrotterImg,
     requirement: 7,
+  },
+  {
+    id: "curious-clicker",
+    name: "Curious Clicker",
+    description: "Click your first trivia card",
+    image: curiousClickerImg,
+    requirement: 1,
+  },
+  {
+    id: "fact-forager",
+    name: "Fact Forager",
+    description: "Click 25 trivia cards",
+    image: factForagerImg,
+    requirement: 25,
+  },
+  {
+    id: "trivia-trailblazer",
+    name: "Trivia Trailblazer",
+    description: "Click 100 trivia cards",
+    image: triviaTrailblazerImg,
+    requirement: 100,
   },
 ];
