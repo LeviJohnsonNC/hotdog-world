@@ -93,7 +93,10 @@ const Index = () => {
   };
 
   const siteUrl = window.location.origin;
-  const showHint = shouldShowFTUX && (ftuxPhase === 'hinting' || ftuxPhase === 'pulsing');
+  const showHint = shouldShowFTUX && ftuxPhase === 'hinting';
+  
+  // Debug logging for FTUX
+  console.log('FTUX State:', { shouldShowFTUX, ftuxPhase, showHint, pulsingPinsCount: ftuxPulsingPins.size });
 
   return (
     <div 
@@ -242,19 +245,16 @@ const Index = () => {
             {/* FTUX Micro-hint */}
             {showHint && (
               <div 
-                className={`
-                  fixed top-32 left-1/2 -translate-x-1/2 z-50
-                  px-4 py-2 rounded-full
-                  bg-background/40 backdrop-blur-lg
-                  border border-border/30
-                  shadow-lg
+                className="
+                  fixed top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
+                  px-6 py-3 rounded-full
+                  bg-background/60 backdrop-blur-lg
+                  border border-border/40
+                  shadow-xl
                   text-sm md:text-base font-medium text-foreground
                   pointer-events-none
-                  ${ftuxPhase === 'hinting' ? 'animate-fade-in' : 'animate-fade-out'}
-                `}
-                style={{
-                  animationDelay: ftuxPhase === 'hinting' ? '0ms' : '2300ms',
-                }}
+                  animate-fade-in
+                "
               >
                 Spin or tap a hot dog to explore.
               </div>
