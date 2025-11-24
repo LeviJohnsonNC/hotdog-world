@@ -1,20 +1,37 @@
-import { Suspense } from "react";
+import { Suspense, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Globe } from "@/components/Globe";
+import { Globe, GlobeHandle } from "@/components/Globe";
 import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useAuth } from "@/contexts/AuthContext";
 import passportIcon from "@/assets/passport-icon.png";
 import leaderboardIcon from "@/assets/leaderboard-icon.png";
+import spinGlobeIcon from "@/assets/spin-globe-icon.png";
 
 const Index = () => {
   const navigate = useNavigate();
   const { data: hotdogs = [], isLoading } = useHotdogsLight();
   const { user, signOut } = useAuth();
+  const globeRef = useRef<GlobeHandle>(null);
+  const [isSpinning, setIsSpinning] = useState(false);
 
   const handleHotdogClick = (hotdogSlug: string) => {
     navigate(`/hotdog/${hotdogSlug}`);
+  };
+
+  const handleSpinClick = () => {
+    if (!hotdogs.length || isSpinning) return;
+    
+    // Select random hotdog
+    const randomIndex = Math.floor(Math.random() * hotdogs.length);
+    const randomHotdog = hotdogs[randomIndex];
+    
+    setIsSpinning(true);
+    globeRef.current?.spinToHotdog(randomHotdog.slug);
+    
+    // Reset spinning state after animation
+    setTimeout(() => setIsSpinning(false), 4000);
   };
 
   const siteUrl = window.location.origin;
@@ -88,7 +105,27 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Floating Icons - Leaderboard and Passport */}
+      {/* Floating Icon - Spin the Globe (Upper Left) */}
+      <div className="fixed top-24 left-6 sm:top-24 sm:left-4 md:top-28 md:left-6 z-20 bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
+        <button
+          onClick={handleSpinClick}
+          disabled={isSpinning || !hotdogs.length}
+          className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 ${
+            isSpinning || !hotdogs.length 
+              ? 'opacity-50 cursor-not-allowed' 
+              : 'hover:scale-110 active:scale-95 cursor-pointer'
+          }`}
+          aria-label="Spin the Globe"
+        >
+          <img 
+            src={spinGlobeIcon} 
+            alt="Spin the Globe" 
+            className={`w-full h-full object-contain ${isSpinning ? 'animate-spin' : ''}`}
+          />
+        </button>
+      </div>
+
+      {/* Floating Icons - Leaderboard and Passport (Upper Right) */}
       <div className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 flex flex-row items-center gap-2 sm:gap-3 bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
         {/* Leaderboard Icon */}
         <a
@@ -131,7 +168,7 @@ const Index = () => {
           <LoadingGlobe />
         ) : (
           <Suspense fallback={<LoadingGlobe />}>
-            <Globe hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
+            <Globe ref={globeRef} hotdogs={hotdogs} onHotdogClick={handleHotdogClick} />
           </Suspense>
         )}
       </div>
