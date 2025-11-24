@@ -15,6 +15,7 @@ import { FactFlipCard } from "@/components/FactFlipCard";
 import { PassportStamp } from "@/components/PassportStamp";
 import { TechnicalNote } from "@/components/TechnicalNote";
 import { NutritionLabel } from "@/components/recipe/NutritionLabel";
+import { OnboardingNudge } from "@/components/OnboardingNudge";
 import { formatCategoryName } from "@/lib/utils";
 
 const HotdogDetail = () => {
@@ -23,8 +24,8 @@ const HotdogDetail = () => {
   const { data: hotdog, isLoading } = useHotdogDetail(slug || "");
   const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(hotdog?.id || '');
   
-  // Record visit for badge tracking
-  useRecordHotdogVisit(hotdog?.id);
+  // Record visit for badge tracking and get milestone info
+  const { isFirstVisit, isNewVisit, visitCount } = useRecordHotdogVisit(hotdog?.id);
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
@@ -653,6 +654,13 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         </Card>
 
       </div>
+
+      {/* Onboarding Nudges */}
+      <OnboardingNudge 
+        isFirstVisit={isFirstVisit}
+        isNewVisit={isNewVisit}
+        visitCount={visitCount}
+      />
     </div>
   );
 };

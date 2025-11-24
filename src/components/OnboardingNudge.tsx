@@ -1,0 +1,154 @@
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useOnboardingNudges } from "@/hooks/useOnboardingNudges";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { toast } from "@/hooks/use-toast";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+interface OnboardingNudgeProps {
+  isFirstVisit: boolean;
+  isNewVisit: boolean;
+  visitCount: number;
+}
+
+export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: OnboardingNudgeProps) => {
+  const navigate = useNavigate();
+  const reducedMotion = useReducedMotion();
+  const {
+    hasShownFirstBadgeToast,
+    markFirstBadgeShown,
+    hasShownProgress3Toast,
+    markProgress3Shown,
+    hasShownProgress7InSession,
+    markProgress7Shown,
+    areProgressNudgesEnabled,
+    disableProgressNudges,
+  } = useOnboardingNudges();
+
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showProgress3Banner, setShowProgress3Banner] = useState(false);
+  const hasTriggeredRef = useRef(false);
+
+  // Track scroll position
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [reducedMotion]);
+
+  // Trigger appropriate nudge based on milestone
+  useEffect(() => {
+    if (hasTriggeredRef.current || !isNewVisit) return;
+
+    const triggerDelay = 1500; // 1.5 seconds base delay
+    const scrollThreshold = 20; // 20% scroll
+
+    const checkTrigger = () => {
+      if (scrollProgress >= scrollThreshold) {
+        hasTriggeredRef.current = true;
+
+        // First visit - show "Passport Opened" badge toast
+        if (isFirstVisit && !hasShownFirstBadgeToast()) {
+          setTimeout(() => {
+            toast({
+              title: "🎉 New Badge Earned: Passport Opened",
+              description: "Tap to view your Passport",
+              duration: 4000,
+              onClick: () => navigate("/passport?tab=stats"),
+              className: "cursor-pointer",
+            });
+            markFirstBadgeShown();
+          }, triggerDelay);
+        }
+        // 3 dogs - show progress banner
+        else if (visitCount === 3 && !hasShownProgress3Toast() && areProgressNudgesEnabled()) {
+          setTimeout(() => {
+            setShowProgress3Banner(true);
+            markProgress3Shown();
+          }, triggerDelay);
+        }
+        // 7 dogs - show foreshadowing toast
+        else if (visitCount === 7 && !hasShownProgress7InSession() && areProgressNudgesEnabled()) {
+          setTimeout(() => {
+            toast({
+              title: "You're close…",
+              description: "Only 3 dogs until the Librarian badge!",
+              duration: 3000,
+            });
+            markProgress7Shown();
+          }, triggerDelay);
+        }
+        // 10 dogs - celebration!
+        else if (visitCount === 10) {
+          setTimeout(() => {
+            toast({
+              title: "🥳 Badge Earned: The Librarian!",
+              description: "Your passport just got upgraded.",
+              duration: 5000,
+              onClick: () => navigate("/passport?tab=stats"),
+              className: "cursor-pointer",
+            });
+          }, triggerDelay);
+        }
+      }
+    };
+
+    const timeoutId = setTimeout(checkTrigger, triggerDelay);
+    return () => clearTimeout(timeoutId);
+  }, [
+    scrollProgress,
+    isFirstVisit,
+    isNewVisit,
+    visitCount,
+    hasShownFirstBadgeToast,
+    markFirstBadgeShown,
+    hasShownProgress3Toast,
+    markProgress3Shown,
+    hasShownProgress7InSession,
+    markProgress7Shown,
+    areProgressNudgesEnabled,
+    navigate,
+  ]);
+
+  const handleDismissProgress3 = () => {
+    setShowProgress3Banner(false);
+    disableProgressNudges();
+  };
+
+  if (!showProgress3Banner) return null;
+
+  return (
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+      <div className="bg-background/95 backdrop-blur-sm border-2 border-primary/20 rounded-lg shadow-[var(--shadow-elevated)] px-6 py-4 flex items-center gap-4 max-w-md">
+        <div className="flex-1">
+          <p className="text-sm font-medium text-foreground">
+            Progress: <span className="text-primary font-semibold">3/10</span> dogs viewed
+          </p>
+          <button
+            onClick={() => navigate("/passport?tab=stats")}
+            className="text-xs text-primary/70 hover:text-primary transition-colors mt-1 flex items-center gap-1"
+          >
+            Librarian badge unlocks at 10 →
+          </button>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleDismissProgress3}
+          className="h-6 w-6 shrink-0"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+};
