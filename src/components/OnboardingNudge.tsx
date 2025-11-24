@@ -45,10 +45,10 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
           toast({
             title: "🎉 New Badge Earned: Passport Opened",
             description: "Tap to view your Passport",
-            duration: 4000,
+            duration: 10000,
             action: (
               <button
-                onClick={() => navigate("/passport?tab=stats")}
+                onClick={() => navigate("/passport?tab=badges")}
                 className="text-primary hover:text-primary/80 font-medium text-sm"
               >
                 View
