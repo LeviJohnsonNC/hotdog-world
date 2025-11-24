@@ -101,6 +101,10 @@ export const calculateBadgeProgress = (
         current = getVisitedHotdogsCount();
         break;
 
+      case "world-gourmet":
+        current = getVisitedHotdogsCount();
+        break;
+
       default:
         current = 0;
     }
