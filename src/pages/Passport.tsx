@@ -8,6 +8,7 @@ import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useStamps } from "@/hooks/useStamps";
 import { calculatePassportStats, sortHotdogs } from "@/utils/passportHelpers";
 import { calculateBadgeProgress } from "@/utils/badgeCalculator";
+import { BADGES } from "@/utils/badgeConfig";
 import { StampCard } from "@/components/passport/StampCard";
 import { StampDetailModal } from "@/components/passport/StampDetailModal";
 import { PassportStats } from "@/components/passport/PassportStats";
@@ -58,9 +59,7 @@ const Passport = () => {
         if (!previousBadgesRef.current.has(badgeId)) {
           const badge = badges.find(b => b.badgeId === badgeId);
           if (badge) {
-            const badgeInfo = require('@/utils/badgeConfig').BADGES.find(
-              (b: any) => b.id === badgeId
-            );
+            const badgeInfo = BADGES.find(b => b.id === badgeId);
             if (badgeInfo) {
               toast({
                 title: "🎉 Badge Earned!",
