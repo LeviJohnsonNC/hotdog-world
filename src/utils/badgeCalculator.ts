@@ -12,6 +12,15 @@ const getVisitedHotdogsCount = (): number => {
   }
 };
 
+const getTriviaClicksCount = (): number => {
+  try {
+    const stored = localStorage.getItem('trivia_clicks_count');
+    return stored ? parseInt(stored, 10) : 0;
+  } catch {
+    return 0;
+  }
+};
+
 export interface BadgeProgress {
   badgeId: string;
   earned: boolean;
@@ -103,6 +112,12 @@ export const calculateBadgeProgress = (
 
       case "world-gourmet":
         current = getVisitedHotdogsCount();
+        break;
+
+      case "curious-clicker":
+      case "fact-forager":
+      case "trivia-trailblazer":
+        current = getTriviaClicksCount();
         break;
 
       default:
