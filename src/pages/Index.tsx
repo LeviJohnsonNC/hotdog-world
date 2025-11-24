@@ -106,7 +106,7 @@ const Index = () => {
       </header>
 
       {/* Floating Icon - Spin the Globe (Upper Left) */}
-      <div className="fixed top-24 left-6 sm:top-24 sm:left-4 md:top-28 md:left-6 z-20 bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
+      <div className="fixed top-24 left-6 sm:top-24 sm:left-4 md:top-28 md:left-6 z-20 flex flex-row items-center bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
         <button
           onClick={handleSpinClick}
           disabled={isSpinning || !hotdogs.length}
