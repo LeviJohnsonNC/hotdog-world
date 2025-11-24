@@ -21,19 +21,26 @@ const Index = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
 
-  // Select 3 well-spaced pins for FTUX pulsing
+  // Select 3 well-spaced pins for FTUX pulsing - prioritize very front-facing
   const ftuxPulsingPins = useMemo(() => {
     if (!shouldShowFTUX || hotdogs.length === 0) return new Set<string>();
 
-    // Filter front-facing pins (approximate front hemisphere)
+    // Filter ONLY very front-facing pins (prime visibility zone)
     const frontFacing = hotdogs.filter(h => {
       const lng = h.longitude;
-      return lng > -60 && lng < 60; // Narrower range for better visibility
+      const lat = h.latitude;
+      // Only select pins in the VERY FRONT: narrow longitude range, avoid extreme latitudes
+      return lng > -40 && lng < 40 && lat > -45 && lat < 45;
     });
 
-    if (frontFacing.length === 0) return new Set<string>();
+    console.log('FTUX: Front-facing hotdogs:', frontFacing.map(h => `${h.name} (lng: ${h.longitude}, lat: ${h.latitude})`));
 
-    // Select 3 geographically distributed pins
+    if (frontFacing.length === 0) {
+      console.warn('FTUX: No front-facing hotdogs found!');
+      return new Set<string>();
+    }
+
+    // Select up to 3 geographically distributed pins
     const selected: typeof hotdogs = [];
     selected.push(frontFacing[0]);
 
@@ -44,7 +51,7 @@ const Index = () => {
       const isFarEnough = selected.every(s => {
         const latDiff = Math.abs(s.latitude - hotdog.latitude);
         const lngDiff = Math.abs(s.longitude - hotdog.longitude);
-        return latDiff > 20 || lngDiff > 20; // Closer spacing for better grouping
+        return latDiff > 15 || lngDiff > 15; // Moderate spacing
       });
 
       if (isFarEnough) {
@@ -60,7 +67,7 @@ const Index = () => {
       }
     }
 
-    console.log('FTUX: Selected pins for pulsing:', selected.map(h => h.name));
+    console.log('FTUX: Selected pins for pulsing:', selected.map(h => `${h.name} (lng: ${h.longitude}, lat: ${h.latitude})`));
     return new Set(selected.map(h => h.id));
   }, [shouldShowFTUX, hotdogs]);
 

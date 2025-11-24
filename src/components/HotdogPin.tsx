@@ -21,28 +21,31 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
 
   useEffect(() => {
     if (shouldPulse && !pulseStartTime.current) {
+      console.log(`Pin "${hotdog.name}" will pulse in ${pulseDelay}ms`);
       setTimeout(() => {
         pulseStartTime.current = Date.now();
         setIsPulsing(true);
+        console.log(`Pin "${hotdog.name}" PULSING NOW!`);
       }, pulseDelay);
     }
-  }, [shouldPulse, pulseDelay]);
+  }, [shouldPulse, pulseDelay, hotdog.name]);
 
   useFrame(() => {
     if (!isPulsing || !groupRef.current || !pulseStartTime.current) return;
 
     const elapsed = Date.now() - pulseStartTime.current;
-    const duration = 1000; // 1000ms pulse duration (longer, more noticeable)
+    const duration = 1200; // 1200ms pulse duration (even longer)
 
     if (elapsed > duration) {
       groupRef.current.scale.setScalar(1);
       setIsPulsing(false);
+      console.log(`Pin "${hotdog.name}" pulse complete`);
       return;
     }
 
-    // More dramatic breathing animation: 1.0 -> 1.15 -> 1.0
+    // VERY dramatic breathing animation: 1.0 -> 1.3 -> 1.0 (30% size increase!)
     const progress = elapsed / duration;
-    const scale = 1 + 0.15 * Math.sin(progress * Math.PI);
+    const scale = 1 + 0.3 * Math.sin(progress * Math.PI);
     groupRef.current.scale.setScalar(scale);
   });
 
