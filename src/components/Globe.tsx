@@ -6,6 +6,7 @@ import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSound } from "@/hooks/useSound";
 
 type AnimationPhase = "idle" | "spinning" | "zooming";
 
@@ -27,6 +28,7 @@ interface EarthProps {
   targetStartRef: React.MutableRefObject<THREE.Vector3>;
   targetEndRef: React.MutableRefObject<THREE.Vector3>;
   controlsRef: React.RefObject<any>;
+  playZoomSound: () => void;
 }
 
 // Easing function for zoom
@@ -55,7 +57,8 @@ function Earth({
   cameraEndRef,
   targetStartRef,
   targetEndRef,
-  controlsRef
+  controlsRef,
+  playZoomSound
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
@@ -121,6 +124,9 @@ function Earth({
         // Transition to zoom phase
         phaseRef.current = "zooming";
         zoomStartRef.current = performance.now();
+        
+        // Play zoom sound
+        playZoomSound();
       }
     }
     
@@ -215,6 +221,10 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
   const earthGroupRef = useRef<THREE.Group>(null);
   const isMobile = useIsMobile();
   
+  // Sound effects
+  const playSpinSound = useSound('/sounds/spin.mp3', 0.2);
+  const playZoomSound = useSound('/sounds/zoom.mp3', 0.25);
+  
   // Physics state refs (proper useRef hooks)
   const angularVelocityRef = useRef(new THREE.Vector3());
   const phaseRef = useRef<AnimationPhase>("idle");
@@ -279,6 +289,9 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
       zoomSlugRef.current = hotdog.slug;
       setIsSpinning(true);
       setTargetHotdog(hotdog);
+
+      // Play spin sound
+      playSpinSound();
 
       // Disable controls during animation
       if (controlsRef.current) {
@@ -371,6 +384,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           targetStartRef={targetStartRef}
           targetEndRef={targetEndRef}
           controlsRef={controlsRef}
+          playZoomSound={playZoomSound}
         />
         
         <OrbitControls
