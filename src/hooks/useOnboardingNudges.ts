@@ -1,5 +1,6 @@
 const STORAGE_KEYS = {
   FIRST_BADGE: 'onboarding_first_badge_shown',
+  FIRST_STAMP_BADGE: 'onboarding_first_stamp_badge_shown',
   PROGRESS_3: 'onboarding_progress_3_shown',
   PROGRESS_7: 'onboarding_progress_7_session',
   PROGRESS_ENABLED: 'onboarding_progress_nudges_enabled',
@@ -77,9 +78,27 @@ export const useOnboardingNudges = () => {
     }
   };
 
+  const hasShownFirstStampBadgeToast = (): boolean => {
+    try {
+      return localStorage.getItem(STORAGE_KEYS.FIRST_STAMP_BADGE) === 'true';
+    } catch {
+      return false;
+    }
+  };
+
+  const markFirstStampBadgeShown = () => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.FIRST_STAMP_BADGE, 'true');
+    } catch (error) {
+      console.error('Failed to mark first stamp badge shown:', error);
+    }
+  };
+
   return {
     hasShownFirstBadgeToast,
     markFirstBadgeShown,
+    hasShownFirstStampBadgeToast,
+    markFirstStampBadgeShown,
     hasShownProgress3Toast,
     markProgress3Shown,
     hasShownProgress7InSession,

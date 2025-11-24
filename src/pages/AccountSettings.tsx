@@ -126,8 +126,9 @@ const AccountSettings = () => {
         localStorage.removeItem('onboarding_progress_3_shown');
         localStorage.removeItem('onboarding_progress_7_session');
         localStorage.removeItem('onboarding_progress_nudges_enabled');
-        localStorage.removeItem('trivia_clicks_count');
-        localStorage.removeItem('first_trivia_badge_shown');
+      localStorage.removeItem('trivia_clicks_count');
+      localStorage.removeItem('first_trivia_badge_shown');
+      localStorage.removeItem('onboarding_first_stamp_badge_shown');
       } catch (error) {
         console.error('Failed to clear localStorage:', error);
       }
