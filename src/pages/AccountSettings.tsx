@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Trash2, RotateCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -174,6 +174,17 @@ const AccountSettings = () => {
     } finally {
       setIsPopulatingMetadata(false);
     }
+  };
+
+  const handleResetFTUX = () => {
+    localStorage.removeItem('hasSeenFTUX');
+    toast({
+      title: "FTUX reset!",
+      description: "Returning to home page to show the onboarding sequence...",
+    });
+    setTimeout(() => {
+      navigate("/");
+    }, 500);
   };
 
   const hasChanges = displayName.trim() !== originalDisplayName;
@@ -367,6 +378,25 @@ const AccountSettings = () => {
                   </div>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* FTUX Testing - Admin Only */}
+          {isAdmin && (
+            <div className="bg-card rounded-lg p-6 shadow-md border-2 border-accent/20">
+              <h2 className="text-xl font-semibold text-foreground mb-2">Test FTUX Onboarding</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Reset the first-time user experience to test the onboarding sequence as if you were a brand new user.
+              </p>
+              
+              <Button 
+                onClick={handleResetFTUX}
+                variant="secondary"
+                className="w-full sm:w-auto"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Reset & Test FTUX
+              </Button>
             </div>
           )}
 
