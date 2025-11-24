@@ -2,7 +2,7 @@
 export const cityToImageMap: Record<string, string> = {
   "Atlanta": "atlanta-hotdog.png",
   "Sydney": "aussie-hotdog.png",
-  "Bangkok": "thailand-hotdog.png",
+  "Bangkok": "bangkok-hotdog.png",
   "Cape Town": "boerewors-hotdog.png",
   "Mumbai": "bombay-hotdog.png",
   "Chicago, Illinois": "chicago-hotdog-hero.png",
