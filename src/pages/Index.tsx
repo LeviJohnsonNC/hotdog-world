@@ -21,53 +21,13 @@ const Index = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
 
-  // Select 10-12 well-spaced pins for FTUX pulsing - TIGHTLY CENTERED on camera view
+  // Pulse ALL hotdogs during FTUX
   const ftuxPulsingPins = useMemo(() => {
     if (!shouldShowFTUX || hotdogs.length === 0) return new Set<string>();
-
-    // TIGHT ZONE: Only pins in DIRECT camera view (longitude 0 = Prime Meridian faces camera)
-    const frontFacing = hotdogs.filter(h => {
-      const lng = h.longitude;
-      const lat = h.latitude;
-      return lng > -20 && lng < 25 && lat > -40 && lat < 40; // Center-focused zone
-    });
-
-    console.log('FTUX: Front-facing hotdogs:', frontFacing.map(h => `${h.name} (lng: ${h.longitude}, lat: ${h.latitude})`));
-
-    if (frontFacing.length === 0) {
-      console.warn('FTUX: No front-facing hotdogs found!');
-      return new Set<string>();
-    }
-
-    // Select up to 12 geographically distributed pins for maximum visual activity
-    const selected: typeof hotdogs = [];
-    selected.push(frontFacing[0]);
-
-    for (const hotdog of frontFacing) {
-      if (selected.length >= 12) break;
-      
-      // Check if this hotdog is far enough from already selected ones
-      const isFarEnough = selected.every(s => {
-        const latDiff = Math.abs(s.latitude - hotdog.latitude);
-        const lngDiff = Math.abs(s.longitude - hotdog.longitude);
-        return latDiff > 8 || lngDiff > 8; // Tighter spacing for more pins
-      });
-
-      if (isFarEnough) {
-        selected.push(hotdog);
-      }
-    }
-
-    // Fallback: if we don't have 12, just take the first 12 front-facing
-    while (selected.length < 12 && selected.length < frontFacing.length) {
-      const next = frontFacing[selected.length];
-      if (!selected.includes(next)) {
-        selected.push(next);
-      }
-    }
-
-    console.log('FTUX: Selected pins for pulsing:', selected.map(h => `${h.name} (lng: ${h.longitude}, lat: ${h.latitude})`));
-    return new Set(selected.map(h => h.id));
+    
+    // Return all hotdog IDs to pulse all pins
+    console.log('FTUX: Pulsing ALL hotdogs:', hotdogs.length);
+    return new Set(hotdogs.map(h => h.id));
   }, [shouldShowFTUX, hotdogs]);
 
   const handleHotdogClick = (hotdogSlug: string) => {
