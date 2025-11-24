@@ -8,6 +8,8 @@ import photojournalistImg from "@/assets/badges/photojournalist.png";
 import flavorDetectiveImg from "@/assets/badges/flavor-detective.png";
 import tailgaterImg from "@/assets/badges/tailgater.png";
 import globetrotterImg from "@/assets/badges/globetrotter.png";
+import passportOpenedImg from "@/assets/badges/passport-opened.png";
+import librarianImg from "@/assets/badges/librarian.png";
 
 export interface Badge {
   id: string;
@@ -87,5 +89,19 @@ export const BADGES: Badge[] = [
     description: "Try 7 dogs from different countries",
     image: globetrotterImg,
     requirement: 7,
+  },
+  {
+    id: "passport-opened",
+    name: "Passport Opened",
+    description: "Open your first hot dog detail page",
+    image: passportOpenedImg,
+    requirement: 1,
+  },
+  {
+    id: "librarian",
+    name: "The Librarian",
+    description: "Explore 10 different hot dog detail pages",
+    image: librarianImg,
+    requirement: 10,
   },
 ];

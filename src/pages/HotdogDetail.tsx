@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useHotdogDetail } from "@/hooks/useHotdogDetail";
 import { useRevealedFacts } from "@/hooks/useRevealedFacts";
+import { useRecordHotdogVisit } from "@/hooks/useVisitedHotdogs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,9 @@ const HotdogDetail = () => {
   const navigate = useNavigate();
   const { data: hotdog, isLoading } = useHotdogDetail(slug || "");
   const { revealFact, isRevealed, revealedIndices } = useRevealedFacts(hotdog?.id || '');
+  
+  // Record visit for badge tracking
+  useRecordHotdogVisit(hotdog?.id);
   
   const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({});
