@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import hotdogGlobePattern from '@/assets/hotdog-globe-pattern.png';
+// Background image is in public folder
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -102,9 +102,9 @@ const Auth = () => {
     <div 
       className="min-h-screen flex items-center justify-center p-4"
       style={{
-        backgroundImage: `url(${hotdogGlobePattern})`,
-        backgroundRepeat: 'repeat',
-        backgroundSize: 'auto'
+        backgroundImage: `url('/images/auth-background.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
       }}
     >
       <Helmet>
