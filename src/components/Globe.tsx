@@ -201,7 +201,7 @@ function Earth({
         // Allow pulsing during both 'pulsing' AND 'hinting' phases (extends from 600ms to 4900ms)
         const shouldPulse = (ftuxPhase === 'pulsing' || ftuxPhase === 'hinting') && ftuxPulsingPins.has(hotdog.id);
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
-        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 200 : 0; // Faster stagger: 200ms between each
+        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0; // Rapid-fire stagger: 150ms between each
         
         return (
           <HotdogPin

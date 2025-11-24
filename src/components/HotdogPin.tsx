@@ -49,9 +49,9 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
       return;
     }
 
-    // VERY dramatic breathing animation: 1.0 -> 1.4 -> 1.0 (40% size increase!)
+    // ULTRA dramatic breathing animation: 1.0 -> 1.6 -> 1.0 (60% size increase!)
     const progress = elapsed / duration;
-    const scale = 1 + 0.4 * Math.sin(progress * Math.PI);
+    const scale = 1 + 0.6 * Math.sin(progress * Math.PI);
     groupRef.current.scale.setScalar(scale);
   });
 
