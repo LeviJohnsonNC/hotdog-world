@@ -119,6 +119,17 @@ const AccountSettings = () => {
 
       if (factsError) throw factsError;
 
+      // Clear localStorage data for badges and onboarding
+      try {
+        localStorage.removeItem('visited_hotdogs');
+        localStorage.removeItem('onboarding_first_badge_shown');
+        localStorage.removeItem('onboarding_progress_3_shown');
+        localStorage.removeItem('onboarding_progress_7_session');
+        localStorage.removeItem('onboarding_progress_nudges_enabled');
+      } catch (error) {
+        console.error('Failed to clear localStorage:', error);
+      }
+
       toast({
         title: "Data cleared!",
         description: "All your stamps and data have been removed.",
