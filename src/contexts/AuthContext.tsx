@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { migrateLocalStorageToDatabase } from '@/utils/dataMigration';
 
 interface AuthContextType {
   user: User | null;
@@ -25,13 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Auto-migrate localStorage data when user signs in
-        if (event === 'SIGNED_IN' && session?.user) {
-          setTimeout(async () => {
-            await migrateLocalStorageToDatabase(session.user.id);
-          }, 0);
-        }
+        // Migration now handled by UserProgressContext
       }
     );
 

@@ -1,32 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useUserProgress } from '@/contexts/UserProgressContext';
 
-const VISITED_HOTDOGS_KEY = 'visited_hotdogs';
-
+/**
+ * Backward compatibility wrapper for useVisitedHotdogs
+ * @deprecated Use useUserProgress directly
+ */
 export const useVisitedHotdogs = () => {
-  const getVisitedHotdogs = (): Set<string> => {
-    try {
-      const stored = localStorage.getItem(VISITED_HOTDOGS_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
-    }
-  };
+  const { visitedHotdogs, recordVisit } = useUserProgress();
 
-  const recordVisit = (hotdogId: string): { isNewVisit: boolean; visitCount: number } => {
-    try {
-      const visited = getVisitedHotdogs();
-      const isNewVisit = !visited.has(hotdogId);
-      visited.add(hotdogId);
-      localStorage.setItem(VISITED_HOTDOGS_KEY, JSON.stringify(Array.from(visited)));
-      return { isNewVisit, visitCount: visited.size };
-    } catch (error) {
-      console.error('Failed to record hotdog visit:', error);
-      return { isNewVisit: false, visitCount: 0 };
-    }
+  const getVisitedHotdogs = (): Set<string> => {
+    return visitedHotdogs;
   };
 
   const getVisitCount = (): number => {
-    return getVisitedHotdogs().size;
+    return visitedHotdogs.size;
   };
 
   return {
@@ -47,10 +34,11 @@ export const useRecordHotdogVisit = (hotdogId: string | undefined) => {
 
   useEffect(() => {
     if (hotdogId) {
-      const { isNewVisit, visitCount } = recordVisit(hotdogId);
-      const isFirstVisit = visitCount === 1;
-      console.log('Visit recorded:', { hotdogId, isNewVisit, isFirstVisit, visitCount });
-      setVisitInfo({ isFirstVisit, isNewVisit, visitCount });
+      recordVisit(hotdogId).then(({ isNewVisit, visitCount }) => {
+        const isFirstVisit = visitCount === 1;
+        console.log('Visit recorded:', { hotdogId, isNewVisit, isFirstVisit, visitCount });
+        setVisitInfo({ isFirstVisit, isNewVisit, visitCount });
+      });
     }
   }, [hotdogId]);
 
