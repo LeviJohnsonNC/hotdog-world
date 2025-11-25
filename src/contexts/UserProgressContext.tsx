@@ -5,6 +5,37 @@ import { HotdogStamp } from '@/types/passport';
 import * as localStampStorage from '@/utils/stampStorage';
 import { useToast } from '@/hooks/use-toast';
 
+// Error classification helpers
+const isNetworkError = (error: any): boolean => {
+  return (
+    error?.message?.includes('fetch') ||
+    error?.message?.includes('network') ||
+    error?.code === 'NETWORK_ERROR' ||
+    !navigator.onLine
+  );
+};
+
+const isAuthError = (error: any): boolean => {
+  return (
+    error?.message?.includes('JWT') ||
+    error?.message?.includes('auth') ||
+    error?.code === 'PGRST301'
+  );
+};
+
+const getUserFriendlyError = (error: any): string => {
+  if (isNetworkError(error)) {
+    return 'Network connection issue. Please check your internet and try again.';
+  }
+  if (isAuthError(error)) {
+    return 'Session expired. Please sign in again.';
+  }
+  if (error?.message?.includes('row-level security')) {
+    return 'Permission denied. Please ensure you are signed in.';
+  }
+  return error instanceof Error ? error.message : 'An unexpected error occurred';
+};
+
 interface MigrationStatus {
   isInProgress: boolean;
   hasFailed: boolean;
@@ -124,6 +155,14 @@ export const UserProgressProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const saveStamp = async (stamp: HotdogStamp): Promise<{ success: boolean; error?: string }> => {
+    // Check offline status
+    if (!navigator.onLine) {
+      return {
+        success: false,
+        error: 'You are offline. Changes will be saved when you reconnect.'
+      };
+    }
+
     try {
       if (user) {
         const { error } = await supabase
@@ -152,13 +191,20 @@ export const UserProgressProvider = ({ children }: { children: ReactNode }) => {
 
       return { success: true };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save stamp';
+      const errorMessage = getUserFriendlyError(error);
       console.error('Save stamp error:', error);
       return { success: false, error: errorMessage };
     }
   };
 
   const deleteStamp = async (hotdogId: string): Promise<{ success: boolean; error?: string }> => {
+    if (!navigator.onLine) {
+      return {
+        success: false,
+        error: 'You are offline. Please try again when connected.'
+      };
+    }
+
     try {
       if (user) {
         const { error } = await supabase
@@ -175,7 +221,7 @@ export const UserProgressProvider = ({ children }: { children: ReactNode }) => {
       setStamps(prev => prev.filter(s => s.hotdogId !== hotdogId));
       return { success: true };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete stamp';
+      const errorMessage = getUserFriendlyError(error);
       console.error('Delete stamp error:', error);
       return { success: false, error: errorMessage };
     }
@@ -268,6 +314,13 @@ export const UserProgressProvider = ({ children }: { children: ReactNode }) => {
       const updated = [...current, index];
 
       if (user) {
+        if (!navigator.onLine) {
+          return {
+            success: false,
+            error: 'You are offline. Fact will be revealed when you reconnect.'
+          };
+        }
+
         const { error } = await supabase
           .from('revealed_facts')
           .insert({
@@ -284,7 +337,7 @@ export const UserProgressProvider = ({ children }: { children: ReactNode }) => {
       setRevealedFactsMap(prev => new Map(prev).set(hotdogId, updated));
       return { success: true };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to reveal fact';
+      const errorMessage = getUserFriendlyError(error);
       console.error('Reveal fact error:', error);
       return { success: false, error: errorMessage };
     }
