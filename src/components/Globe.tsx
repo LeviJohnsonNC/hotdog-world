@@ -284,11 +284,15 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
       // Capture current earth orientation
       const currentQ = earthGroupRef.current.quaternion.clone();
       
-      // Compute target orientation: rotate hotdog to front (+Z)
+      // Get camera's current direction as the "front" (where it's looking from)
+      // Camera position normalized gives us the direction the camera is viewing from
+      const cameraDirection = controlsRef.current?.object?.position?.clone().normalize() 
+        ?? new THREE.Vector3(0, 0, 1);
+      
+      // Compute target orientation: rotate hotdog to face the camera's actual position
       const hotdogLocal = new THREE.Vector3(...hotdog.position).normalize();
-      const front = new THREE.Vector3(0, 0, 1);
       const hotdogWorldNow = hotdogLocal.clone().applyQuaternion(currentQ);
-      const qDelta = new THREE.Quaternion().setFromUnitVectors(hotdogWorldNow, front);
+      const qDelta = new THREE.Quaternion().setFromUnitVectors(hotdogWorldNow, cameraDirection);
       const targetQ = qDelta.multiply(currentQ);
       targetQuaternionRef.current.copy(targetQ);
       
