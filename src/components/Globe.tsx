@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, forwardRef, useImperativeHandle, useMemo } from "react";
+import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import * as THREE from "three";
@@ -174,21 +174,6 @@ function Earth({
   // Mobile optimization: reduce geometry complexity
   const sphereDetail = isMobile ? 32 : 64;
   
-  // Memoize hotdog pins to prevent unnecessary re-renders
-  const memoizedHotdogPins = useMemo(() => {
-    return hotdogs.map((hotdog) => {
-      const shouldPulse = ftuxPulsingPins.has(hotdog.id) && ftuxPhase !== 'complete' && ftuxPhase !== 'loading';
-      const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
-      const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0;
-      
-      return {
-        hotdog,
-        shouldPulse,
-        pulseDelay,
-      };
-    });
-  }, [hotdogs, ftuxPulsingPins, ftuxPhase]);
-  
   return (
     <group ref={earthGroupRef}>
       {/* Main Earth sphere - optimized geometry for mobile */}
@@ -211,17 +196,24 @@ function Earth({
         />
       </Sphere>
       
-      {/* Hotdogs - optimized rendering with memoization */}
-      {memoizedHotdogPins.map(({ hotdog, shouldPulse, pulseDelay }) => (
-        <HotdogPin
-          key={hotdog.id}
-          position={hotdog.position}
-          onClick={() => !isSpinning && onHotdogClick(hotdog.slug)}
-          hotdog={hotdog}
-          shouldPulse={shouldPulse}
-          pulseDelay={pulseDelay}
-        />
-      ))}
+      {/* Hotdogs - disable clicks during spin */}
+      {hotdogs.map((hotdog, index) => {
+        // Pulse ALL hotdogs during entire FTUX (except 'loading' and 'complete')
+        const shouldPulse = ftuxPulsingPins.has(hotdog.id) && ftuxPhase !== 'complete' && ftuxPhase !== 'loading';
+        const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
+        const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0; // Rapid-fire stagger: 150ms between each
+        
+        return (
+          <HotdogPin
+            key={hotdog.id}
+            position={hotdog.position}
+            onClick={() => !isSpinning && onHotdogClick(hotdog.slug)}
+            hotdog={hotdog}
+            shouldPulse={shouldPulse}
+            pulseDelay={pulseDelay}
+          />
+        );
+      })}
     </group>
   );
 }

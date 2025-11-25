@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect, useMemo, memo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
 import { Hotdog } from "@/types/hotdog";
-import { OptimizedHotdogModel } from "./OptimizedHotdogModel";
+import { HotdogModel } from "./HotdogModel";
 
 interface HotdogPinProps {
   position: [number, number, number];
@@ -13,14 +13,11 @@ interface HotdogPinProps {
   pulseDelay?: number;
 }
 
-const HotdogPinComponent = ({ position, onClick, hotdog, shouldPulse = false, pulseDelay = 0 }: HotdogPinProps) => {
+export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, pulseDelay = 0 }: HotdogPinProps) {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<Group>(null);
   const pulseStartTime = useRef<number | null>(null);
   const [isPulsing, setIsPulsing] = useState(false);
-
-  // Memoize position to avoid recalculations
-  const memoizedPosition = useMemo(() => position, [position[0], position[1], position[2]]);
 
   useEffect(() => {
     // Only start pulsing when shouldPulse becomes true
@@ -61,7 +58,7 @@ const HotdogPinComponent = ({ position, onClick, hotdog, shouldPulse = false, pu
   return (
     <group 
       ref={groupRef}
-      position={memoizedPosition}
+      position={position}
       onClick={(e) => {
         e.stopPropagation();
         onClick();
@@ -77,12 +74,7 @@ const HotdogPinComponent = ({ position, onClick, hotdog, shouldPulse = false, pu
         document.body.style.cursor = "auto";
       }}
     >
-      <OptimizedHotdogModel 
-        hovered={hovered} 
-        imageUrl={hotdog.image} 
-        position={memoizedPosition}
-        hotdogId={hotdog.id}
-      />
+      <HotdogModel hovered={hovered} imageUrl={hotdog.image} position={position} />
       
       {hovered && (
         <Html
@@ -102,17 +94,4 @@ const HotdogPinComponent = ({ position, onClick, hotdog, shouldPulse = false, pu
       )}
     </group>
   );
-};
-
-// Memoize component to prevent unnecessary re-renders
-export const HotdogPin = memo(HotdogPinComponent, (prevProps, nextProps) => {
-  // Custom comparison: only re-render if these props change
-  return (
-    prevProps.hotdog.id === nextProps.hotdog.id &&
-    prevProps.shouldPulse === nextProps.shouldPulse &&
-    prevProps.pulseDelay === nextProps.pulseDelay &&
-    prevProps.position[0] === nextProps.position[0] &&
-    prevProps.position[1] === nextProps.position[1] &&
-    prevProps.position[2] === nextProps.position[2]
-  );
-});
+}
