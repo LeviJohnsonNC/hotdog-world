@@ -5,9 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Camera, X, Stamp } from "lucide-react";
+import { Camera, X, Stamp, RefreshCcw } from "lucide-react";
 import { HotdogStamp } from "@/types/passport";
 import { useStamps } from "@/hooks/useStamps";
+import { useUserProgress } from "@/contexts/UserProgressContext";
 import { compressImageToBase64, checkStorageSpace } from "@/utils/imageCompression";
 import { toast } from "sonner";
 import { toast as shadcnToast } from "@/hooks/use-toast";
@@ -20,7 +21,8 @@ interface PassportStampProps {
 
 export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
   const navigate = useNavigate();
-  const { getStamp, saveStamp: saveStampToStorage, deleteStamp: deleteStampFromStorage, stamps } = useStamps();
+  const { getStamp, saveStamp: saveStampLegacy, deleteStamp: deleteStampFromStorage, stamps } = useStamps();
+  const { saveStamp: saveStampWithErrors } = useUserProgress();
   const { hasShownFirstStampBadgeToast, markFirstStampBadgeShown } = useOnboardingNudges();
   const [isExpanded, setIsExpanded] = useState(false);
   const [stamp, setStamp] = useState<HotdogStamp | null>(null);
@@ -68,9 +70,9 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
       lastModified: Date.now(),
     };
 
-    const success = await saveStampToStorage(newStamp);
+    const result = await saveStampWithErrors(newStamp);
     
-    if (success) {
+    if (result.success) {
       setStamp(newStamp);
       setIsExpanded(false);
       
@@ -100,8 +102,25 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
         });
       }
     } else {
-      toast.error("Failed to save stamp!", {
-        description: "Please try again.",
+      // Show error with retry button
+      shadcnToast({
+        title: "Failed to save stamp",
+        description: result.error || "Please try again",
+        variant: "destructive",
+        action: (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setIsSaving(false);
+              handleSave();
+            }}
+            className="gap-1"
+          >
+            <RefreshCcw className="h-3 w-3" />
+            Retry
+          </Button>
+        ),
       });
     }
 
