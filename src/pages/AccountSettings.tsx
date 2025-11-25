@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Save, Trash2, RotateCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserProgress } from "@/contexts/UserProgressContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -24,6 +25,7 @@ import {
 const AccountSettings = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { clearAllUserData } = useUserProgress();
   const { toast } = useToast();
   const [displayName, setDisplayName] = useState("");
   const [originalDisplayName, setOriginalDisplayName] = useState("");
@@ -103,36 +105,7 @@ const AccountSettings = () => {
     setIsClearingData(true);
 
     try {
-      // Delete all stamps for this user
-      const { error: stampsError } = await supabase
-        .from("hotdog_stamps")
-        .delete()
-        .eq("user_id", user.id);
-
-      if (stampsError) throw stampsError;
-
-      // Delete all revealed facts for this user
-      const { error: factsError } = await supabase
-        .from("revealed_facts")
-        .delete()
-        .eq("user_id", user.id);
-
-      if (factsError) throw factsError;
-
-      // Clear localStorage data for badges and onboarding
-      try {
-        localStorage.removeItem('visited_hotdogs');
-        localStorage.removeItem('onboarding_first_badge_shown');
-        localStorage.removeItem('onboarding_progress_3_shown');
-        localStorage.removeItem('onboarding_progress_7_session');
-        localStorage.removeItem('onboarding_progress_nudges_enabled');
-        localStorage.removeItem('trivia_clicks_count');
-        localStorage.removeItem('first_trivia_badge_shown');
-        localStorage.removeItem('onboarding_first_stamp_badge_shown');
-        localStorage.removeItem('shown_badge_celebration_toasts');
-      } catch (error) {
-        console.error('Failed to clear localStorage:', error);
-      }
+      await clearAllUserData();
 
       toast({
         title: "Data cleared!",

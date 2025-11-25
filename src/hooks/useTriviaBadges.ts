@@ -1,26 +1,21 @@
-const STORAGE_KEY = 'trivia_clicks_count';
+import { useUserProgress } from '@/contexts/UserProgressContext';
+
 const FIRST_TRIVIA_TOAST_KEY = 'first_trivia_badge_shown';
 
+/**
+ * Backward compatibility wrapper for useTriviaBadges
+ * @deprecated Use useUserProgress directly
+ */
 export const useTriviaBadges = () => {
+  const { triviaClickCount, incrementTriviaClick } = useUserProgress();
+
   const getTriviaClickCount = (): number => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? parseInt(stored, 10) : 0;
-    } catch {
-      return 0;
-    }
+    return triviaClickCount;
   };
 
-  const incrementTriviaClick = (): number => {
-    try {
-      const current = getTriviaClickCount();
-      const newCount = current + 1;
-      localStorage.setItem(STORAGE_KEY, newCount.toString());
-      return newCount;
-    } catch (error) {
-      console.error('Failed to increment trivia click:', error);
-      return getTriviaClickCount();
-    }
+  const incrementTriviaClickLegacy = (): number => {
+    incrementTriviaClick();
+    return triviaClickCount + 1;
   };
 
   const hasShownFirstTriviaBadgeToast = (): boolean => {
@@ -41,7 +36,6 @@ export const useTriviaBadges = () => {
 
   const clearTriviaData = () => {
     try {
-      localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(FIRST_TRIVIA_TOAST_KEY);
     } catch (error) {
       console.error('Failed to clear trivia data:', error);
@@ -50,7 +44,7 @@ export const useTriviaBadges = () => {
 
   return {
     getTriviaClickCount,
-    incrementTriviaClick,
+    incrementTriviaClick: incrementTriviaClickLegacy,
     hasShownFirstTriviaBadgeToast,
     markFirstTriviaBadgeToastShown,
     clearTriviaData,
