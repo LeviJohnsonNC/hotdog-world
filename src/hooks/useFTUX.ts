@@ -35,7 +35,9 @@ export const useFTUX = (prefersReducedMotion: boolean) => {
       }, 1400); // Show hint after pins finish pulsing (600ms + 800ms = 1400ms)
       setTimeout(() => {
         setFTUXPhase('complete');
-        console.log('FTUX: Phase = complete');
+        localStorage.setItem(FTUX_STORAGE_KEY, 'true');
+        setHasSeenFTUX(true);
+        console.log('FTUX: Phase = complete, saved to localStorage');
       }, 4900); // Hint stays for 3500ms (1400ms + 3500ms = 4900ms)
     }
   }, [hasSeenFTUX, prefersReducedMotion]);
