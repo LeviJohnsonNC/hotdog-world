@@ -39,9 +39,9 @@ const easeInOutQuart = (t: number) =>
   t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
 
 // Animation constants
-const SPIN_DURATION = 3.2; // seconds
+const SPIN_DURATION = 5.2; // seconds (+2s for more rotations)
 const ZOOM_DURATION = 2.0; // seconds
-const MAX_TOTAL = 6.0; // safety net
+const MAX_TOTAL = 8.0; // safety net
 
 function Earth({ 
   hotdogs,
@@ -87,8 +87,8 @@ function Earth({
       const t = (performance.now() - spinStartRef.current) / 1000;
       const spinProgress = Math.min(t / SPIN_DURATION, 1);
       
-      // Apply friction to quickly damp the spin
-      const friction = isMobile ? 3.5 : 2.8;
+      // Apply friction to quickly damp the spin (gentler decay = longer sustained spin)
+      const friction = isMobile ? 2.5 : 2.0;
       const damping = Math.max(0, 1 - friction * delta);
       angularVelocityRef.current!.multiplyScalar(damping);
       
@@ -296,8 +296,8 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
       const targetQ = qDelta.multiply(currentQ);
       targetQuaternionRef.current.copy(targetQ);
       
-      // Initialize random 3D angular velocity with saner magnitude
-      const baseSpeed = isMobile ? 0.18 : 0.22;
+      // Initialize random 3D angular velocity (increased for more rotations)
+      const baseSpeed = isMobile ? 0.25 : 0.30;
       const randomAxis = new THREE.Vector3(
         Math.random() - 0.5,
         Math.random() - 0.5,
