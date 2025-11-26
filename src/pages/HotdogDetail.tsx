@@ -172,7 +172,17 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
             ...(hotdog.calories && {
               "nutrition": {
                 "@type": "NutritionInformation",
-                "calories": `${hotdog.calories} calories`
+                "servingSize": "1 hot dog",
+                "calories": `${hotdog.calories} calories`,
+                ...(hotdog.fat_total_g && { "fatContent": `${hotdog.fat_total_g}g` }),
+                ...(hotdog.fat_saturated_g && { "saturatedFatContent": `${hotdog.fat_saturated_g}g` }),
+                ...(hotdog.fat_trans_g && { "transFatContent": `${hotdog.fat_trans_g}g` }),
+                ...(hotdog.carbs_total_g && { "carbohydrateContent": `${hotdog.carbs_total_g}g` }),
+                ...(hotdog.carbs_fiber_g && { "fiberContent": `${hotdog.carbs_fiber_g}g` }),
+                ...(hotdog.carbs_sugars_g && { "sugarContent": `${hotdog.carbs_sugars_g}g` }),
+                ...(hotdog.protein_g && { "proteinContent": `${hotdog.protein_g}g` }),
+                ...(hotdog.sodium_mg && { "sodiumContent": `${hotdog.sodium_mg}mg` }),
+                ...(hotdog.cholesterol_mg && { "cholesterolContent": `${hotdog.cholesterol_mg}mg` })
               }
             }),
             ...(hotdog.video_url && {
