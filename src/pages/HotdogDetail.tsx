@@ -16,7 +16,7 @@ import { PassportStamp } from "@/components/PassportStamp";
 import { TechnicalNote } from "@/components/TechnicalNote";
 import { NutritionLabel } from "@/components/recipe/NutritionLabel";
 import { OnboardingNudge } from "@/components/OnboardingNudge";
-import { formatCategoryName } from "@/lib/utils";
+import { formatCategoryName, separateOptionalIngredients } from "@/lib/utils";
 
 const HotdogDetail = () => {
   const { slug } = useParams();
@@ -383,38 +383,81 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
                 {isStructuredIngredients && ingredientsData && Object.entries(ingredientsData).map(([groupName, ingredients]) => {
                   if (groupName === 'hotdog_and_bun' || !Array.isArray(ingredients) || ingredients.length === 0) return null;
                   
+                  const { required, optional } = separateOptionalIngredients(ingredients);
+                  
                   return (
-                    <div key={groupName}>
-                      <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
-                        {formatCategoryName(groupName)}
-                      </div>
-                      <ul className="space-y-3">
-                        {ingredients.map((ingredient, index) => {
-                          const checkboxKey = `${groupName}-${index}`;
-                          return (
-                            <li key={checkboxKey} className="flex items-start gap-4 group">
-                              <Checkbox
-                                id={`ingredient-${checkboxKey}`}
-                                checked={checkedIngredients[checkboxKey] || false}
-                                onCheckedChange={(checked) => 
-                                  setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
-                                }
-                                className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
-                              />
-                              <label
-                                htmlFor={`ingredient-${checkboxKey}`}
-                                className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
-                                  checkedIngredients[checkboxKey]
-                                    ? 'line-through opacity-50' 
-                                    : 'text-poppy/90 group-hover:text-poppy'
-                                }`}
-                              >
-                                {ingredient}
-                              </label>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                    <div key={groupName} className="space-y-6">
+                      {/* Required Toppings */}
+                      {required.length > 0 && (
+                        <div>
+                          <div className="inline-block mb-3 px-3 py-1 bg-mustard/20 text-mustard font-display text-xs tracking-wider rounded uppercase">
+                            {formatCategoryName(groupName)}
+                          </div>
+                          <ul className="space-y-3">
+                            {required.map((ingredient, index) => {
+                              const checkboxKey = `${groupName}-required-${index}`;
+                              return (
+                                <li key={checkboxKey} className="flex items-start gap-4 group">
+                                  <Checkbox
+                                    id={`ingredient-${checkboxKey}`}
+                                    checked={checkedIngredients[checkboxKey] || false}
+                                    onCheckedChange={(checked) => 
+                                      setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
+                                    }
+                                    className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                                  />
+                                  <label
+                                    htmlFor={`ingredient-${checkboxKey}`}
+                                    className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                      checkedIngredients[checkboxKey]
+                                        ? 'line-through opacity-50' 
+                                        : 'text-poppy/90 group-hover:text-poppy'
+                                    }`}
+                                  >
+                                    {ingredient}
+                                  </label>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {/* Optional Toppings */}
+                      {optional.length > 0 && (
+                        <div>
+                          <div className="inline-block mb-3 px-3 py-1 bg-mustard/10 text-mustard/70 font-display text-xs tracking-wider rounded uppercase border border-dashed border-mustard/30">
+                            Optional
+                          </div>
+                          <ul className="space-y-3">
+                            {optional.map((ingredient, index) => {
+                              const checkboxKey = `${groupName}-optional-${index}`;
+                              return (
+                                <li key={checkboxKey} className="flex items-start gap-4 group">
+                                  <Checkbox
+                                    id={`ingredient-${checkboxKey}`}
+                                    checked={checkedIngredients[checkboxKey] || false}
+                                    onCheckedChange={(checked) => 
+                                      setCheckedIngredients(prev => ({ ...prev, [checkboxKey]: checked as boolean }))
+                                    }
+                                    className="mt-1 data-[state=checked]:bg-mustard data-[state=checked]:border-mustard"
+                                  />
+                                  <label
+                                    htmlFor={`ingredient-${checkboxKey}`}
+                                    className={`flex-1 text-base leading-relaxed cursor-pointer transition-all ${
+                                      checkedIngredients[checkboxKey]
+                                        ? 'line-through opacity-50' 
+                                        : 'text-poppy/70 group-hover:text-poppy'
+                                    }`}
+                                  >
+                                    {ingredient}
+                                  </label>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
