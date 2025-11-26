@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
     if (hotdogs) {
       for (const hotdog of hotdogs) {
         xml += '  <url>\n';
-        xml += `    <loc>${baseUrl}/hotdog/${hotdog.slug}</loc>\n`;
+        xml += `    <loc>${baseUrl}/hotdog/${encodeURIComponent(hotdog.slug)}</loc>\n`;
         xml += `    <lastmod>${currentDate}</lastmod>\n`;
         xml += '    <changefreq>monthly</changefreq>\n';
         xml += '    <priority>0.7</priority>\n';
