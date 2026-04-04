@@ -74,10 +74,10 @@ const Leaderboard = () => {
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
       <Helmet>
-        <title>Hot Dog Leaderboard - Top Explorers | Hotdogs Around the World</title>
+        <title>World's Best Hot Dogs — Leaderboard | Hot Dog World</title>
         <meta 
           name="description" 
-          content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world."
+          content="Which hot dog style reigns supreme? Browse the Hot Dog World community leaderboard — ranking the best hot dogs from across the globe. Cast your vote."
         />
         <link rel="canonical" href={`${siteUrl}/leaderboard`} />
         
