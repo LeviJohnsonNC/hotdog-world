@@ -113,6 +113,11 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
   const siteUrl = window.location.origin;
   const pageUrl = `${siteUrl}/hotdog/${slug}`;
   
+  // Use custom SEO overrides if available, otherwise generate defaults
+  const seoOverride = slug ? hotdogSeoOverrides[slug] : undefined;
+  const seoTitle = seoOverride?.title || `${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country} | Hotdogs Around the World`;
+  const seoDescription = seoOverride?.description || `Learn how to make authentic ${hotdog.name} from ${hotdog.city}. Get the complete recipe, ingredients, and origin story of this iconic ${hotdog.country} street food.`;
+  
   // Prepare ingredients for Recipe schema
   const allIngredients = isStructuredIngredients && ingredientsData
     ? Object.values(ingredientsData).flat()
