@@ -72,10 +72,10 @@ const Index = () => {
       }`}
     >
       <Helmet>
-        <title>Hotdogs Around the World - Discover Global Street Food Cultures</title>
+        <title>Hot Dog World — A World Map of Hot Dog Styles</title>
         <meta 
           name="description" 
-          content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." 
+          content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." 
         />
         <link rel="canonical" href={siteUrl} />
         
