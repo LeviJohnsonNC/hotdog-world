@@ -80,8 +80,8 @@ const Index = () => {
         <link rel="canonical" href={siteUrl} />
         
         {/* Open Graph tags */}
-        <meta property="og:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
-        <meta property="og:description" content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." />
+        <meta property="og:title" content="Hot Dog World — A World Map of Hot Dog Styles" />
+        <meta property="og:description" content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={siteUrl} />
         <meta property="og:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
