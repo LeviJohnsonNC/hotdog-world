@@ -17,6 +17,7 @@ import { TechnicalNote } from "@/components/TechnicalNote";
 import { NutritionLabel } from "@/components/recipe/NutritionLabel";
 import { OnboardingNudge } from "@/components/OnboardingNudge";
 import { formatCategoryName, separateOptionalIngredients } from "@/lib/utils";
+import { hotdogSeoOverrides } from "@/utils/seoOverrides";
 
 const HotdogDetail = () => {
   const { slug } = useParams();
@@ -112,6 +113,11 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
   const siteUrl = window.location.origin;
   const pageUrl = `${siteUrl}/hotdog/${slug}`;
   
+  // Use custom SEO overrides if available, otherwise generate defaults
+  const seoOverride = slug ? hotdogSeoOverrides[slug] : undefined;
+  const seoTitle = seoOverride?.title || `${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country} | Hotdogs Around the World`;
+  const seoDescription = seoOverride?.description || `Learn how to make authentic ${hotdog.name} from ${hotdog.city}. Get the complete recipe, ingredients, and origin story of this iconic ${hotdog.country} street food.`;
+  
   // Prepare ingredients for Recipe schema
   const allIngredients = isStructuredIngredients && ingredientsData
     ? Object.values(ingredientsData).flat()
@@ -120,16 +126,16 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50">
       <Helmet>
-        <title>{hotdog.name} Recipe - {hotdog.city}, {hotdog.country} | Hotdogs Around the World</title>
+        <title>{seoTitle}</title>
         <meta 
           name="description" 
-          content={`Learn how to make authentic ${hotdog.name} from ${hotdog.city}. Get the complete recipe, ingredients, and origin story of this iconic ${hotdog.country} street food.`}
+          content={seoDescription}
         />
         <link rel="canonical" href={pageUrl} />
         
         {/* Open Graph tags */}
-        <meta property="og:title" content={`${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country}`} />
-        <meta property="og:description" content={hotdog.description} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:image" content={hotdog.image} />
@@ -137,8 +143,8 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${hotdog.name} Recipe - ${hotdog.city}, ${hotdog.country}`} />
-        <meta name="twitter:description" content={hotdog.description} />
+        <meta name="twitter:title" content={seoTitle} />
+        <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={hotdog.image} />
 
         {/* Structured Data - Recipe Schema */}

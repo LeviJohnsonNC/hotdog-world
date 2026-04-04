@@ -72,16 +72,16 @@ const Index = () => {
       }`}
     >
       <Helmet>
-        <title>Hotdogs Around the World - Discover Global Street Food Cultures</title>
+        <title>Hot Dog World — A World Map of Hot Dog Styles</title>
         <meta 
           name="description" 
-          content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." 
+          content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." 
         />
         <link rel="canonical" href={siteUrl} />
         
         {/* Open Graph tags */}
-        <meta property="og:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
-        <meta property="og:description" content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." />
+        <meta property="og:title" content="Hot Dog World — A World Map of Hot Dog Styles" />
+        <meta property="og:description" content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={siteUrl} />
         <meta property="og:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
@@ -90,8 +90,8 @@ const Index = () => {
         
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
-        <meta name="twitter:description" content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." />
+        <meta name="twitter:title" content="Hot Dog World — A World Map of Hot Dog Styles" />
+        <meta name="twitter:description" content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." />
         <meta name="twitter:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
 
         {/* Structured Data - Organization */}

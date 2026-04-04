@@ -74,23 +74,23 @@ const Leaderboard = () => {
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
       <Helmet>
-        <title>Hot Dog Leaderboard - Top Explorers | Hotdogs Around the World</title>
+        <title>World's Best Hot Dogs — Leaderboard | Hot Dog World</title>
         <meta 
           name="description" 
-          content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world."
+          content="Which hot dog style reigns supreme? Browse the Hot Dog World community leaderboard — ranking the best hot dogs from across the globe. Cast your vote."
         />
         <link rel="canonical" href={`${siteUrl}/leaderboard`} />
         
         {/* Open Graph tags */}
-        <meta property="og:title" content="Hot Dog Leaderboard - Top Explorers | Hotdogs Around the World" />
-        <meta property="og:description" content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world." />
+        <meta property="og:title" content="World's Best Hot Dogs — Leaderboard | Hot Dog World" />
+        <meta property="og:description" content="Which hot dog style reigns supreme? Browse the Hot Dog World community leaderboard — ranking the best hot dogs from across the globe. Cast your vote." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${siteUrl}/leaderboard`} />
         
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Hot Dog Leaderboard - Top Explorers" />
-        <meta name="twitter:description" content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world." />
+        <meta name="twitter:title" content="World's Best Hot Dogs — Leaderboard | Hot Dog World" />
+        <meta name="twitter:description" content="Which hot dog style reigns supreme? Browse the Hot Dog World community leaderboard — ranking the best hot dogs from across the globe. Cast your vote." />
       </Helmet>
 
       {/* Header */}
