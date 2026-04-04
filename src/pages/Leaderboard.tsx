@@ -82,8 +82,8 @@ const Leaderboard = () => {
         <link rel="canonical" href={`${siteUrl}/leaderboard`} />
         
         {/* Open Graph tags */}
-        <meta property="og:title" content="Hot Dog Leaderboard - Top Explorers | Hotdogs Around the World" />
-        <meta property="og:description" content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world." />
+        <meta property="og:title" content="World's Best Hot Dogs — Leaderboard | Hot Dog World" />
+        <meta property="og:description" content="Which hot dog style reigns supreme? Browse the Hot Dog World community leaderboard — ranking the best hot dogs from across the globe. Cast your vote." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`${siteUrl}/leaderboard`} />
         
