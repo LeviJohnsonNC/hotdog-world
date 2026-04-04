@@ -89,8 +89,8 @@ const Leaderboard = () => {
         
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content="Hot Dog Leaderboard - Top Explorers" />
-        <meta name="twitter:description" content="See who's leading the hot dog exploration race! Compare your progress with top explorers from around the world." />
+        <meta name="twitter:title" content="World's Best Hot Dogs — Leaderboard | Hot Dog World" />
+        <meta name="twitter:description" content="Which hot dog style reigns supreme? Browse the Hot Dog World community leaderboard — ranking the best hot dogs from across the globe. Cast your vote." />
       </Helmet>
 
       {/* Header */}

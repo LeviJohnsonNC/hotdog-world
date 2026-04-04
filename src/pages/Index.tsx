@@ -90,8 +90,8 @@ const Index = () => {
         
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Hotdogs Around the World - Discover Global Street Food Cultures" />
-        <meta name="twitter:description" content="Explore iconic hot dog recipes from around the world. Discover origin stories, authentic recipes, and collect stamps from global destinations." />
+        <meta name="twitter:title" content="Hot Dog World — A World Map of Hot Dog Styles" />
+        <meta name="twitter:description" content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." />
         <meta name="twitter:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
 
         {/* Structured Data - Organization */}
