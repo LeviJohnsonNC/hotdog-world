@@ -17,6 +17,7 @@ import { TechnicalNote } from "@/components/TechnicalNote";
 import { NutritionLabel } from "@/components/recipe/NutritionLabel";
 import { OnboardingNudge } from "@/components/OnboardingNudge";
 import { formatCategoryName, separateOptionalIngredients } from "@/lib/utils";
+import { hotdogSeoOverrides } from "@/utils/seoOverrides";
 
 const HotdogDetail = () => {
   const { slug } = useParams();
