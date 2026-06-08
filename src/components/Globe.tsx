@@ -227,6 +227,17 @@ function Earth({
           side={THREE.BackSide}
         />
       </Sphere>
+
+      {/* Outer atmospheric rim halo */}
+      <Sphere args={[2.18, 48, 48]}>
+        <meshBasicMaterial
+          color="#5cb8ff"
+          transparent
+          opacity={0.08}
+          side={THREE.BackSide}
+        />
+      </Sphere>
+
       
       {/* Hotdogs - disable clicks during spin */}
       {hotdogs.map((hotdog, index) => {
