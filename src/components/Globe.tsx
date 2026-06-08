@@ -74,6 +74,8 @@ function Earth({
   const introDoneRef = useRef<boolean>(false);
   const introStartZRef = useRef<number>((isMobile ? 8 : 4.5) * 1.85);
   const introEndZRef = useRef<number>(isMobile ? 8 : 4.5);
+  // Small random vertical tilt for idle drift (±0.0008 rad/frame)
+  const idleTiltRef = useRef<number>((Math.random() * 2 - 1) * 0.0008);
 
   useEffect(() => {
     // Set starting camera position for dolly-in
