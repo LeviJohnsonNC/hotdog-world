@@ -99,6 +99,13 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Bogotá": "colombia.png",
   "San José": "costarica.png",
   "Caracas": "venezuela.png",
+  "Oslo": "polse-lompe.png",
+  "Honolulu": "puka.png",
+  "Anchorage": "alaska-reindeer.png",
+  "Providence": "rhode-island.png",
+  "Copenhagen": "rod-polser.png",
+  "Seattle": "seattle.png",
+  "Guatemala City": "shuco.png",
 };
 
 // Slug-based globe overrides (for cities with multiple hot dogs)
