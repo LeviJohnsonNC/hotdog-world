@@ -74,6 +74,8 @@ function Earth({
   const introDoneRef = useRef<boolean>(false);
   const introStartZRef = useRef<number>((isMobile ? 8 : 4.5) * 1.85);
   const introEndZRef = useRef<number>(isMobile ? 8 : 4.5);
+  // Small random vertical tilt for idle drift (±0.0008 rad/frame)
+  const idleTiltRef = useRef<number>((Math.random() * 2 - 1) * 0.0008);
 
   useEffect(() => {
     // Set starting camera position for dolly-in
@@ -106,7 +108,7 @@ function Earth({
       camera.position.set(0, y, z);
       camera.lookAt(0, 0, 0);
       // Slow majestic spin during intro
-      earthGroupRef.current.rotation.y += 0.004 * (1 - eased * 0.6);
+      earthGroupRef.current.rotation.y -= 0.004 * (1 - eased * 0.6);
       if (p >= 1) introDoneRef.current = true;
       return;
     }
@@ -199,7 +201,10 @@ function Earth({
     
     // IDLE PHASE: Slow majestic auto-rotation (only if enabled)
     else if (enableAutoRotation && !isInteracting && !isSpinning) {
-      earthGroupRef.current.rotation.y += 0.0018;
+      earthGroupRef.current.rotation.y -= 0.0018;
+      earthGroupRef.current.rotation.x += idleTiltRef.current;
+      // Clamp tilt so it doesn't drift indefinitely
+      earthGroupRef.current.rotation.x = Math.max(-0.35, Math.min(0.35, earthGroupRef.current.rotation.x));
     }
   });
 
