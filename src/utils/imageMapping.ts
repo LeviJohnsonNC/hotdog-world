@@ -106,6 +106,13 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Copenhagen": "rod-polser.png",
   "Seattle": "seattle.png",
   "Guatemala City": "shuco.png",
+  "Kyiv": "ukraine.png",
+  "Arizona": "sonoran.png",
+  "Tehran": "iran.png",
+  "Moscow": "sosiska-teste.png",
+  "Japan": "japan-tako-san.png",
+  "Pennsylvania": "pennsylvania.png",
+  "Tokyo": "tokyo.png",
 };
 
 // Slug-based globe overrides (for cities with multiple hot dogs)
