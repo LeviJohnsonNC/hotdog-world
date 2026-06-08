@@ -84,6 +84,14 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Kansas City": "kansas-city.png",
   "Warsaw": "kielbasa-roll.png",
   "Krakow": "kielbasa-roll.png",
+  "Seoul": "seoul-corndog.png",
+  "Finland": "finland.png",
+  "Lima": "lima.png",
+  "London": "london.png",
+  "Tunis": "merguez.png",
+  "Michigan": "michigan.png",
+  "Dar es Salaam": "mishkaki.png",
+  "Nairobi": "mishkaki.png",
 };
 
 // Slug-based globe overrides (for cities with multiple hot dogs)
