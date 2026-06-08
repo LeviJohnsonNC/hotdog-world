@@ -68,19 +68,51 @@ function Earth({
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
-  
+
+  // Cinematic dolly-in on mount
+  const introStartRef = useRef<number>(performance.now());
+  const introDoneRef = useRef<boolean>(false);
+  const introStartZRef = useRef<number>((isMobile ? 8 : 4.5) * 1.85);
+  const introEndZRef = useRef<number>(isMobile ? 8 : 4.5);
+
+  useEffect(() => {
+    // Set starting camera position for dolly-in
+    camera.position.set(0, 0.6, introStartZRef.current);
+    camera.lookAt(0, 0, 0);
+    introStartRef.current = performance.now();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Load optimized Earth texture (will use browser caching after first load)
   const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
-  
+
   // Standard texture configuration for equirectangular projection
   colorMap.wrapS = THREE.RepeatWrapping;
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
 
+
   useFrame((state, delta) => {
     if (!earthGroupRef.current) return;
 
+    // CINEMATIC DOLLY-IN on first mount
+    if (!introDoneRef.current && phaseRef.current === "idle") {
+      const t = (performance.now() - introStartRef.current) / 1800; // 1.8s
+      const p = Math.min(t, 1);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - p, 3);
+      const z = introStartZRef.current + (introEndZRef.current - introStartZRef.current) * eased;
+      const y = 0.6 * (1 - eased);
+      camera.position.set(0, y, z);
+      camera.lookAt(0, 0, 0);
+      // Slow majestic spin during intro
+      earthGroupRef.current.rotation.y += 0.004 * (1 - eased * 0.6);
+      if (p >= 1) introDoneRef.current = true;
+      return;
+    }
+
     const phase = phaseRef.current;
+
 
     // SPINNING PHASE: Time-bounded physics with guaranteed alignment
     if (phase === "spinning" && targetHotdog) {
@@ -195,6 +227,17 @@ function Earth({
           side={THREE.BackSide}
         />
       </Sphere>
+
+      {/* Outer atmospheric rim halo */}
+      <Sphere args={[2.18, 48, 48]}>
+        <meshBasicMaterial
+          color="#5cb8ff"
+          transparent
+          opacity={0.08}
+          side={THREE.BackSide}
+        />
+      </Sphere>
+
       
       {/* Hotdogs - disable clicks during spin */}
       {hotdogs.map((hotdog, index) => {
