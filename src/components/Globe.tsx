@@ -68,14 +68,29 @@ function Earth({
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
-  
+
+  // Cinematic dolly-in on mount
+  const introStartRef = useRef<number>(performance.now());
+  const introDoneRef = useRef<boolean>(false);
+  const introStartZRef = useRef<number>((isMobile ? 8 : 4.5) * 1.85);
+  const introEndZRef = useRef<number>(isMobile ? 8 : 4.5);
+
+  useEffect(() => {
+    // Set starting camera position for dolly-in
+    camera.position.set(0, 0.6, introStartZRef.current);
+    camera.lookAt(0, 0, 0);
+    introStartRef.current = performance.now();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Load optimized Earth texture (will use browser caching after first load)
   const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
-  
+
   // Standard texture configuration for equirectangular projection
   colorMap.wrapS = THREE.RepeatWrapping;
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
+
 
   useFrame((state, delta) => {
     if (!earthGroupRef.current) return;
