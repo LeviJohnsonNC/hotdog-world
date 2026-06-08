@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Hotdog } from "@/types/hotdog";
-import { getHotdogImage } from "@/utils/imageMapping";
+import { getGlobeImage } from "@/utils/imageMapping";
 
 // Utility function to convert lat/lng to 3D vector position on a sphere
 function latLngToVector3(
