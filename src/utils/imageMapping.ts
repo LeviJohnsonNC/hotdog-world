@@ -77,9 +77,22 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Coney Island": "coney-island.png",
   "Berlin": "currywurst.png",
   "Melbourne": "dagwood.png",
+  "LA": "la.png",
+  "Detroit": "detroit-coney-dog.png",
+  "Philippines": "philippines.png",
+  "Helsinki": "grilli-makkara.png",
+  "Kansas City": "kansas-city.png",
+  "Warsaw": "kielbasa-roll.png",
+  "Krakow": "kielbasa-roll.png",
+};
+
+// Slug-based globe overrides (for cities with multiple hot dogs)
+export const slugToGlobeImageMap: Record<string, string> = {
+  "khanom-tokiao-hot-dog-crepe": "khanom.png",
 };
 
 export function getGlobeImage(city: string, slug?: string): string {
+  if (slug && slugToGlobeImageMap[slug]) return `/globe/${slugToGlobeImageMap[slug]}`;
   const globeImg = cityToGlobeImageMap[city];
   if (globeImg) return `/globe/${globeImg}`;
   // Fallback to full image if no optimized globe image exists yet
