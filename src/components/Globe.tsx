@@ -465,7 +465,6 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           rotateSpeed={0.5}
           zoomSpeed={0.8}
           onStart={handleInteractionStart}
-          onChange={handleInteractionStart}
           onEnd={handleInteractionEnd}
           enabled={!isSpinning}
         />
