@@ -60,6 +60,24 @@ export const cityToImageMap: Record<string, string> = {
   "Melbourne": "dagwood-dog.png",
 };
 
+// Small transparent-background images used ONLY for the 3D globe pins.
+// Keep these tiny (256px) so the globe loads fast.
+export const cityToGlobeImageMap: Record<string, string> = {
+  "Atlanta": "atlanta.png",
+  "Sydney": "aussie.png",
+  "Bangkok": "bangkok.png",
+  "Cape Town": "boerewors.png",
+  "Mumbai": "bombay.png",
+  "Reykjavík": "pylsa.png",
+};
+
+export function getGlobeImage(city: string, slug?: string): string {
+  const globeImg = cityToGlobeImageMap[city];
+  if (globeImg) return `/globe/${globeImg}`;
+  // Fallback to full image if no optimized globe image exists yet
+  return getHotdogImage(city, slug);
+}
+
 export function getHotdogImage(city: string, slug?: string): string {
   // First try slug-based mapping (for cities with multiple hot dogs)
   if (slug && slugToImageMap[slug]) {
