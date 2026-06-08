@@ -9,7 +9,7 @@ import { useFTUX } from "@/hooks/useFTUX";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import passportIcon from "@/assets/passport-icon.png";
 import leaderboardIcon from "@/assets/leaderboard-icon.png";
-import spinGlobeIcon from "@/assets/spin-globe-icon.png";
+
 
 const Index = () => {
   const navigate = useNavigate();
@@ -127,33 +127,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Spin the Globe — floating glass card (upper left) */}
+      {/* Leaderboard Ranks — upper left glass card */}
       <div className="fixed top-28 left-4 md:top-32 md:left-6 z-20">
-        <button
-          onClick={handleSpinClick}
-          disabled={isSpinning || !hotdogs.length || !canSpin}
-          className={`group relative flex flex-col items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-2xl
-            bg-white/5 backdrop-blur-xl border border-white/15
-            shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]
-            transition-all duration-300
-            ${isSpinning || !hotdogs.length || !canSpin
-              ? 'opacity-60 cursor-not-allowed'
-              : 'hover:bg-white/10 hover:border-white/25 hover:-translate-y-0.5 hover:shadow-[0_15px_50px_-10px_hsl(var(--mustard-yellow)/0.5)] active:scale-95'}`}
-          aria-label="Spin the Globe"
-        >
-          {/* colored glow under card */}
-          <div className="absolute inset-0 -z-10 rounded-2xl bg-[hsl(var(--mustard-yellow))]/30 blur-xl opacity-50 group-hover:opacity-80 transition-opacity" />
-          <img
-            src={spinGlobeIcon}
-            alt=""
-            className={`w-11 h-11 md:w-12 md:h-12 object-contain ${isSpinning ? 'animate-spin' : ''}`}
-          />
-          <span className="text-[10px] font-semibold tracking-wider uppercase text-white/85 mt-1">Spin</span>
-        </button>
-      </div>
-
-      {/* Leaderboard + Passport — upper right glass cards */}
-      <div className="fixed top-28 right-4 md:top-32 md:right-6 z-20 flex gap-2 md:gap-3">
         <a
           href="/leaderboard"
           onClick={(e) => { e.preventDefault(); navigate("/leaderboard"); }}
@@ -168,7 +143,10 @@ const Index = () => {
           <img src={leaderboardIcon} alt="" className="w-11 h-11 md:w-12 md:h-12 object-contain" />
           <span className="text-[10px] font-semibold tracking-wider uppercase text-white/85 mt-1">Ranks</span>
         </a>
+      </div>
 
+      {/* Passport — upper right glass card */}
+      <div className="fixed top-28 right-4 md:top-32 md:right-6 z-20">
         <a
           href="/passport"
           onClick={(e) => { e.preventDefault(); navigate("/passport"); }}
