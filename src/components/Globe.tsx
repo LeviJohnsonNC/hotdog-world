@@ -201,7 +201,10 @@ function Earth({
     
     // IDLE PHASE: Slow majestic auto-rotation (only if enabled)
     else if (enableAutoRotation && !isInteracting && !isSpinning) {
-      earthGroupRef.current.rotation.y += 0.0018;
+      earthGroupRef.current.rotation.y -= 0.0018;
+      earthGroupRef.current.rotation.x += idleTiltRef.current;
+      // Clamp tilt so it doesn't drift indefinitely
+      earthGroupRef.current.rotation.x = Math.max(-0.35, Math.min(0.35, earthGroupRef.current.rotation.x));
     }
   });
 
