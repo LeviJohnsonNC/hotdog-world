@@ -92,6 +92,13 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Michigan": "michigan.png",
   "Dar es Salaam": "mishkaki.png",
   "Nairobi": "mishkaki.png",
+  "Montreal": "montreal.png",
+  "New York": "newyork.png",
+  "Buenos Aires": "pancho.png",
+  "Prague": "parek-rohliku.png",
+  "Bogotá": "colombia.png",
+  "San José": "costarica.png",
+  "Caracas": "venezuela.png",
 };
 
 // Slug-based globe overrides (for cities with multiple hot dogs)
