@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState, useMemo } from "react";
+import { Suspense, useRef, useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Globe, GlobeHandle } from "@/components/Globe";
@@ -16,70 +16,48 @@ const Index = () => {
   const { data: hotdogs = [], isLoading } = useHotdogsLight();
   const { user, signOut } = useAuth();
   const prefersReducedMotion = useReducedMotion();
-  const { hasSeenFTUX, ftuxPhase, markFTUXComplete, shouldShowFTUX } = useFTUX(prefersReducedMotion);
+  const { ftuxPhase, markFTUXComplete, shouldShowFTUX } = useFTUX(prefersReducedMotion);
   const globeRef = useRef<GlobeHandle>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Pulse ALL hotdogs during FTUX
   const ftuxPulsingPins = useMemo(() => {
     if (!shouldShowFTUX || hotdogs.length === 0) return new Set<string>();
-    
-    // Return all hotdog IDs to pulse all pins
-    console.log('FTUX: Pulsing ALL hotdogs:', hotdogs.length);
     return new Set(hotdogs.map(h => h.id));
   }, [shouldShowFTUX, hotdogs]);
 
   const handleHotdogClick = (hotdogSlug: string) => {
     markFTUXComplete();
+    setHasInteracted(true);
     navigate(`/hotdog/${hotdogSlug}`);
   };
 
   const handleSpinClick = () => {
     if (!hotdogs.length || isSpinning || !canSpin) return;
-    
     markFTUXComplete();
-    
-    // Select random hotdog
+    setHasInteracted(true);
     const randomIndex = Math.floor(Math.random() * hotdogs.length);
     const randomHotdog = hotdogs[randomIndex];
-    
     setIsSpinning(true);
     setCanSpin(false);
     globeRef.current?.spinToHotdog(randomHotdog.slug);
-    
-    // Reset spinning state after animation
-    setTimeout(() => {
-      setIsSpinning(false);
-    }, 5000);
-    
-    // 5 second cooldown
-    setTimeout(() => {
-      setCanSpin(true);
-    }, 5000);
+    setTimeout(() => setIsSpinning(false), 5000);
+    setTimeout(() => setCanSpin(true), 5000);
   };
 
-  const siteUrl = window.location.origin;
-  const showHint = shouldShowFTUX && ftuxPhase === 'hinting';
-  
-  // Debug logging for FTUX
-  console.log('FTUX State:', { shouldShowFTUX, ftuxPhase, showHint, pulsingPinsCount: ftuxPulsingPins.size });
+  const siteUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <div 
-      className={`relative w-full h-screen overflow-hidden transition-opacity duration-200 ${
-        shouldShowFTUX && ftuxPhase === 'loading' ? 'opacity-0' : 'opacity-100'
-      }`}
-    >
+    <div className="relative w-full h-screen overflow-hidden bg-[#0a1420]">
       <Helmet>
         <title>Hot Dog World — A World Map of Hot Dog Styles</title>
-        <meta 
-          name="description" 
-          content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." 
+        <meta
+          name="description"
+          content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog."
         />
         <link rel="canonical" href={siteUrl} />
-        
-        {/* Open Graph tags */}
         <meta property="og:title" content="Hot Dog World — A World Map of Hot Dog Styles" />
         <meta property="og:description" content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." />
         <meta property="og:type" content="website" />
@@ -87,14 +65,10 @@ const Index = () => {
         <meta property="og:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        
-        {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Hot Dog World — A World Map of Hot Dog Styles" />
         <meta name="twitter:description" content="Explore hot dogs from every corner of the globe. An interactive map and guide to 60+ regional hot dog styles — from Iceland's pylsa to the Filipino waffle dog." />
         <meta name="twitter:image" content={`${siteUrl}/images/chicago-hotdog-hero.png`} />
-
-        {/* Structured Data - Organization */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -105,195 +79,178 @@ const Index = () => {
             "description": "A global exploration of iconic hot dog recipes and street food cultures"
           })}
         </script>
-
-        {/* Structured Data - WebSite */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Hotdogs Around the World",
             "url": siteUrl,
-            "description": "Explore iconic hot dog recipes from around the world",
             "potentialAction": {
               "@type": "SearchAction",
-              "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": `${siteUrl}/hotdog/{search_term_string}`
-              },
+              "target": { "@type": "EntryPoint", "urlTemplate": `${siteUrl}/hotdog/{search_term_string}` },
               "query-input": "required name=search_term_string"
             }
           })}
         </script>
       </Helmet>
 
-      {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 p-3 md:p-4 bg-background/60 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="font-heading text-2xl md:text-4xl font-semibold text-primary">
-            Hotdogs Around the World
-          </h1>
-          <p className="text-xs md:text-base text-foreground/60 mt-0.5 md:mt-1">
-            Click a pin to discover iconic street food from every corner of the planet
-          </p>
-        </div>
-      </header>
-
-      {/* Floating Icon - Spin the Globe (Upper Left) */}
-      <div className="fixed top-24 left-6 sm:top-24 sm:left-4 md:top-28 md:left-6 z-20 flex flex-row items-center bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
-        <button
-          onClick={handleSpinClick}
-          disabled={isSpinning || !hotdogs.length || !canSpin}
-          className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 ${
-            isSpinning || !hotdogs.length 
-              ? 'opacity-50 cursor-not-allowed' 
-              : 'hover:scale-110 active:scale-95 cursor-pointer'
-          }`}
-          aria-label="Spin the Globe"
-        >
-          <img 
-            src={spinGlobeIcon} 
-            alt="Spin the Globe" 
-            className={`w-full h-full object-contain ${isSpinning ? 'animate-spin' : ''}`}
-          />
-        </button>
-      </div>
-
-      {/* Floating Icons - Leaderboard and Passport (Upper Right) */}
-      <div className="fixed top-24 right-6 sm:top-24 sm:right-4 md:top-28 md:right-6 z-20 flex flex-row items-center gap-2 sm:gap-3 bg-background/40 backdrop-blur-lg rounded-2xl p-3 shadow-lg border border-border/30">
-        {/* Leaderboard Icon */}
-        <a
-          href="/leaderboard"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/leaderboard");
-          }}
-          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer block"
-          aria-label="View Leaderboard"
-        >
-          <img 
-            src={leaderboardIcon} 
-            alt="Hot Dog Leaderboard" 
-            className="w-full h-full object-contain"
-          />
-        </a>
-
-        {/* Passport Icon */}
-        <a
-          href="/passport"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/passport");
-          }}
-          className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer block"
-          aria-label="View My Passport"
-        >
-          <img 
-            src={passportIcon} 
-            alt="Hot Dog Passport" 
-            className="w-full h-full object-contain"
-          />
-        </a>
-      </div>
-
-      {/* Globe with Loading State */}
-      <div className="absolute inset-0 pt-20 md:pt-24">
+      {/* Globe canvas — full bleed */}
+      <div className="absolute inset-0">
         {isLoading ? (
           <LoadingGlobe />
         ) : (
           <Suspense fallback={<LoadingGlobe />}>
-            <Globe 
-              ref={globeRef} 
-              hotdogs={hotdogs} 
+            <Globe
+              ref={globeRef}
+              hotdogs={hotdogs}
               onHotdogClick={handleHotdogClick}
               enableAutoRotation={!shouldShowFTUX || ftuxPhase !== 'static'}
               ftuxPulsingPins={ftuxPulsingPins}
               ftuxPhase={ftuxPhase}
             />
-            
-            {/* FTUX Micro-hint */}
-            {showHint && (
-              <div 
-                className="
-                  fixed top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
-                  px-6 py-3 rounded-full
-                  bg-background/60 backdrop-blur-lg
-                  border border-border/40
-                  shadow-xl
-                  text-sm md:text-base font-medium text-foreground
-                  pointer-events-none
-                  opacity-0
-                "
-                style={{
-                  animation: 'fadeIn 0.5s ease-out forwards'
-                }}
-              >
-                Spin or tap a hot dog to explore.
-              </div>
-            )}
-            
-            <style>{`
-              @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-              }
-            `}</style>
           </Suspense>
         )}
       </div>
 
-      {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-mustard/40 via-ketchup/30 to-mustard/40 backdrop-blur-md border-t-2 border-mustard/30 rounded-t-3xl shadow-lg pointer-events-auto">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-1.5 md:py-2 flex items-center justify-between">
-          {/* Left: Browse All & Account Settings */}
+      {/* Top vignette + title — overlays the globe directly */}
+      <div className="pointer-events-none absolute top-0 left-0 right-0 z-10 pt-5 md:pt-7 pb-10 bg-gradient-to-b from-black/55 via-black/25 to-transparent">
+        <div className="max-w-5xl mx-auto text-center px-4 animate-fade-in-down">
+          <p className="text-[10px] md:text-xs tracking-[0.32em] uppercase text-white/55 font-medium mb-2 md:mb-3">
+            An Interactive Atlas of Street Food
+          </p>
+          <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] text-white">
+            Hotdogs{" "}
+            <span className="bg-gradient-to-r from-[hsl(var(--mustard-yellow))] via-[hsl(var(--papaya-pink))] to-[hsl(var(--ketchup-red))] bg-clip-text text-transparent">
+              Around the World
+            </span>
+          </h1>
+        </div>
+      </div>
+
+      {/* Spin the Globe — floating glass card (upper left) */}
+      <div className="fixed top-28 left-4 md:top-32 md:left-6 z-20">
+        <button
+          onClick={handleSpinClick}
+          disabled={isSpinning || !hotdogs.length || !canSpin}
+          className={`group relative flex flex-col items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-2xl
+            bg-white/5 backdrop-blur-xl border border-white/15
+            shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]
+            transition-all duration-300
+            ${isSpinning || !hotdogs.length || !canSpin
+              ? 'opacity-60 cursor-not-allowed'
+              : 'hover:bg-white/10 hover:border-white/25 hover:-translate-y-0.5 hover:shadow-[0_15px_50px_-10px_hsl(var(--mustard-yellow)/0.5)] active:scale-95'}`}
+          aria-label="Spin the Globe"
+        >
+          {/* colored glow under card */}
+          <div className="absolute inset-0 -z-10 rounded-2xl bg-[hsl(var(--mustard-yellow))]/30 blur-xl opacity-50 group-hover:opacity-80 transition-opacity" />
+          <img
+            src={spinGlobeIcon}
+            alt=""
+            className={`w-11 h-11 md:w-12 md:h-12 object-contain ${isSpinning ? 'animate-spin' : ''}`}
+          />
+          <span className="text-[10px] font-semibold tracking-wider uppercase text-white/85 mt-1">Spin</span>
+        </button>
+      </div>
+
+      {/* Leaderboard + Passport — upper right glass cards */}
+      <div className="fixed top-28 right-4 md:top-32 md:right-6 z-20 flex gap-2 md:gap-3">
+        <a
+          href="/leaderboard"
+          onClick={(e) => { e.preventDefault(); navigate("/leaderboard"); }}
+          className="group relative flex flex-col items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-2xl
+            bg-white/5 backdrop-blur-xl border border-white/15
+            shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]
+            transition-all duration-300
+            hover:bg-white/10 hover:border-white/25 hover:-translate-y-0.5 hover:shadow-[0_15px_50px_-10px_hsl(var(--ketchup-red)/0.5)] active:scale-95"
+          aria-label="View Leaderboard"
+        >
+          <div className="absolute inset-0 -z-10 rounded-2xl bg-[hsl(var(--ketchup-red))]/30 blur-xl opacity-50 group-hover:opacity-80 transition-opacity" />
+          <img src={leaderboardIcon} alt="" className="w-11 h-11 md:w-12 md:h-12 object-contain" />
+          <span className="text-[10px] font-semibold tracking-wider uppercase text-white/85 mt-1">Ranks</span>
+        </a>
+
+        <a
+          href="/passport"
+          onClick={(e) => { e.preventDefault(); navigate("/passport"); }}
+          className="group relative flex flex-col items-center justify-center w-20 h-20 md:w-24 md:h-24 rounded-2xl
+            bg-white/5 backdrop-blur-xl border border-white/15
+            shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]
+            transition-all duration-300
+            hover:bg-white/10 hover:border-white/25 hover:-translate-y-0.5 hover:shadow-[0_15px_50px_-10px_hsl(var(--sky-blue)/0.5)] active:scale-95"
+          aria-label="View My Passport"
+        >
+          <div className="absolute inset-0 -z-10 rounded-2xl bg-[hsl(var(--sky-blue))]/30 blur-xl opacity-50 group-hover:opacity-80 transition-opacity" />
+          <img src={passportIcon} alt="" className="w-11 h-11 md:w-12 md:h-12 object-contain" />
+          <span className="text-[10px] font-semibold tracking-wider uppercase text-white/85 mt-1">Passport</span>
+        </a>
+      </div>
+
+      {/* Hero CTA — primary first-touch action */}
+      {!hasInteracted && !isLoading && (
+        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-24 md:bottom-28 z-20 flex flex-col items-center gap-2 animate-fade-in">
+          <button
+            onClick={handleSpinClick}
+            disabled={isSpinning || !hotdogs.length || !canSpin}
+            className="pointer-events-auto group relative px-7 md:px-9 py-3.5 md:py-4 rounded-full
+              bg-gradient-to-r from-[hsl(var(--ketchup-red))] to-[hsl(var(--mustard-yellow))]
+              text-white font-semibold text-sm md:text-base tracking-wide
+              shadow-[0_10px_40px_-5px_hsl(var(--ketchup-red)/0.6)]
+              hover:shadow-[0_15px_50px_-5px_hsl(var(--mustard-yellow)/0.7)]
+              hover:-translate-y-0.5 active:scale-95 transition-all duration-300
+              before:absolute before:inset-0 before:rounded-full before:bg-white/20 before:opacity-0 before:hover:opacity-100 before:transition-opacity
+              cta-pulse"
+          >
+            <span className="relative flex items-center gap-2">
+              Spin the Globe
+              <span className="text-lg leading-none transition-transform group-hover:translate-x-0.5">→</span>
+            </span>
+          </button>
+          <p className="text-xs md:text-sm text-white/60 font-medium">
+            or click any pin to explore 60+ regional styles
+          </p>
+        </div>
+      )}
+
+      {/* Bottom nav — slim glass */}
+      <div className="fixed bottom-0 left-0 right-0 z-10 bg-black/30 backdrop-blur-xl border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <a
               href="/hotdogs"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/hotdogs");
-              }}
-              className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
+              onClick={(e) => { e.preventDefault(); navigate("/hotdogs"); }}
+              className="px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 border border-white/10"
             >
-              <span>Browse All</span>
+              Browse All
             </a>
             {user && (
               <a
                 href="/settings"
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate('/settings');
-                }}
-                className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
+                onClick={(e) => { e.preventDefault(); navigate('/settings'); }}
+                className="px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 border border-white/10"
               >
                 <span className="hidden sm:inline">Account Settings</span>
                 <span className="sm:hidden">Settings</span>
               </a>
             )}
           </div>
-          
-          {/* Right: Sign In / Log Out */}
           {user ? (
             <button
               onClick={() => signOut()}
-              className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
+              className="px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 border border-white/10"
             >
-              <span>Log Out</span>
+              Log Out
             </button>
           ) : (
             <a
               href="/auth"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate('/auth');
-              }}
-              className="flex items-center gap-2 px-4 md:px-6 py-2 bg-card hover:bg-card/90 text-card-foreground rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 shadow-md hover:shadow-lg text-xs md:text-base"
+              onClick={(e) => { e.preventDefault(); navigate('/auth'); }}
+              className="px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 border border-white/10"
             >
-              <span>Sign In</span>
+              Sign In
             </a>
           )}
         </div>
       </div>
-
     </div>
   );
 };
