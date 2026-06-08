@@ -197,9 +197,9 @@ function Earth({
       }
     }
     
-    // IDLE PHASE: Normal auto-rotation (only if enabled)
+    // IDLE PHASE: Slow majestic auto-rotation (only if enabled)
     else if (enableAutoRotation && !isInteracting && !isSpinning) {
-      earthGroupRef.current.rotation.y += 0.001;
+      earthGroupRef.current.rotation.y += 0.0018;
     }
   });
 
