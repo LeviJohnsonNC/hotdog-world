@@ -69,6 +69,14 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Cape Town": "boerewors.png",
   "Mumbai": "bombay.png",
   "Reykjavík": "pylsa.png",
+  "São Paulo": "saopaulo.png",
+  "Kabul": "afghanistan.png",
+  "Chicago, Illinois": "chicago.png",
+  "Chicago": "chicago.png",
+  "Santiago": "completo.png",
+  "Coney Island": "coney-island.png",
+  "Berlin": "currywurst.png",
+  "Melbourne": "dagwood.png",
 };
 
 export function getGlobeImage(city: string, slug?: string): string {
