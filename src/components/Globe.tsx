@@ -95,7 +95,24 @@ function Earth({
   useFrame((state, delta) => {
     if (!earthGroupRef.current) return;
 
+    // CINEMATIC DOLLY-IN on first mount
+    if (!introDoneRef.current && phaseRef.current === "idle") {
+      const t = (performance.now() - introStartRef.current) / 1800; // 1.8s
+      const p = Math.min(t, 1);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - p, 3);
+      const z = introStartZRef.current + (introEndZRef.current - introStartZRef.current) * eased;
+      const y = 0.6 * (1 - eased);
+      camera.position.set(0, y, z);
+      camera.lookAt(0, 0, 0);
+      // Slow majestic spin during intro
+      earthGroupRef.current.rotation.y += 0.004 * (1 - eased * 0.6);
+      if (p >= 1) introDoneRef.current = true;
+      return;
+    }
+
     const phase = phaseRef.current;
+
 
     // SPINNING PHASE: Time-bounded physics with guaranteed alignment
     if (phase === "spinning" && targetHotdog) {
