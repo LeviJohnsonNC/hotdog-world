@@ -8,6 +8,7 @@ export interface Hotdog {
   latitude: number;
   longitude: number;
   image: string;
+  globeImage?: string;
   position: [number, number, number]; // 3D coordinates on globe
   ingredients?: {
     hotdog_and_bun?: string[];
