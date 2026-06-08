@@ -148,6 +148,28 @@ All colors MUST be HSL.
   .transition-smooth {
     transition: var(--transition-smooth);
   }
+
+  @keyframes fade-in-down {
+    0% { opacity: 0; transform: translateY(-12px); filter: blur(6px); }
+    100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  .animate-fade-in-down {
+    animation: fade-in-down 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes cta-pulse-glow {
+    0%, 100% { box-shadow: 0 10px 40px -5px hsl(var(--ketchup-red) / 0.6), 0 0 0 0 hsl(var(--mustard-yellow) / 0.55); }
+    50%      { box-shadow: 0 10px 40px -5px hsl(var(--ketchup-red) / 0.7), 0 0 0 14px hsl(var(--mustard-yellow) / 0); }
+  }
+  .cta-pulse {
+    animation: cta-pulse-glow 2.4s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-down,
+    .cta-pulse { animation: none !important; }
+  }
+
 }
 
 /* Flip Card Animations */
