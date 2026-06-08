@@ -74,7 +74,7 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
         document.body.style.cursor = "auto";
       }}
     >
-      <HotdogModel hovered={hovered} imageUrl={hotdog.image} position={position} />
+      <HotdogModel hovered={hovered} imageUrl={hotdog.globeImage ?? hotdog.image} position={position} />
       
       {hovered && (
         <Html
