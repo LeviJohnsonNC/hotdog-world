@@ -108,7 +108,7 @@ function Earth({
       camera.position.set(0, y, z);
       camera.lookAt(0, 0, 0);
       // Slow majestic spin during intro
-      earthGroupRef.current.rotation.y += 0.004 * (1 - eased * 0.6);
+      earthGroupRef.current.rotation.y -= 0.004 * (1 - eased * 0.6);
       if (p >= 1) introDoneRef.current = true;
       return;
     }
