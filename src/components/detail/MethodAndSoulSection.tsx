@@ -13,7 +13,13 @@ export function MethodAndSoulSection({ body, pullQuote }: Props) {
   const paragraphs = body.split("\n\n").filter(Boolean);
 
   return (
-    <section className="paper-card p-6 md:p-10 relative overflow-hidden">
+    <section
+      className="paper-card p-6 md:p-10 relative overflow-hidden"
+      style={{
+        background:
+          "linear-gradient(180deg, hsl(var(--cilantro) / 0.07) 0%, hsl(var(--paper)) 100%)",
+      }}
+    >
       <span
         aria-hidden
         className="absolute left-0 top-0 bottom-0 w-1.5"
