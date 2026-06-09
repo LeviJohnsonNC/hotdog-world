@@ -330,3 +330,115 @@ All colors MUST be HSL.
     transform: none;
   }
 }
+
+/* ============================================================
+   Editorial passport / field-guide utilities (Bogotá redesign)
+   ============================================================ */
+@layer utilities {
+  .bg-paper {
+    background-color: hsl(var(--paper));
+    background-image:
+      radial-gradient(hsla(32, 28%, 50%, 0.06) 1px, transparent 1px),
+      radial-gradient(hsla(32, 28%, 30%, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px, 53px 53px;
+    background-position: 0 0, 11px 17px;
+  }
+
+  .paper-card {
+    background-color: hsl(var(--paper));
+    border: 1px solid hsl(var(--paper-edge) / 0.55);
+    border-radius: 14px;
+    box-shadow: var(--shadow-paper);
+    position: relative;
+  }
+
+  .stamp-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    background: hsl(var(--stamp-red));
+    color: hsl(var(--paper));
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.12em;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 0 hsl(var(--stamp-red) / 0.45);
+    transform: rotate(-1.5deg);
+  }
+
+  .visa-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.95rem;
+    background: hsl(var(--paper));
+    color: hsl(var(--ink));
+    border: 1.5px dashed hsl(var(--ink) / 0.45);
+    border-radius: 999px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.18em;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 6px hsla(0,0%,0%,0.18);
+    transform: rotate(-2deg);
+  }
+
+  .ink-circle {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid hsl(var(--ink) / 0.75);
+    border-radius: 9999px;
+    background: hsl(var(--paper));
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .ink-circle[data-checked="true"] {
+    background: hsl(var(--stamp-red));
+    border-color: hsl(var(--stamp-red));
+    box-shadow: inset 0 0 0 3px hsl(var(--paper));
+  }
+
+  .brass-button {
+    background: linear-gradient(180deg, hsl(var(--brass)) 0%, hsl(var(--brass) / 0.85) 100%);
+    color: hsl(var(--paper));
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.14em;
+    padding: 0.65rem 1.25rem;
+    border-radius: 6px;
+    box-shadow: var(--shadow-stamp);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .brass-button:hover { transform: translateY(-1px); }
+  .brass-button:active {
+    transform: translateY(1px) rotate(-1deg);
+    box-shadow: 0 1px 0 hsl(var(--stamp-red) / 0.3);
+  }
+
+  .discovered-stamp {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.2rem 0.55rem;
+    color: hsl(var(--stamp-red));
+    border: 2px solid hsl(var(--stamp-red));
+    border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.16em;
+    font-size: 0.7rem;
+    transform: rotate(-8deg);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  @keyframes stamp-press {
+    0%   { transform: scale(1) rotate(0); }
+    40%  { transform: scale(0.9) rotate(-3deg); }
+    70%  { transform: scale(1.05) rotate(1deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  .animate-stamp-press { animation: stamp-press 0.45s ease-out; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-stamp-press { animation: none !important; }
+    .brass-button:active { transform: none; }
+  }
+}
