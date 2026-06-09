@@ -18,6 +18,9 @@ import { NutritionLabel } from "@/components/recipe/NutritionLabel";
 import { OnboardingNudge } from "@/components/OnboardingNudge";
 import { formatCategoryName, separateOptionalIngredients } from "@/lib/utils";
 import { hotdogSeoOverrides } from "@/utils/seoOverrides";
+import { EditorialDetailView } from "@/components/detail/EditorialDetailView";
+
+const EDITORIAL_SLUGS = new Set(["perro-caliente-colombiano"]);
 
 const HotdogDetail = () => {
   const { slug } = useParams();
