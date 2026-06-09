@@ -46,12 +46,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
     }
   }, [hotdogId, getStamp]);
 
-  // Scroll to top when stamp section opens
-  useEffect(() => {
-    if (isExpanded) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [isExpanded]);
+  // (Removed scroll-to-top; modal opens in place now)
 
   const handleSave = async () => {
     if (!tried) {
