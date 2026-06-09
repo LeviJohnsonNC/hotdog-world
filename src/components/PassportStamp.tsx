@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Camera, X, Stamp, RefreshCcw } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { HotdogStamp } from "@/types/passport";
 import { useStamps } from "@/hooks/useStamps";
 import { useUserProgress } from "@/contexts/UserProgressContext";
