@@ -70,6 +70,22 @@ All colors MUST be HSL.
     --poppy-seed: 0 0% 15%;
     --tomato-red: 10 80% 55%;
     --bun-cream: 40 40% 95%;
+
+    /* Editorial passport / field-guide tokens */
+    --paper: 39 45% 94%;
+    --paper-edge: 32 28% 78%;
+    --ink: 219 32% 22%;
+    --stamp-red: 8 70% 48%;
+    --sauce-pink: 352 85% 72%;
+    --cilantro: 135 45% 38%;
+    --pineapple: 42 90% 58%;
+    --brass: 38 55% 48%;
+    --shadow-paper: 0 4px 18px hsla(32, 30%, 30%, 0.10), 0 1px 0 hsla(32, 30%, 60%, 0.30) inset;
+    --shadow-stamp: 0 2px 0 hsla(8, 70%, 35%, 0.35), 0 6px 14px hsla(8, 70%, 35%, 0.25);
+
+    /* Per-page accent overrides (defaults; can be overridden per dog) */
+    --accent-1: var(--mustard-yellow);
+    --accent-2: var(--ketchup-red);
   }
 
   .dark {
