@@ -55,6 +55,8 @@ export type Database = {
       }
       hotdogs: {
         Row: {
+          accent_palette: Json | null
+          anatomy: Json | null
           calories: number | null
           carbs_fiber_g: number | null
           carbs_sugars_g: number | null
@@ -70,7 +72,9 @@ export type Database = {
           fat_saturated_g: number | null
           fat_total_g: number | null
           fat_trans_g: number | null
+          flavor_profile: Json | null
           fun_facts: string[] | null
+          hero_subtitle: string | null
           id: string
           ingredients: Json | null
           ingredients_hash: string | null
@@ -80,17 +84,23 @@ export type Database = {
           method_and_soul: string | null
           name: string
           origin_story: string | null
+          origin_timeline: Json | null
           prep_time: string | null
           protein_g: number | null
+          pull_quote: string | null
           recipe_yield: string | null
           region: string | null
+          related_slugs: string[] | null
           slug: string
           sodium_mg: number | null
           tags: string[] | null
           total_time: string | null
           video_url: string | null
+          why_it_works: string | null
         }
         Insert: {
+          accent_palette?: Json | null
+          anatomy?: Json | null
           calories?: number | null
           carbs_fiber_g?: number | null
           carbs_sugars_g?: number | null
@@ -106,7 +116,9 @@ export type Database = {
           fat_saturated_g?: number | null
           fat_total_g?: number | null
           fat_trans_g?: number | null
+          flavor_profile?: Json | null
           fun_facts?: string[] | null
+          hero_subtitle?: string | null
           id?: string
           ingredients?: Json | null
           ingredients_hash?: string | null
@@ -116,17 +128,23 @@ export type Database = {
           method_and_soul?: string | null
           name: string
           origin_story?: string | null
+          origin_timeline?: Json | null
           prep_time?: string | null
           protein_g?: number | null
+          pull_quote?: string | null
           recipe_yield?: string | null
           region?: string | null
+          related_slugs?: string[] | null
           slug: string
           sodium_mg?: number | null
           tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
+          why_it_works?: string | null
         }
         Update: {
+          accent_palette?: Json | null
+          anatomy?: Json | null
           calories?: number | null
           carbs_fiber_g?: number | null
           carbs_sugars_g?: number | null
@@ -142,7 +160,9 @@ export type Database = {
           fat_saturated_g?: number | null
           fat_total_g?: number | null
           fat_trans_g?: number | null
+          flavor_profile?: Json | null
           fun_facts?: string[] | null
+          hero_subtitle?: string | null
           id?: string
           ingredients?: Json | null
           ingredients_hash?: string | null
@@ -152,15 +172,19 @@ export type Database = {
           method_and_soul?: string | null
           name?: string
           origin_story?: string | null
+          origin_timeline?: Json | null
           prep_time?: string | null
           protein_g?: number | null
+          pull_quote?: string | null
           recipe_yield?: string | null
           region?: string | null
+          related_slugs?: string[] | null
           slug?: string
           sodium_mg?: number | null
           tags?: string[] | null
           total_time?: string | null
           video_url?: string | null
+          why_it_works?: string | null
         }
         Relationships: []
       }
