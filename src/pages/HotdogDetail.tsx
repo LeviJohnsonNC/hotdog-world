@@ -736,6 +736,8 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         isNewVisit={isNewVisit}
         visitCount={visitCount}
       />
+      </>
+      )}
     </div>
   );
 };
