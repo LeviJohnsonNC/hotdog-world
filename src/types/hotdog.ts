@@ -40,4 +40,25 @@ export interface Hotdog {
   protein_g?: number;
   sodium_mg?: number;
   cholesterol_mg?: number;
+  // Editorial detail-page fields (optional, per-dog)
+  hero_subtitle?: string | null;
+  flavor_profile?: {
+    sweet?: number;
+    salty?: number;
+    crunch?: number;
+    creamy?: number;
+    heat?: number;
+    mess?: number;
+  } | null;
+  anatomy?: Array<{ layer: string; note?: string }> | null;
+  why_it_works?: string | null;
+  origin_timeline?: Array<{
+    era: string;
+    title: string;
+    body: string;
+    icon?: string;
+  }> | null;
+  pull_quote?: string | null;
+  accent_palette?: { primary?: string; secondary?: string } | null;
+  related_slugs?: string[] | null;
 }
