@@ -20,7 +20,7 @@ import { formatCategoryName, separateOptionalIngredients } from "@/lib/utils";
 import { hotdogSeoOverrides } from "@/utils/seoOverrides";
 import { EditorialDetailView } from "@/components/detail/EditorialDetailView";
 
-const EDITORIAL_SLUGS = new Set(["perro-caliente-colombiano"]);
+// Editorial design applied to all hotdog pages
 
 const HotdogDetail = () => {
   const { slug } = useParams();
@@ -230,16 +230,16 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
         </script>
       </Helmet>
 
-      {EDITORIAL_SLUGS.has(hotdog.slug) ? (
-        <>
-          <EditorialDetailView hotdog={hotdog} />
-          <OnboardingNudge
-            isFirstVisit={isFirstVisit}
-            isNewVisit={isNewVisit}
-            visitCount={visitCount}
-          />
-        </>
-      ) : (
+      <>
+        <EditorialDetailView hotdog={hotdog} />
+        <OnboardingNudge
+          isFirstVisit={isFirstVisit}
+          isNewVisit={isNewVisit}
+          visitCount={visitCount}
+        />
+      </>
+      {false && (
+
       <>
       {/* Floating Back Button */}
       <Button

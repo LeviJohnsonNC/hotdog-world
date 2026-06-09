@@ -13,6 +13,8 @@ import { MethodAndSoulSection } from "@/components/detail/MethodAndSoulSection";
 import { TriviaPostcards } from "@/components/detail/TriviaPostcards";
 import { OriginTimelineSection } from "@/components/detail/OriginTimelineSection";
 import { ExploreMoreCTA } from "@/components/detail/ExploreMoreCTA";
+import { NutritionLabel } from "@/components/recipe/NutritionLabel";
+
 
 interface Props {
   hotdog: Hotdog;
@@ -80,6 +82,24 @@ export function EditorialDetailView({ hotdog }: Props) {
           <AnatomySection anatomy={hotdog.anatomy} whyItWorks={hotdog.why_it_works} />
         )}
 
+        {/* Nutrition at top of recipe area (full-width, no squish) */}
+        {hotdog.calories != null && (
+          <div className="paper-card p-4 md:p-5">
+            <NutritionLabel
+              calories={hotdog.calories}
+              fat_total_g={hotdog.fat_total_g}
+              fat_saturated_g={hotdog.fat_saturated_g}
+              fat_trans_g={hotdog.fat_trans_g}
+              carbs_total_g={hotdog.carbs_total_g}
+              carbs_fiber_g={hotdog.carbs_fiber_g}
+              carbs_sugars_g={hotdog.carbs_sugars_g}
+              protein_g={hotdog.protein_g}
+              sodium_mg={hotdog.sodium_mg}
+              cholesterol_mg={hotdog.cholesterol_mg}
+            />
+          </div>
+        )}
+
         {/* Editorial two-column at lg+: Build on left, Instructions on right */}
         <div className="grid lg:grid-cols-2 gap-8 md:gap-10">
           <BuildSection hotdog={hotdog} />
@@ -102,9 +122,10 @@ export function EditorialDetailView({ hotdog }: Props) {
           />
         )}
 
-        {hotdog.origin_timeline && hotdog.origin_timeline.length > 0 && (
-          <OriginTimelineSection timeline={hotdog.origin_timeline} />
+        {hotdog.origin_story && (
+          <OriginTimelineSection hotdog={hotdog} />
         )}
+
 
         <ExploreMoreCTA
           hotdog={hotdog}
