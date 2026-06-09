@@ -210,19 +210,10 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
         </Button>
       )}
 
-      {/* Expanded Form Panel */}
-      {isExpanded && (
-        <div className="w-full max-w-4xl mx-auto px-4 mb-8 animate-fade-in">
-          <Card className="relative p-6 md:p-8 shadow-[var(--shadow-elevated)] border-4 border-mustard/30 bg-bun">
-            {/* Close Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsExpanded(false)}
-              className="absolute top-4 right-4 rounded-full"
-            >
-              <X className="h-5 w-5" />
-            </Button>
+      {/* Expanded Form Modal */}
+      <Dialog open={isExpanded} onOpenChange={setIsExpanded}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8 border-4 border-mustard/30 bg-bun">
+
 
             {/* Header */}
             <div className="mb-6">
