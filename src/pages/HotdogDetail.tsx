@@ -229,6 +229,18 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
           })}
         </script>
       </Helmet>
+
+      {EDITORIAL_SLUGS.has(hotdog.slug) ? (
+        <>
+          <EditorialDetailView hotdog={hotdog} />
+          <OnboardingNudge
+            isFirstVisit={isFirstVisit}
+            isNewVisit={isNewVisit}
+            visitCount={visitCount}
+          />
+        </>
+      ) : (
+      <>
       {/* Floating Back Button */}
       <Button
         onClick={() => navigate("/")}
@@ -241,6 +253,7 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
 
       {/* Passport Stamp Button */}
       <PassportStamp hotdogId={hotdog.id} hotdogName={hotdog.name} />
+
 
       {/* Hero Section */}
       <section className="relative h-[60vh] min-h-[400px] bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden">
