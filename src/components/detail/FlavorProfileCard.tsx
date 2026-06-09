@@ -42,13 +42,13 @@ export function FlavorProfileCard({ flavorProfile }: Props) {
               </div>
               <div className="flex gap-1">
                 {[0, 1, 2, 3, 4].map((i) => {
-                  // Gradient stops across the 5 segments
+                  // Ketchup-red gradient: light → dark
                   const stops = [
-                    "hsl(var(--accent-1))",
-                    "hsl(var(--accent-1))",
-                    "hsl(var(--pineapple))",
-                    "hsl(var(--accent-2))",
-                    "hsl(var(--stamp-red))",
+                    "hsl(var(--ketchup-red) / 0.25)",
+                    "hsl(var(--ketchup-red) / 0.45)",
+                    "hsl(var(--ketchup-red) / 0.65)",
+                    "hsl(var(--ketchup-red) / 0.85)",
+                    "hsl(var(--ketchup-red))",
                   ];
                   return (
                     <span
