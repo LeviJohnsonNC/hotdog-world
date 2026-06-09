@@ -23,7 +23,7 @@ export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampCl
 
   return (
     <div
-      className={`hidden md:block fixed top-0 inset-x-0 z-40 transition-transform duration-300 ${
+      className={`hidden md:block fixed top-0 inset-x-0 z-50 transition-transform duration-300 ${
         visible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
@@ -62,7 +62,7 @@ export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampCl
 export function MobileActionBar({ onStampClick }: { onStampClick: () => void }) {
   const navigate = useNavigate();
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[hsl(var(--ink))] text-[hsl(var(--paper))] border-t border-white/10 px-4 py-3 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+    <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[hsl(var(--ink))] text-[hsl(var(--paper))] border-t border-white/10 px-4 py-3 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
       <button
         onClick={() => navigate("/")}
         className="flex-1 flex items-center justify-center gap-2 text-sm font-medium border border-white/25 rounded-md py-2.5"
