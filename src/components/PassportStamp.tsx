@@ -357,9 +357,9 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                 )}
               </div>
             </div>
-          </Card>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
+
     </>
   );
 }
