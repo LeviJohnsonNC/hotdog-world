@@ -113,6 +113,7 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Japan": "japan-tako-san.png",
   "Pennsylvania": "pennsylvania.png",
   "Tokyo": "tokyo.png",
+  "Toronto": "toronto.png",
 };
 
 // Slug-based globe overrides (for cities with multiple hot dogs)
