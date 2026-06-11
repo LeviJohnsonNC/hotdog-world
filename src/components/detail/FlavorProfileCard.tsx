@@ -5,12 +5,12 @@ interface Props {
 }
 
 const LABELS: Array<{ key: keyof NonNullable<Hotdog["flavor_profile"]>; label: string }> = [
-  { key: "sweet", label: "Sweet" },
-  { key: "salty", label: "Salty" },
-  { key: "crunch", label: "Crunch" },
-  { key: "creamy", label: "Creamy" },
-  { key: "heat", label: "Heat" },
   { key: "mess", label: "Mess Factor" },
+  { key: "heat", label: "Heat Level" },
+  { key: "crunch", label: "Crunch" },
+  { key: "sauce", label: "Sauce Load" },
+  { key: "boldness", label: "Boldness" },
+  { key: "distinctiveness", label: "Distinctiveness" },
 ];
 
 // Normalize legacy 0–3 values to 1–5 if needed

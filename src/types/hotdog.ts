@@ -43,12 +43,16 @@ export interface Hotdog {
   // Editorial detail-page fields (optional, per-dog)
   hero_subtitle?: string | null;
   flavor_profile?: {
+    mess?: number;
+    heat?: number;
+    crunch?: number;
+    sauce?: number;
+    boldness?: number;
+    distinctiveness?: number;
+    // legacy keys (kept optional for backward compatibility)
     sweet?: number;
     salty?: number;
-    crunch?: number;
     creamy?: number;
-    heat?: number;
-    mess?: number;
   } | null;
   anatomy?: Array<{ layer: string; note?: string }> | null;
   why_it_works?: string | null;
