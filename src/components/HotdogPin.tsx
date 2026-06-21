@@ -16,47 +16,46 @@ interface HotdogPinProps {
 export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, pulseDelay = 0 }: HotdogPinProps) {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<Group>(null);
-  const pulseStartTime = useRef<number | null>(null);
-  const [isPulsing, setIsPulsing] = useState(false);
+  const pulseStartRef = useRef<number | null>(null);
+  const hasStartedRef = useRef(false);
 
   useEffect(() => {
-    // Only start pulsing when shouldPulse becomes true
-    if (shouldPulse && !pulseStartTime.current && !isPulsing) {
-      console.log(`Pin "${hotdog.name}" will pulse in ${pulseDelay}ms`);
-      setTimeout(() => {
-        pulseStartTime.current = Date.now();
-        setIsPulsing(true);
-        console.log(`Pin "${hotdog.name}" PULSING NOW!`);
+    if (shouldPulse && !hasStartedRef.current) {
+      hasStartedRef.current = true;
+      const timer = setTimeout(() => {
+        pulseStartRef.current = performance.now();
       }, pulseDelay);
+      return () => clearTimeout(timer);
     }
-  }, [shouldPulse, pulseDelay, hotdog.name, isPulsing]);
+    if (!shouldPulse) {
+      pulseStartRef.current = null;
+      hasStartedRef.current = false;
+      if (groupRef.current) groupRef.current.scale.setScalar(1);
+    }
+  }, [shouldPulse, pulseDelay]);
 
   useFrame(() => {
-    if (!isPulsing || !groupRef.current || !pulseStartTime.current) return;
+    const g = groupRef.current;
+    if (!g) return;
 
-    const elapsed = Date.now() - pulseStartTime.current;
-    const duration = 1000; // Faster pulse: 1000ms
-
-    if (elapsed > duration) {
-      // Loop the pulse continuously during FTUX
-      if (shouldPulse) {
-        pulseStartTime.current = Date.now(); // Restart pulse immediately
-      } else {
-        groupRef.current.scale.setScalar(1);
-        setIsPulsing(false);
-        console.log(`Pin "${hotdog.name}" pulse complete`);
-      }
+    // Hover-driven gentle lift + scale spring
+    const targetScale = hovered ? 1.18 : pulseStartRef.current ? g.scale.x : 1;
+    if (!pulseStartRef.current) {
+      const s = g.scale.x + (targetScale - g.scale.x) * 0.18;
+      g.scale.setScalar(s);
       return;
     }
 
-    // ULTRA dramatic breathing animation: 1.0 -> 1.6 -> 1.0 (60% size increase!)
+    // Pulse loop
+    const duration = 1000;
+    const elapsed = (performance.now() - pulseStartRef.current) % duration;
     const progress = elapsed / duration;
     const scale = 1 + 0.6 * Math.sin(progress * Math.PI);
-    groupRef.current.scale.setScalar(scale);
+    g.scale.setScalar(scale);
   });
 
   return (
-    <group 
+    <group
       ref={groupRef}
       position={position}
       onClick={(e) => {
@@ -75,7 +74,7 @@ export function HotdogPin({ position, onClick, hotdog, shouldPulse = false, puls
       }}
     >
       <HotdogModel hovered={hovered} imageUrl={hotdog.globeImage ?? hotdog.image} position={position} />
-      
+
       {hovered && (
         <Html
           position={[0, 0.3, 0]}

@@ -85,13 +85,14 @@ function Earth({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load optimized Earth texture (will use browser caching after first load)
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
+  // Load optimized Earth texture (152KB WebP — preloaded in index.html)
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.webp');
 
   // Standard texture configuration for equirectangular projection
   colorMap.wrapS = THREE.RepeatWrapping;
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
+  colorMap.anisotropy = 8;
 
 
   useFrame((state, delta) => {
@@ -213,35 +214,62 @@ function Earth({
   
   return (
     <group ref={earthGroupRef}>
-      {/* Main Earth sphere - optimized geometry for mobile */}
+      {/* Main Earth sphere */}
       <Sphere args={[2, sphereDetail, sphereDetail]}>
         <meshStandardMaterial
           map={colorMap}
-          roughness={0.7}
-          metalness={0.0}
-          toneMapped={false}
-        />
-      </Sphere>
-      
-      {/* Subtle atmosphere glow */}
-      <Sphere args={[2.05, 32, 32]}>
-        <meshBasicMaterial
-          color="#87CEEB"
-          transparent
-          opacity={0.2}
-          side={THREE.BackSide}
+          roughness={0.78}
+          metalness={0.02}
         />
       </Sphere>
 
-      {/* Outer atmospheric rim halo */}
-      <Sphere args={[2.18, 48, 48]}>
+      {/* Inner soft atmosphere */}
+      <Sphere args={[2.04, 48, 48]}>
         <meshBasicMaterial
-          color="#5cb8ff"
+          color="#88c5ff"
           transparent
-          opacity={0.08}
+          opacity={0.16}
           side={THREE.BackSide}
+          depthWrite={false}
         />
       </Sphere>
+
+      {/* Fresnel rim halo — premium limb glow */}
+      <Sphere args={[2.22, 64, 64]}>
+        <shaderMaterial
+          transparent
+          depthWrite={false}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+          uniforms={{
+            uColor: { value: new THREE.Color('#6cc1ff') },
+            uPower: { value: 2.6 },
+            uIntensity: { value: 0.95 },
+          }}
+          vertexShader={`
+            varying vec3 vNormal;
+            varying vec3 vViewDir;
+            void main() {
+              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+              vNormal = normalize(normalMatrix * normal);
+              vViewDir = normalize(-mvPosition.xyz);
+              gl_Position = projectionMatrix * mvPosition;
+            }
+          `}
+          fragmentShader={`
+            varying vec3 vNormal;
+            varying vec3 vViewDir;
+            uniform vec3 uColor;
+            uniform float uPower;
+            uniform float uIntensity;
+            void main() {
+              float fres = pow(1.0 - abs(dot(vNormal, vViewDir)), uPower);
+              gl_FragColor = vec4(uColor, fres * uIntensity);
+            }
+          `}
+        />
+      </Sphere>
+
 
       
       {/* Hotdogs - disable clicks during spin */}
@@ -415,31 +443,44 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
     <div className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0, cameraZ], fov: 50, near: 0.01 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.1;
+          gl.outputColorSpace = THREE.SRGBColorSpace;
+        }}
       >
-        {/* Dark starry background like the reference */}
-        <color attach="background" args={["#1a2332"]} />
-        <fog attach="fog" args={["#1a2332", 10, 20]} />
-        
-        {/* Bright lighting for cartoonish look */}
-        <ambientLight intensity={1.5} />
-        <directionalLight 
-          position={[5, 3, 5]} 
-          intensity={1.5}
-          color="#ffffff"
+        {/* Deep space background */}
+        <color attach="background" args={["#0a1420"]} />
+        <fog attach="fog" args={["#0a1420", 11, 22]} />
+
+        {/* Cinematic three-point lighting */}
+        <ambientLight intensity={0.35} color="#9ec8ff" />
+        {/* Warm key (sun) */}
+        <directionalLight
+          position={[6, 3, 5]}
+          intensity={2.4}
+          color="#fff1d6"
         />
-        <directionalLight 
-          position={[-5, -3, -5]} 
-          intensity={0.8}
-          color="#ffffff"
+        {/* Cool fill */}
+        <directionalLight
+          position={[-6, -2, -4]}
+          intensity={0.55}
+          color="#6aa9ff"
         />
-        
+        {/* Rim light */}
+        <directionalLight
+          position={[0, 4, -6]}
+          intensity={0.9}
+          color="#aee0ff"
+        />
+
         {/* Starfield background */}
         <Stars />
-        
-        <Earth 
-          hotdogs={hotdogs} 
-          onHotdogClick={onHotdogClick} 
+
+        <Earth
+          hotdogs={hotdogs}
+          onHotdogClick={onHotdogClick}
           isInteracting={isInteracting}
           isSpinning={isSpinning}
           targetHotdog={targetHotdog}
@@ -460,15 +501,17 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           ftuxPulsingPins={ftuxPulsingPins}
           ftuxPhase={ftuxPhase}
         />
-        
+
         <OrbitControls
           ref={controlsRef}
           enablePan={false}
           enableZoom={true}
+          enableDamping
+          dampingFactor={0.08}
           minDistance={minZoom}
           maxDistance={10}
-          rotateSpeed={0.5}
-          zoomSpeed={0.8}
+          rotateSpeed={0.38}
+          zoomSpeed={0.7}
           onStart={handleInteractionStart}
           onEnd={handleInteractionEnd}
           enabled={!isSpinning}

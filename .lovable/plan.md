@@ -1,86 +1,72 @@
 
-# Hot Dog Detail Page Redesign — Bogotá First
+# Premium Globe: Performance + "Wow" Upgrades
 
-Ship the full redesign against the Bogotá Perro Caliente entry only. Other dogs keep the current page until you approve the direction and we expand. New DB columns are nullable, so every other dog stays unaffected.
+Two parallel goals: **(1) load fast**, **(2) feel premium** (look, light, motion). Below are the concrete recommendations, grouped so you can approve all or pick a subset.
 
-## Phase 1 — Database
+---
 
-Single migration adding nullable columns to `public.hotdogs`:
+## 1. Why it's slow today
 
-- `flavor_profile jsonb` — `{ sweet, salty, crunch, creamy, heat, mess }` each 0–3
-- `anatomy jsonb` — `[{ layer, note? }]` ordered bottom→top
-- `why_it_works text`
-- `origin_timeline jsonb` — `[{ era, title, body, icon? }]`
-- `pull_quote text`
-- `hero_subtitle text`
-- `accent_palette jsonb` — `{ primary, secondary }` as HSL strings (e.g. `"352 100% 74%"`) so they slot into the existing token system
-- `related_slugs text[]` — optional manual override; auto-derive by shared `region` + `tags` when null
+Measured from the codebase:
 
-No RLS changes needed (table is publicly readable, writes denied). Bogotá row backfilled via a follow-up data insert once the migration is approved and types regenerate.
+- `public/globe/` is **51 MB across 49 PNGs** (transparent pin art). Largest pins are 1.5–1.8 MB each. Every pin's texture is loaded as soon as the globe mounts.
+- `public/textures/earth-map.png` is **1.9 MB PNG**. There's a much smaller `earth-equirect-clean.jpg` (138 KB) already in the repo that isn't used.
+- No preload, no compression pipeline, no progressive reveal — the user stares at `LoadingGlobe` until everything is decoded.
+- Pin geometry, FTUX pulse loop, and per-frame `Date.now()` work in every `HotdogPin` add CPU cost on weak devices.
 
-## Phase 2 — Data backfill for Bogotá
+## 2. Performance plan (biggest wins first)
 
-Author Bogotá's content using existing fields + light research (Colombian street-food sources, not invented "old tricks"):
+1. **Earth texture**: switch to a compressed **1024×512 WebP** (~60–120 KB) generated from the existing equirect art. Add `<link rel="preload" as="image">` in `index.html` so it starts downloading before React mounts.
+2. **Pin textures**: batch-convert all `public/globe/*.png` to **256×256 WebP** (target ~15–25 KB each → ~1 MB total instead of 51 MB). Keep PNG fallback only if needed. This alone cuts first-paint network by ~95%.
+3. **Lazy pin loading**: render pins as cheap colored dots immediately, then swap to the textured "hotdog" model after the texture for that pin resolves. Globe is interactive in <1 s.
+4. **KTX2/Basis** (optional, larger lift): compress earth + pins to GPU-native format via `@loaders.gl` or `gltf-transform`; decoded on the GPU, ~5× faster than PNG.
+5. **Suspense polish**: replace the static `LoadingGlobe` with a low-poly Earth that's already on screen while textures stream in — no jarring swap.
+6. **Lower idle cost**: pause `useFrame` work when tab is hidden; use `state.clock.elapsedTime` instead of `Date.now()` in `HotdogPin`; skip pulse math when `!isPulsing`.
 
-- `hero_subtitle` — the punchier subtitle from the brief
-- `flavor_profile` — Sweet 2, Salty 2, Crunch 3, Creamy 2, Heat 0, Mess 3
-- `anatomy` — 7 layers from the brief (bun → dog → pink sauce → pineapple sauce → cheese → papitas → optional crown)
-- `why_it_works` — the pineapple/papitas/mayo sentence from the brief
-- `origin_timeline` — 4 eras from the brief, grounded language
-- `pull_quote` — "A proper perro is built tall, almost unstable, like a dare."
-- `accent_palette` — sauce pink + pineapple yellow, expressed as HSL tokens
-- `related_slugs` — Venezuelan Perro Caliente, Sonoran, Completo, Cachorro Quente (only those that exist in DB; verified before write)
-- De-dupe and regroup `ingredients` into Base / Sauces / Crunch / Fresh toppings / Optional chaos
-- Lightly tighten `method_and_soul` (the memory rule about not modifying it is overridden here because you've explicitly asked for this redesign)
+Expected result: time-to-interactive **~4–6 s → ~1.0–1.5 s** on a typical connection.
 
-## Phase 3 — Design tokens & shared utilities
+## 3. "Wow" visual upgrades
 
-Add to `index.css` (HSL only, semantic tokens):
+A. **Atmosphere & rim light** — replace the two flat backside spheres with a real **Fresnel atmosphere shader** (custom `ShaderMaterial`): soft cyan halo that gets brighter at the limb, subtle blue scatter into the day side. This is the single biggest premium tell.
 
-- `--paper`, `--paper-edge`, `--ink`, `--stamp-red`, `--sauce-pink`, `--cilantro`, `--pineapple`, `--brass`
-- `--shadow-paper`, `--shadow-stamp`
-- Per-page accent overrides applied via inline `style={{ '--accent-1': ..., '--accent-2': ... }}` from `accent_palette`
-- Utilities: `.bg-paper` (subtle SVG grain data-URI), `.paper-card`, `.stamp-label`, `.ink-circle` (checkbox skin)
+B. **Day/night with city lights** — add a second emissive texture (night-side city lights) blended by the dot product of the sun direction and the surface normal. Pins on the dark side glow warmer. Feels like Apple Weather / Stripe.
 
-Extend `tailwind.config.ts` with the new color tokens and a `stamp-press` keyframe (scale + slight rotate, gated by `prefers-reduced-motion`).
+C. **Cinematic lighting** — drop the flat ambient + two directionals. Use one warm key light (sun) + cool fill + a subtle rim, plus `ACESFilmicToneMapping` and `outputColorSpace = SRGB`. Earth instantly looks rendered, not flat.
 
-## Phase 4 — Component split
+D. **Starfield depth** — current `Stars` is a flat layer. Add a slow-parallax distant nebula plane + 2–3 brighter twinkling stars; tiny touch, huge mood.
 
-`HotdogDetail.tsx` becomes a thin shell (route + Helmet/JSON-LD + layout). New components under `src/components/detail/`:
+E. **Pin presentation** — instead of flat upright sprites, anchor each pin with a soft glowing **ground halo disc** on the surface + a thin vertical "rising line" + the hotdog floating just above. On hover, the halo pulses and the model gently lifts.
 
-- `HeroSection` — full-bleed image, stronger bottom gradient, visa-sticker location pill, balanced display type, metadata chip row (from `tags` + `region` + city; no fabricated values)
-- `StickyPassportBar` (desktop) — appears after hero scrolls off; Back to Map · name+city · trivia progress · Stamp button
-- `MobileActionBar` — sticky bottom Back + Stamp
-- `FlavorProfileCard` — meter bars colored from accent tokens (renders only if `flavor_profile` present)
-- `AnatomySection` — vertical layered stack with numbered callouts + `why_it_works` margin note (renders only if `anatomy` present)
-- `BuildSection` — keeps SEO-visible `<h2>Recipe</h2>`, displays "The Bogotá Build" as the styled stamp label; ink-circle checkboxes (still real Radix `Checkbox` for a11y); grouped ingredients; nutrition rendered as a small "Approx. per dog" receipt sticker in a sidebar slot
-- `InstructionsSection` — numbered step cards, two columns on desktop, technique tips as margin notes
-- `MethodAndSoulSection` — editorial card, vertical cilantro/mustard accent stripe, large pull quote from `pull_quote` (fallback: first sentence of `method_and_soul`)
-- `TriviaSection` — restyles `FactFlipCard` as collectible postcards with "Discovered" stamp on reveal; stamp-trail progress replaces `<Progress>`; completion fires existing `useTriviaBadges` pipeline (no new per-city badge)
-- `OriginTimelineSection` — vertical timeline using existing `.timeline-dot` styles, one entry per era from `origin_timeline` (falls back to the current prose block if null)
-- `ExploreMoreCTA` — bottom card with Stamp passport (re-trigger), Spin the globe (links `/`), and 3 related dog cards from `related_slugs` (or auto-derived by region+tags)
+F. **Postprocessing** (optional, +1 dep `@react-three/postprocessing`): subtle **Bloom** on rim + pin halos, **Vignette**, and a touch of **ChromaticAberration**. This is what makes 3D look like a product, not a demo.
 
-Desktop layout: editorial two-column at `lg+` inside `max-w-[1140px]`. Tablet/mobile: single column with strong section separation. Existing floating round Back button and floating PassportStamp are removed in favor of the new bars.
+## 4. "Wow" motion upgrades
 
-## Phase 5 — Interaction polish
+A. **Cinematic intro** — extend the existing 1.8 s dolly-in: start from far + tilted, ease-in the camera while the globe finishes a slow ¾ rotation, atmosphere fades in last. Pins fade/scale in with a staggered ripple from the equator outward.
 
-- Stamp button: brass styling, press animation, existing toast preserved
-- Card flip: keep current 3D flip, add "Discovered" stamp overlay on reveal
-- Hover lift only on interactive cards
-- All animations gated by `prefers-reduced-motion`
+B. **Inertial drag** — OrbitControls feels "sticky." Add `enableDamping`, `dampingFactor: 0.08`, `rotateSpeed: 0.35` for a heavy, satisfying spin. Mouse-wheel zoom uses an ease curve, not linear.
 
-## Phase 6 — QA
+C. **Idle drift** — current drift is constant. Use a low-frequency noise (e.g. `simplex-noise`) so the globe gently breathes on two axes — never repeats, never feels mechanical.
 
-- Recipe + BreadcrumbList JSON-LD unchanged; verify against Rich Results Test
-- Confirm non-Bogotá dogs render unchanged (sections gracefully hide when new fields are null)
-- Check mobile (sticky bar doesn't overlap final card), tablet single column, desktop two column
+D. **"Spin the Globe" upgrade** — currently flicks then aligns. Replace with: rapid spin-up → momentary motion blur (via postprocessing) → magnetic slow-down with a soft *thunk* haptic (Vibration API on mobile) → camera dolly + tilt onto the target pin → pin halo pulses → route transitions. Feels like a slot machine landing.
 
-## Technical notes
+E. **Hover micro-interactions** — pin scales 1.0→1.15 with spring easing, halo expands, tooltip card uses the existing fade-in but slides up 4 px. Cursor becomes a custom dot that follows with lerp.
 
-- Order of operations: (a) approve migration → (b) types regenerate → (c) data insert for Bogotá + verify related slugs → (d) build components against typed fields. Components reading new fields handle `null` so the page works before the data insert lands.
-- No hardcoded hex in components. Per-dog accents flow through `accent_palette` HSL strings written into a CSS variable scope on the page root.
-- Bogotá-only scoping: every new section component checks the relevant field for null and hides itself otherwise — no slug gating, so when you backfill the next dog it automatically lights up.
+F. **Page transition** — when zooming into a pin, fade the globe to the detail page's hero image rather than a hard route swap.
 
-## Open question for after you approve
+## 5. Suggested rollout order
 
-Once you've reviewed Bogotá, I'll need a quick rubric from you for expanding: how grounded vs. playful you want the timeline copy, and whether you'd like me to draft batches of (flavor_profile + anatomy + timeline + pull_quote) for the next ~5 dogs for your review, or do them one-by-one.
+1. **Perf pass** (assets + preload + lazy pins) — invisible but unblocks everything else.
+2. **Lighting + tone mapping + Fresnel atmosphere** — biggest visual jump for least code.
+3. **Pin halos + hover springs**.
+4. **Intro choreography + inertial controls**.
+5. **Day/night texture + postprocessing bloom** (optional flourish).
+
+---
+
+## Questions before I build
+
+1. **Scope** — do you want the full premium pass (1–5) or just perf + atmosphere + pin polish (1–3)?
+2. **Postprocessing dependency** — OK to add `@react-three/postprocessing` (~25 KB gz) for bloom/vignette?
+3. **Art direction** — keep the current "bright cartoon" Earth, or move toward a darker, more cinematic **photographic-but-stylized** look (Apple Weather / Stripe Atlas vibe)?
+
+I'll wait for your answers, then implement.
