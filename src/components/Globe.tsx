@@ -488,16 +488,15 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           enabled={!isSpinning}
         />
 
-        {/* Postprocessing — subtle bloom + vignette */}
+        {/* Postprocessing — whisper of bloom on warm highlights only */}
         {!isMobile && (
           <EffectComposer multisampling={0}>
             <Bloom
-              intensity={0.5}
-              luminanceThreshold={0.6}
-              luminanceSmoothing={0.25}
+              intensity={0.18}
+              luminanceThreshold={0.82}
+              luminanceSmoothing={0.2}
               mipmapBlur
             />
-            <Vignette eskil={false} offset={0.2} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
           </EffectComposer>
         )}
       </Canvas>
