@@ -85,13 +85,14 @@ function Earth({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load optimized Earth texture (will use browser caching after first load)
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.png');
+  // Load optimized Earth texture (152KB WebP — preloaded in index.html)
+  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.webp');
 
   // Standard texture configuration for equirectangular projection
   colorMap.wrapS = THREE.RepeatWrapping;
   colorMap.wrapT = THREE.ClampToEdgeWrapping;
   colorMap.colorSpace = THREE.SRGBColorSpace;
+  colorMap.anisotropy = 8;
 
 
   useFrame((state, delta) => {
