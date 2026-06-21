@@ -226,50 +226,14 @@ function Earth({
         />
       </Sphere>
 
-      {/* Inner soft atmosphere */}
-      <Sphere args={[2.04, 48, 48]}>
+      {/* Subtle atmosphere — single thin backside layer, barely there */}
+      <Sphere args={[2.06, 48, 48]}>
         <meshBasicMaterial
-          color="#88c5ff"
+          color="#7fb8ff"
           transparent
-          opacity={0.16}
+          opacity={0.10}
           side={THREE.BackSide}
           depthWrite={false}
-        />
-      </Sphere>
-
-      {/* Fresnel rim halo — premium limb glow */}
-      <Sphere args={[2.22, 64, 64]}>
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-          uniforms={{
-            uColor: { value: new THREE.Color('#6cc1ff') },
-            uPower: { value: 2.6 },
-            uIntensity: { value: 0.95 },
-          }}
-          vertexShader={`
-            varying vec3 vNormal;
-            varying vec3 vViewDir;
-            void main() {
-              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-              vNormal = normalize(normalMatrix * normal);
-              vViewDir = normalize(-mvPosition.xyz);
-              gl_Position = projectionMatrix * mvPosition;
-            }
-          `}
-          fragmentShader={`
-            varying vec3 vNormal;
-            varying vec3 vViewDir;
-            uniform vec3 uColor;
-            uniform float uPower;
-            uniform float uIntensity;
-            void main() {
-              float fres = pow(1.0 - abs(dot(vNormal, vViewDir)), uPower);
-              gl_FragColor = vec4(uColor, fres * uIntensity);
-            }
-          `}
         />
       </Sphere>
 
