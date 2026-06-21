@@ -1,12 +1,15 @@
 import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSound } from "@/hooks/useSound";
+
 
 type AnimationPhase = "idle" | "spinning" | "zooming";
 
@@ -279,6 +282,10 @@ function Earth({
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
         const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0; // Rapid-fire stagger: 150ms between each
         
+        // Intro ripple: pins near the equator appear first, poles last
+        const latAbs = Math.abs(hotdog.position[1]); // y axis ~ latitude
+        const introDelay = 1800 + latAbs * 700 + Math.random() * 120;
+
         return (
           <HotdogPin
             key={hotdog.id}
@@ -287,6 +294,7 @@ function Earth({
             hotdog={hotdog}
             shouldPulse={shouldPulse}
             pulseDelay={pulseDelay}
+            introDelay={introDelay}
           />
         );
       })}
@@ -516,6 +524,19 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           onEnd={handleInteractionEnd}
           enabled={!isSpinning}
         />
+
+        {/* Postprocessing — subtle bloom + vignette */}
+        {!isMobile && (
+          <EffectComposer multisampling={0}>
+            <Bloom
+              intensity={0.5}
+              luminanceThreshold={0.6}
+              luminanceSmoothing={0.25}
+              mipmapBlur
+            />
+            <Vignette eskil={false} offset={0.2} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
+          </EffectComposer>
+        )}
       </Canvas>
     </div>
   );
