@@ -121,10 +121,13 @@ export const slugToGlobeImageMap: Record<string, string> = {
   "khanom-tokiao-hot-dog-crepe": "khanom.png",
 };
 
+// All globe pin images are now stored as optimized .webp (256px, ~10KB each)
+const toWebp = (filename: string) => filename.replace(/\.png$/i, ".webp");
+
 export function getGlobeImage(city: string, slug?: string): string {
-  if (slug && slugToGlobeImageMap[slug]) return `/globe/${slugToGlobeImageMap[slug]}`;
+  if (slug && slugToGlobeImageMap[slug]) return `/globe/${toWebp(slugToGlobeImageMap[slug])}`;
   const globeImg = cityToGlobeImageMap[city];
-  if (globeImg) return `/globe/${globeImg}`;
+  if (globeImg) return `/globe/${toWebp(globeImg)}`;
   // Fallback to full image if no optimized globe image exists yet
   return getHotdogImage(city, slug);
 }
