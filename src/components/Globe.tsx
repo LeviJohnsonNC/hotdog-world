@@ -282,6 +282,10 @@ function Earth({
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
         const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0; // Rapid-fire stagger: 150ms between each
         
+        // Intro ripple: pins near the equator appear first, poles last
+        const latAbs = Math.abs(hotdog.position[1]); // y axis ~ latitude
+        const introDelay = 1800 + latAbs * 700 + Math.random() * 120;
+
         return (
           <HotdogPin
             key={hotdog.id}
@@ -290,6 +294,7 @@ function Earth({
             hotdog={hotdog}
             shouldPulse={shouldPulse}
             pulseDelay={pulseDelay}
+            introDelay={introDelay}
           />
         );
       })}
