@@ -1,8 +1,7 @@
 import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
@@ -226,50 +225,14 @@ function Earth({
         />
       </Sphere>
 
-      {/* Inner soft atmosphere */}
-      <Sphere args={[2.04, 48, 48]}>
+      {/* Subtle atmosphere — single thin backside layer, barely there */}
+      <Sphere args={[2.06, 48, 48]}>
         <meshBasicMaterial
-          color="#88c5ff"
+          color="#7fb8ff"
           transparent
-          opacity={0.16}
+          opacity={0.10}
           side={THREE.BackSide}
           depthWrite={false}
-        />
-      </Sphere>
-
-      {/* Fresnel rim halo — premium limb glow */}
-      <Sphere args={[2.22, 64, 64]}>
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-          uniforms={{
-            uColor: { value: new THREE.Color('#6cc1ff') },
-            uPower: { value: 2.6 },
-            uIntensity: { value: 0.95 },
-          }}
-          vertexShader={`
-            varying vec3 vNormal;
-            varying vec3 vViewDir;
-            void main() {
-              vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-              vNormal = normalize(normalMatrix * normal);
-              vViewDir = normalize(-mvPosition.xyz);
-              gl_Position = projectionMatrix * mvPosition;
-            }
-          `}
-          fragmentShader={`
-            varying vec3 vNormal;
-            varying vec3 vViewDir;
-            uniform vec3 uColor;
-            uniform float uPower;
-            uniform float uIntensity;
-            void main() {
-              float fres = pow(1.0 - abs(dot(vNormal, vViewDir)), uPower);
-              gl_FragColor = vec4(uColor, fres * uIntensity);
-            }
-          `}
         />
       </Sphere>
 
@@ -282,9 +245,8 @@ function Earth({
         const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
         const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0; // Rapid-fire stagger: 150ms between each
         
-        // Intro ripple: pins near the equator appear first, poles last
-        const latAbs = Math.abs(hotdog.position[1]); // y axis ~ latitude
-        const introDelay = 1800 + latAbs * 700 + Math.random() * 120;
+        // Subtle intro stagger — short, no lat-based delay
+        const introDelay = 1600 + Math.random() * 300;
 
         return (
           <HotdogPin
@@ -525,16 +487,15 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           enabled={!isSpinning}
         />
 
-        {/* Postprocessing — subtle bloom + vignette */}
+        {/* Postprocessing — whisper of bloom on warm highlights only */}
         {!isMobile && (
           <EffectComposer multisampling={0}>
             <Bloom
-              intensity={0.5}
-              luminanceThreshold={0.6}
-              luminanceSmoothing={0.25}
+              intensity={0.18}
+              luminanceThreshold={0.82}
+              luminanceSmoothing={0.2}
               mipmapBlur
             />
-            <Vignette eskil={false} offset={0.2} darkness={0.55} blendFunction={BlendFunction.NORMAL} />
           </EffectComposer>
         )}
       </Canvas>

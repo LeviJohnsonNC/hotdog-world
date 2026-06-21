@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { Group, AdditiveBlending, DoubleSide, Color, Quaternion, Vector3 } from "three";
+import { Group } from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogModel } from "./HotdogModel";
 
@@ -14,8 +14,6 @@ interface HotdogPinProps {
   introDelay?: number;
 }
 
-const UP = new Vector3(0, 1, 0);
-
 export function HotdogPin({
   position,
   onClick,
@@ -26,17 +24,9 @@ export function HotdogPin({
 }: HotdogPinProps) {
   const [hovered, setHovered] = useState(false);
   const groupRef = useRef<Group>(null);
-  const haloRef = useRef<any>(null);
   const pulseStartRef = useRef<number | null>(null);
   const introStartRef = useRef<number>(performance.now() + introDelay);
   const hasStartedPulseRef = useRef(false);
-
-  // Orient halo flat against the surface (face outward from globe center)
-  const haloQuaternion = useMemo(() => {
-    const dir = new Vector3(...position).normalize();
-    const q = new Quaternion().setFromUnitVectors(UP, dir);
-    return q;
-  }, [position]);
 
   useEffect(() => {
     if (shouldPulse && !hasStartedPulseRef.current) {
@@ -56,36 +46,24 @@ export function HotdogPin({
     const g = groupRef.current;
     if (!g) return;
 
-    // INTRO: rippled fade+scale-in (runs once)
-    const introT = (performance.now() - introStartRef.current) / 600;
+    // INTRO: smooth scale-in
+    const introT = (performance.now() - introStartRef.current) / 500;
     const introP = Math.min(Math.max(introT, 0), 1);
-    const introScale = introP < 1 ? introP * introP * (3 - 2 * introP) : 1; // smoothstep
+    const introScale = introP < 1 ? introP * introP * (3 - 2 * introP) : 1;
 
-    // PULSE (FTUX) — overrides idle scale
-    let baseScale = introScale;
     if (pulseStartRef.current) {
       const duration = 1000;
       const elapsed = (performance.now() - pulseStartRef.current) % duration;
       const progress = elapsed / duration;
-      baseScale = introScale * (1 + 0.6 * Math.sin(progress * Math.PI));
-    } else {
-      // Hover spring
-      const target = hovered ? 1.18 : 1;
-      const current = g.scale.x / Math.max(introScale, 0.001);
-      const next = current + (target - current) * 0.18;
-      baseScale = introScale * next;
+      g.scale.setScalar(introScale * (1 + 0.6 * Math.sin(progress * Math.PI)));
+      return;
     }
-    g.scale.setScalar(baseScale);
 
-    // Halo gentle breathing pulse
-    if (haloRef.current) {
-      const t = performance.now() * 0.001;
-      const breath = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(t * 1.6));
-      const hoverBoost = hovered ? 1.5 : 1;
-      haloRef.current.material.opacity = 0.35 * breath * hoverBoost * introP;
-      const haloScale = (hovered ? 1.35 : 1) * (0.95 + 0.05 * Math.sin(t * 1.6));
-      haloRef.current.scale.setScalar(haloScale);
-    }
+    // Hover spring (relative to intro scale)
+    const target = hovered ? 1.18 : 1;
+    const currentRel = g.scale.x / Math.max(introScale, 0.001);
+    const next = currentRel + (target - currentRel) * 0.18;
+    g.scale.setScalar(introScale * next);
   });
 
   return (
@@ -107,25 +85,6 @@ export function HotdogPin({
         document.body.style.cursor = "auto";
       }}
     >
-      {/* Glowing ground halo flat against the globe */}
-      <mesh
-        ref={haloRef}
-        quaternion={haloQuaternion}
-        position={[0, 0, 0]}
-        renderOrder={19}
-      >
-        <ringGeometry args={[0.05, 0.14, 32]} />
-        <meshBasicMaterial
-          color={new Color("#ffb347")}
-          transparent
-          opacity={0.35}
-          blending={AdditiveBlending}
-          depthWrite={false}
-          depthTest={false}
-          side={DoubleSide}
-        />
-      </mesh>
-
       <HotdogModel hovered={hovered} imageUrl={hotdog.globeImage ?? hotdog.image} position={position} />
 
       {hovered && (
