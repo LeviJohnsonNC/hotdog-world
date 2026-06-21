@@ -1,12 +1,15 @@
 import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSound } from "@/hooks/useSound";
+
 
 type AnimationPhase = "idle" | "spinning" | "zooming";
 
