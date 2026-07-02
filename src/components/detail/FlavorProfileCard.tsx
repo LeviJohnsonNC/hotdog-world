@@ -5,13 +5,15 @@ interface Props {
 }
 
 const LABELS: Array<{ key: keyof NonNullable<Hotdog["flavor_profile"]>; label: string }> = [
-  { key: "mess", label: "Mess Factor" },
-  { key: "heat", label: "Heat Level" },
+  { key: "mess", label: "Napkin Risk" },
+  { key: "heat", label: "Heat" },
   { key: "crunch", label: "Crunch" },
   { key: "sauce", label: "Sauce Load" },
-  { key: "boldness", label: "Boldness" },
-  { key: "distinctiveness", label: "Distinctiveness" },
+  { key: "boldness", label: "Swagger" },
+  { key: "distinctiveness", label: "Local Oddness" },
 ];
+
+const TICKS = ["low", "medium", "dangerous"] as const;
 
 // Normalize legacy 0–3 values to 1–5 if needed
 function normalize(v: number | undefined): number {
@@ -65,6 +67,11 @@ export function FlavorProfileCard({ flavorProfile }: Props) {
             </div>
           );
         })}
+      </div>
+      <div className="mt-5 flex justify-between text-[10px] uppercase tracking-[0.2em] text-[hsl(var(--ink))]/45 font-mono max-w-[220px]">
+        {TICKS.map((t) => (
+          <span key={t}>{t}</span>
+        ))}
       </div>
     </section>
   );
