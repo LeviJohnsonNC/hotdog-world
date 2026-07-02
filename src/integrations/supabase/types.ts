@@ -88,6 +88,9 @@ export type Database = {
           prep_time: string | null
           protein_g: number | null
           pull_quote: string | null
+          recipe_ingredients: Json | null
+          recipe_meta: Json | null
+          recipe_steps: Json | null
           recipe_yield: string | null
           region: string | null
           related_slugs: string[] | null
@@ -132,6 +135,9 @@ export type Database = {
           prep_time?: string | null
           protein_g?: number | null
           pull_quote?: string | null
+          recipe_ingredients?: Json | null
+          recipe_meta?: Json | null
+          recipe_steps?: Json | null
           recipe_yield?: string | null
           region?: string | null
           related_slugs?: string[] | null
@@ -176,6 +182,9 @@ export type Database = {
           prep_time?: string | null
           protein_g?: number | null
           pull_quote?: string | null
+          recipe_ingredients?: Json | null
+          recipe_meta?: Json | null
+          recipe_steps?: Json | null
           recipe_yield?: string | null
           region?: string | null
           related_slugs?: string[] | null
