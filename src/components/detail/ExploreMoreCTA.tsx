@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Stamp, Globe as GlobeIcon, ArrowRight } from "lucide-react";
 import { Hotdog } from "@/types/hotdog";
+import { getRelatedCaption } from "@/utils/relatedCaptions";
 
 interface Props {
   hotdog: Hotdog;
@@ -39,32 +40,40 @@ export function ExploreMoreCTA({ hotdog, related, onStampClick }: Props) {
             Try another dog
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {related.slice(0, 3).map((r) => (
-              <Link
-                key={r.id}
-                to={`/hotdog/${r.slug}`}
-                className="group block paper-card overflow-hidden hover:-translate-y-1 transition-transform"
-              >
-                {r.image && (
-                  <div className="aspect-[16/10] overflow-hidden">
-                    <img
-                      src={r.image}
-                      alt={r.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+            {related.slice(0, 3).map((r) => {
+              const caption =
+                getRelatedCaption(hotdog.slug, r.slug) ??
+                `${r.city}, ${r.country}`;
+              return (
+                <Link
+                  key={r.id}
+                  to={`/hotdog/${r.slug}`}
+                  className="group block paper-card overflow-hidden hover:-translate-y-1 transition-transform"
+                >
+                  {r.image && (
+                    <div className="aspect-[16/10] overflow-hidden">
+                      <img
+                        src={r.image}
+                        alt={r.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/60">
+                      {r.city}, {r.country}
+                    </div>
+                    <div className="font-heading font-semibold text-[hsl(var(--ink))] mt-1 flex items-center justify-between gap-2">
+                      <span>{r.name}</span>
+                      <ArrowRight className="h-4 w-4 opacity-60 group-hover:translate-x-1 transition-transform shrink-0" />
+                    </div>
+                    <div className="mt-2 text-[13px] italic text-[hsl(var(--ink))]/70 leading-snug">
+                      {caption}
+                    </div>
                   </div>
-                )}
-                <div className="p-4">
-                  <div className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/60">
-                    {r.city}, {r.country}
-                  </div>
-                  <div className="font-heading font-semibold text-[hsl(var(--ink))] mt-1 flex items-center justify-between">
-                    {r.name}
-                    <ArrowRight className="h-4 w-4 opacity-60 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </>
       )}

@@ -27,29 +27,40 @@ export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampCl
         visible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="bg-[hsl(var(--ink))] text-[hsl(var(--paper))] border-b border-white/10 shadow-lg">
-        <div className="max-w-[1180px] mx-auto px-6 h-14 flex items-center justify-between gap-6">
+      <div
+        className="border-b backdrop-blur-md"
+        style={{
+          background: "hsl(var(--paper) / 0.92)",
+          borderColor: "hsl(var(--ink) / 0.14)",
+          boxShadow: "0 1px 0 hsl(var(--ink) / 0.04), 0 8px 24px -18px hsl(var(--ink) / 0.35)",
+        }}
+      >
+        <div className="max-w-[1180px] mx-auto px-6 h-12 flex items-center justify-between gap-6 text-[hsl(var(--ink))]">
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 text-sm font-medium hover:text-[hsl(var(--pineapple))] transition-colors"
+            className="flex items-center gap-1.5 text-[13px] font-medium uppercase tracking-[0.18em] text-[hsl(var(--ink))]/70 hover:text-[hsl(var(--ink))] transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Map
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Atlas
           </button>
-          <div className="flex-1 text-center">
-            <div className="font-heading font-semibold text-sm leading-tight truncate">
+          <div className="flex-1 min-w-0 text-center flex items-baseline justify-center gap-2 truncate">
+            <span className="font-heading font-semibold text-sm truncate">
               {hotdog.name}
-            </div>
-            <div className="text-[11px] opacity-70 uppercase tracking-wider">
-              {hotdog.city}, {hotdog.country}
-            </div>
+            </span>
+            <span className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/55 truncate">
+              · {hotdog.city}, {hotdog.country}
+            </span>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-[11px] uppercase tracking-wider opacity-80">
-              Trivia {revealedCount}/{totalFacts}
+            <div className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/60 font-mono">
+              {revealedCount}/{totalFacts} field notes
             </div>
-            <button onClick={onStampClick} className="brass-button text-sm flex items-center gap-2">
-              <Stamp className="h-4 w-4" />
+            <button
+              onClick={onStampClick}
+              className="text-[12px] uppercase tracking-[0.18em] font-semibold px-3 py-1.5 rounded-sm border flex items-center gap-1.5 hover:bg-[hsl(var(--ink))] hover:text-[hsl(var(--paper))] transition-colors"
+              style={{ borderColor: "hsl(var(--ink) / 0.35)" }}
+            >
+              <Stamp className="h-3.5 w-3.5" />
               Stamp
             </button>
           </div>
@@ -62,12 +73,20 @@ export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampCl
 export function MobileActionBar({ onStampClick }: { onStampClick: () => void }) {
   const navigate = useNavigate();
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-[hsl(var(--ink))] text-[hsl(var(--paper))] border-t border-white/10 px-4 py-3 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+    <div
+      className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t px-4 py-3 flex gap-3 backdrop-blur-md"
+      style={{
+        background: "hsl(var(--paper) / 0.95)",
+        borderColor: "hsl(var(--ink) / 0.14)",
+        boxShadow: "0 -6px 24px -12px hsl(var(--ink) / 0.35)",
+      }}
+    >
       <button
         onClick={() => navigate("/")}
-        className="flex-1 flex items-center justify-center gap-2 text-sm font-medium border border-white/25 rounded-md py-2.5"
+        className="flex-1 flex items-center justify-center gap-2 text-sm font-medium border rounded-md py-2.5 text-[hsl(var(--ink))]"
+        style={{ borderColor: "hsl(var(--ink) / 0.25)" }}
       >
-        <ArrowLeft className="h-4 w-4" /> Map
+        <ArrowLeft className="h-4 w-4" /> Atlas
       </button>
       <button onClick={onStampClick} className="brass-button flex-1 flex items-center justify-center gap-2 text-sm">
         <Stamp className="h-4 w-4" /> Stamp Passport

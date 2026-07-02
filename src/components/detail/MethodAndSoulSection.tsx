@@ -3,14 +3,25 @@ interface Props {
   pullQuote?: string | null;
 }
 
+// Labels for up to 3 paragraph-derived micro-cards. Rendered only when we have
+// enough content — no empty states.
+const BLOCK_LABELS = ["Field Note", "The Move", "Why It Works"] as const;
+
 export function MethodAndSoulSection({ body, pullQuote }: Props) {
+  const paragraphs = body.split("\n\n").map((s) => s.trim()).filter(Boolean);
+
   // Auto-derive pull quote: first sentence of body if not provided
   const quote =
     pullQuote ||
     (body.split(/(?<=[.!?])\s+/).find((s) => s.length > 40 && s.length < 180) ??
       null);
 
-  const paragraphs = body.split("\n\n").filter(Boolean);
+  // Split into up to 3 labeled blocks. If only one paragraph, render a single
+  // "Field Note" card (no forced empties).
+  const blocks = paragraphs.slice(0, 3).map((text, i) => ({
+    label: BLOCK_LABELS[i],
+    text,
+  }));
 
   return (
     <section
@@ -37,14 +48,24 @@ export function MethodAndSoulSection({ body, pullQuote }: Props) {
           </blockquote>
         )}
 
-        <div className="space-y-4 max-w-[68ch]">
-          {paragraphs.map((p, i) => (
-            <p
+        <div
+          className={`grid gap-4 md:gap-5 mt-6 ${
+            blocks.length === 1 ? "grid-cols-1" : "md:grid-cols-3"
+          }`}
+        >
+          {blocks.map((b, i) => (
+            <div
               key={i}
-              className="text-[hsl(var(--ink))]/85 leading-relaxed text-base md:text-lg"
+              className="rounded-md border p-4 md:p-5 bg-[hsl(var(--paper))]"
+              style={{ borderColor: "hsl(var(--ink) / 0.14)" }}
             >
-              {p}
-            </p>
+              <div className="text-[10px] uppercase tracking-[0.22em] font-mono text-[hsl(var(--ink))]/55 mb-2">
+                {b.label}
+              </div>
+              <p className="text-[hsl(var(--ink))]/85 leading-relaxed text-[15px] md:text-base">
+                {b.text}
+              </p>
+            </div>
           ))}
         </div>
       </div>
