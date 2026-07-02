@@ -3,7 +3,17 @@ import { Hotdog } from "@/types/hotdog";
 interface Props {
   anatomy: NonNullable<Hotdog["anatomy"]>;
   whyItWorks?: string | null;
+  slug?: string;
+  name?: string;
 }
+
+// Slugs that have a hand-drawn exploded-view illustration in /public/anatomy/.
+const ANATOMY_ILLUSTRATIONS = new Set([
+  "atlanta-slaw-dog",
+  "aussie-dog",
+  "bangkok-spicy-street-dog",
+  "boerewors-roll",
+]);
 
 // Rotating palette for the numbered layer dots so the list still reads as a
 // visual stack. Top of the ordered list = top of the dog.
@@ -22,7 +32,8 @@ function dotStyle(i: number, total: number) {
   return DOT_PALETTE[(i % (DOT_PALETTE.length - 2)) + 1];
 }
 
-export function AnatomySection({ anatomy, whyItWorks }: Props) {
+export function AnatomySection({ anatomy, whyItWorks, slug, name }: Props) {
+  const hasIllustration = slug && ANATOMY_ILLUSTRATIONS.has(slug);
   return (
     <section className="paper-card p-6 md:p-10">
       <div className="stamp-label mb-6">Anatomy of the Dog</div>
