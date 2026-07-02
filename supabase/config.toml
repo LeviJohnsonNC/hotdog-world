@@ -5,3 +5,4 @@ verify_jwt = false
 
 [functions.populate-recipe-metadata]
 verify_jwt = true
+
