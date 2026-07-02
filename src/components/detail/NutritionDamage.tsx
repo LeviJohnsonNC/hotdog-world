@@ -35,7 +35,7 @@ export function NutritionDamage({ hotdog }: Props) {
           <DialogHeader>
             <DialogTitle>Nutrition Facts</DialogTitle>
           </DialogHeader>
-          <NutritionLabel
+          <FullNutritionFacts
             calories={hotdog.calories}
             fat_total_g={hotdog.fat_total_g}
             fat_saturated_g={hotdog.fat_saturated_g}
