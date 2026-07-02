@@ -88,7 +88,7 @@ export function EditorialDetailView({ hotdog }: Props) {
         )}
 
         {hotdog.anatomy && hotdog.anatomy.length > 0 && (
-          <AnatomySection anatomy={hotdog.anatomy} whyItWorks={hotdog.why_it_works} />
+          <AnatomySection anatomy={hotdog.anatomy} whyItWorks={hotdog.why_it_works} slug={hotdog.slug} name={hotdog.name} />
         )}
 
         {/* "The Damage" — quiet nutrition summary; full label in modal */}
