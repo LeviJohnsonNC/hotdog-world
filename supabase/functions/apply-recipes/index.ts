@@ -1,7 +1,7 @@
 // One-shot admin function to apply structured recipe data to hotdogs.
 // Reads outputs.json bundled with the function and runs UPDATEs via service role.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import recipes from "../_tmp/recipes.json" with { type: "json" };
+import recipes from "./recipes.json" with { type: "json" };
 
 Deno.serve(async (_req) => {
   const url = Deno.env.get("SUPABASE_URL")!;
