@@ -1,43 +1,51 @@
+## My take on the critique
 
-# Fix: Strip the noise, keep the polish
+**Strongly agree**
+- Voice/labels: renaming ratings ("Napkin Risk", "Local Oddness"), "The Damage" nutrition, more evocative hero subtitles, and provenance labels (vendor lore / home version / canonical / disputed) — these are the highest-leverage changes and cost almost nothing.
+- Sticky navy nav feels like admin chrome. A quieter "passport strip" fits the tone better.
+- Nutrition should collapse — it's tonally the biggest offender right now.
+- "Method & Soul" deserves more authority via labeled micro-blocks (Field Note / The Move / Local Warning).
+- Anatomy reading 6→1 is confusing. A layered stack diagram is the right long-term move.
+- Trivia cards look flat. Postcard/stamp treatment is a real delight opportunity.
+- Related dogs need curation reasons ("spiced sausage energy" etc.).
+- Fix data bugs (missing "ml water" amount) — these silently kill the craft feeling.
 
-The last pass added too many always-on effects. They fought each other and made the globe smaller and busier. This plan removes the offenders, keeps the real wins, and re-tunes what's left.
+**Partially agree**
+- Handwritten margin notes, grease spots, paper scuffs: yes, but *very* restrained. Easy to slide into kitsch. I'd budget ~2–3 motifs per page, not a scrapbook.
+- Canonical vs home-cook recipe modes: great idea but a big content lift across 50 dogs. Worth it, but phase it after the visual/voice pass so we're not blocked on writing.
+- Reducing hero overlay: agree in principle, but some dogs have busy photos; needs a per-image contrast check, not a blanket change.
 
-## What I'll remove (the regressions)
+**Disagree / push back**
+- Dropping to 4 flavor axes. We just finished populating 6 across 50 dogs and the 6 read cleanly. I'd **rename** rather than **remove** — keep the data, change the labels.
+- Imperfect card rotations: risky at scale, hurts scanability on mobile. Skip.
+- Sound on trivia flip: adds friction, autoplay policies bite. Skip.
 
-1. **Ground halo discs under every pin** — these are the "strange circles." Delete entirely. They were always on, depth-test disabled, and visible through the planet.
-2. **Vignette** — darkens the corners, visually shrinks the globe. Remove.
-3. **Bright/thick Fresnel rim** — replace the additive cyan rim with the original subtle backside-sphere glow (much thinner, much dimmer). The atmosphere should be *barely there*, not a halo.
-4. **Aggressive Bloom** — drop intensity from 0.5 → 0.18 and raise the luminance threshold so only true highlights bloom (or remove entirely; see Q1).
+**What "great" looks like as a first step (Phase 1, Seattle pilot only)**
 
-## What I'll keep (the actual wins)
+Focus: voice + chrome + nutrition + trivia. No schema changes, no per-dog content writing beyond Seattle.
 
-- 53 MB → 0.49 MB pin asset compression
-- 1.9 MB → 152 KB earth texture + `<link rel=preload>`
-- ACES Filmic tone mapping + sRGB output
-- Cinematic three-point lighting (warm key / cool fill / rim)
-- OrbitControls with `enableDamping` for heavy, satisfying drag
-- Pin hover spring (subtle 1.0 → 1.18 scale lerp)
-- Removed the per-frame `console.log` and `Date.now()` work
-- Intro stagger — keep, but shorten and remove the lat-based delay (it caused the visible "pop-in" you saw on the lower pins)
+1. **Rename the 6 flavor axes** in `FlavorProfileCard` labels only (data unchanged):
+   Mess Factor → Napkin Risk, Regional Distinctiveness → Local Oddness, Boldness → Swagger, Heat/Crunch/Sauce Load unchanged. Add small "low / medium / dangerous" tick labels.
+2. **"The Damage" nutrition module**: collapse the full nutrition card into a one-line summary (cal · fat · protein) with a "Show full label" expander. Keep JSON-LD nutrition markup intact for SEO.
+3. **Passport strip header**: replace the navy sticky bar with a lighter paper-toned strip: `← Atlas` · dog name · city · `n/6 field notes` · Stamp. Same behavior, quieter visual weight.
+4. **Method & Soul micro-labels**: split the section into up to 3 labeled cards driven by existing copy (Field Note / The Move / Why It Works). If a dog only has one block, we render one — no empty states.
+5. **Trivia as postcards**: restyle `TriviaPostcards` cards as postcard-backs (perforated edge, stamp corner, "tap to flip" affordance, subtle flip animation). Content unchanged.
+6. **Curated related-dog captions**: add a one-line "why this one" caption under each related card. For the pilot, hand-write Seattle's 3; for other dogs, fall back to city/region text until Phase 3.
+7. **Content bug sweep on Seattle**: fix the missing water amount and any other blank quantities/steps on the pilot page.
+8. **Hero subtitle rewrite for Seattle only**: use `hero_subtitle` field we already have; no new field needed.
 
-## What "premium" actually means here
+Explicitly **not** in Phase 1: anatomy diagram redesign, provenance-tagged origin story, canonical-vs-home recipe modes, map/neighbourhood module, applying anything to the other 49 dogs.
 
-Looking at Apple Weather, Stripe Atlas, github.com/orbit — the move is **less, but better**:
+## Phased roadmap after approval
 
-- One soft atmosphere. No competing halos.
-- Pins that sit *on* the planet, not floating in front of it.
-- Restrained motion: gentle drift, gentle hover, dramatic only on user-triggered moments (spin-to-globe).
+- **Phase 2 — Anatomy + Origin provenance**: turn Anatomy into a layered stack diagram; add provenance tags (vendor lore / canonical / disputed) to `origin_timeline` entries. Pilot on Seattle, then batch-migrate.
+- **Phase 3 — Recipe dual-mode**: add `recipe_variant` (canonical vs home) to `recipe_steps`; UI toggle in `BuildRail`. Author Seattle first, then generate for the rest.
+- **Phase 4 — Field-guide polish pass**: paper textures per section, controlled "artifact" details (ticket-stub Stamp CTA, map coord line in hero), curated related-dog captions for all 50.
 
-## After the fix — optional next steps (ask me)
+## Technical notes (safe to skip)
 
-A. **Night side**: I can generate a complementary night-lights texture and blend it by sun direction so the unlit side shimmers with city lights. Big "wow" but adds a texture.
-B. **Pin treatment**: instead of halos, make each pin sit on a tiny soft **drop shadow** projected onto the sphere surface (uses a small radial gradient sprite, billboarded toward the surface normal, depth-tested so back-side pins are hidden cleanly). This gives pins "weight" without circles.
+- Files touched in Phase 1: `FlavorProfileCard.tsx`, new `NutritionDamage.tsx` replacing current nutrition placement in `EditorialDetailView.tsx`, `StickyPassportBar.tsx`, `MethodAndSoulSection.tsx`, `TriviaPostcards.tsx`, `ExploreMoreCTA.tsx`, plus Seattle-only DB update for hero subtitle + ingredient fix.
+- No migrations, no edge functions, no image work.
+- Keep existing Recipe/Nutrition JSON-LD so SEO is unaffected.
 
-## Questions
-
-1. **Postprocessing**: keep a tiny amount of Bloom (just barely lifts the warm pins/sun) or remove it completely? I lean **keep tiny**.
-2. **Atmosphere style**: subtle blue limb glow (current, restored to the gentler version) or no glow at all — just the planet against deep space?
-3. After the cleanup ships and you can judge baseline, do you want me to try (A) night-side lights, (B) drop-shadow pin treatment, or both?
-
-I'll wait for your answers, then implement.
+Approve Phase 1 and I'll ship it against Seattle so you can react before we roll to the other 49.
