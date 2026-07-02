@@ -9,6 +9,8 @@ import { FlavorProfileCard } from "@/components/detail/FlavorProfileCard";
 import { AnatomySection } from "@/components/detail/AnatomySection";
 import { BuildSection } from "@/components/detail/BuildSection";
 import { InstructionsSection } from "@/components/detail/InstructionsSection";
+import { BuildRail } from "@/components/detail/BuildRail";
+import { StepsSection } from "@/components/detail/StepsSection";
 import { MethodAndSoulSection } from "@/components/detail/MethodAndSoulSection";
 import { TriviaPostcards } from "@/components/detail/TriviaPostcards";
 import { OriginTimelineSection } from "@/components/detail/OriginTimelineSection";
