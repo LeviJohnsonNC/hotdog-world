@@ -64,6 +64,9 @@ export function EditorialDetailView({ hotdog }: Props) {
       } as React.CSSProperties)
     : {};
 
+  const hasStructuredRecipe =
+    !!hotdog.recipe_steps?.length && !!hotdog.recipe_ingredients?.length;
+
   return (
     <div className="bg-paper min-h-screen pb-32 md:pb-12" style={accentStyle}>
       <StickyPassportBar
