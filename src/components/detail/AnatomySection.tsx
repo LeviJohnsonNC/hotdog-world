@@ -38,7 +38,7 @@ export function AnatomySection({ anatomy, whyItWorks, slug, name }: Props) {
     <section className="paper-card p-6 md:p-10">
       <div className="stamp-label mb-6">Anatomy of the Dog</div>
 
-      <div className={hasIllustration ? "grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start" : ""}>
+      <div className={hasIllustration ? "grid gap-8 md:grid-cols-[1fr_1.25fr] md:items-start" : ""}>
         <ol className="relative max-w-[52ch]">
           {anatomy.map((item, i) => {
             const s = dotStyle(i, anatomy.length);
@@ -77,12 +77,12 @@ export function AnatomySection({ anatomy, whyItWorks, slug, name }: Props) {
         </ol>
 
         {hasIllustration && (
-          <figure className="flex items-center justify-center">
+          <figure className="flex items-center justify-center p-2">
             <img
               src={`/anatomy/${slug}.png`}
               alt={`Exploded view of the ${name ?? "hot dog"} layers`}
               loading="lazy"
-              className="w-full max-w-[420px] h-auto mix-blend-multiply"
+              className="w-full h-auto max-h-[520px] object-contain mix-blend-multiply"
             />
           </figure>
         )}
