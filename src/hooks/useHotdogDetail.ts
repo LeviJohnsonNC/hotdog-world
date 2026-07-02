@@ -78,6 +78,9 @@ export function useHotdogDetail(slug: string) {
         pull_quote: (hotdog as any).pull_quote ?? null,
         accent_palette: (hotdog as any).accent_palette ?? null,
         related_slugs: (hotdog as any).related_slugs ?? null,
+        recipe_meta: (hotdog as any).recipe_meta ?? null,
+        recipe_ingredients: (hotdog as any).recipe_ingredients ?? null,
+        recipe_steps: (hotdog as any).recipe_steps ?? null,
       } as Hotdog;
     },
     enabled: !!slug,
