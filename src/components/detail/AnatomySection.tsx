@@ -38,42 +38,55 @@ export function AnatomySection({ anatomy, whyItWorks, slug, name }: Props) {
     <section className="paper-card p-6 md:p-10">
       <div className="stamp-label mb-6">Anatomy of the Dog</div>
 
-      <ol className="relative max-w-[52ch]">
-        {anatomy.map((item, i) => {
-          const s = dotStyle(i, anatomy.length);
-          return (
-            <li key={i} className="relative flex gap-4 pb-5 last:pb-0">
-              {i < anatomy.length - 1 && (
-                <span
-                  className="absolute left-[13px] top-8 bottom-0 w-px"
-                  style={{ background: "hsl(var(--ink) / 0.15)" }}
-                />
-              )}
-              <div
-                className="relative z-10 mt-1 h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center font-mono text-[10px] font-semibold"
-                style={{
-                  background: s.fill,
-                  borderColor: s.stroke,
-                  color: "hsl(var(--ink))",
-                }}
-                aria-hidden
-              >
-                {i + 1}
-              </div>
-              <div>
-                <div className="font-heading font-semibold text-[hsl(var(--ink))] text-base md:text-lg leading-tight">
-                  {item.layer}
-                </div>
-                {item.note && (
-                  <p className="text-sm text-[hsl(var(--ink))]/70 mt-1 leading-relaxed">
-                    {item.note}
-                  </p>
+      <div className={hasIllustration ? "grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start" : ""}>
+        <ol className="relative max-w-[52ch]">
+          {anatomy.map((item, i) => {
+            const s = dotStyle(i, anatomy.length);
+            return (
+              <li key={i} className="relative flex gap-4 pb-5 last:pb-0">
+                {i < anatomy.length - 1 && (
+                  <span
+                    className="absolute left-[13px] top-8 bottom-0 w-px"
+                    style={{ background: "hsl(var(--ink) / 0.15)" }}
+                  />
                 )}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+                <div
+                  className="relative z-10 mt-1 h-6 w-6 shrink-0 rounded-full border-2 flex items-center justify-center font-mono text-[10px] font-semibold"
+                  style={{
+                    background: s.fill,
+                    borderColor: s.stroke,
+                    color: "hsl(var(--ink))",
+                  }}
+                  aria-hidden
+                >
+                  {i + 1}
+                </div>
+                <div>
+                  <div className="font-heading font-semibold text-[hsl(var(--ink))] text-base md:text-lg leading-tight">
+                    {item.layer}
+                  </div>
+                  {item.note && (
+                    <p className="text-sm text-[hsl(var(--ink))]/70 mt-1 leading-relaxed">
+                      {item.note}
+                    </p>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+        {hasIllustration && (
+          <figure className="flex items-center justify-center">
+            <img
+              src={`/anatomy/${slug}.png`}
+              alt={`Exploded view of the ${name ?? "hot dog"} layers`}
+              loading="lazy"
+              className="w-full max-w-[420px] h-auto mix-blend-multiply"
+            />
+          </figure>
+        )}
+      </div>
 
       {whyItWorks && (
         <aside
