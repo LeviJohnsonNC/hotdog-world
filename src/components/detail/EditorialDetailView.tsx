@@ -78,7 +78,11 @@ export function EditorialDetailView({ hotdog }: Props) {
 
       <HeroSection hotdog={hotdog} />
 
-      <div className="max-w-[1140px] mx-auto px-4 md:px-6 mt-10 md:mt-14 space-y-8 md:space-y-10">
+      <div
+        className={`${
+          hasStructuredRecipe ? "max-w-[1240px]" : "max-w-[1140px]"
+        } mx-auto px-4 md:px-6 mt-10 md:mt-14 space-y-8 md:space-y-10`}
+      >
         {hotdog.flavor_profile && (
           <FlavorProfileCard flavorProfile={hotdog.flavor_profile} />
         )}
@@ -105,11 +109,19 @@ export function EditorialDetailView({ hotdog }: Props) {
           </div>
         )}
 
-        {/* Editorial two-column at lg+: Build on left, Instructions on right */}
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-10">
-          <BuildSection hotdog={hotdog} />
-          <InstructionsSection instructions={hotdog.instructions || []} />
-        </div>
+        {hasStructuredRecipe ? (
+          // Asymmetric grid: compact sticky Build rail + wide Steps column
+          <div className="grid lg:grid-cols-[360px_1fr] gap-6 md:gap-8 items-start">
+            <BuildRail hotdog={hotdog} />
+            <StepsSection hotdog={hotdog} />
+          </div>
+        ) : (
+          // Legacy layout for dogs not yet migrated
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-10">
+            <BuildSection hotdog={hotdog} />
+            <InstructionsSection instructions={hotdog.instructions || []} />
+          </div>
+        )}
 
         {hotdog.method_and_soul && (
           <MethodAndSoulSection
