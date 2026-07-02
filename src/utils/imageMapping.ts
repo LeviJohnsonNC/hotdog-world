@@ -114,11 +114,14 @@ export const cityToGlobeImageMap: Record<string, string> = {
   "Pennsylvania": "pennsylvania.png",
   "Tokyo": "tokyo.png",
   "Toronto": "toronto.png",
+  "Stockholm": "tunnbrodsrulle-globe-v2.webp",
 };
 
 // Slug-based globe overrides (for cities with multiple hot dogs)
 export const slugToGlobeImageMap: Record<string, string> = {
   "khanom-tokiao-hot-dog-crepe": "khanom.png",
+  "tunnbrodsrulle": "tunnbrodsrulle-globe-v2.webp",
+  "tunnbrödsrulle": "tunnbrodsrulle-globe-v2.webp",
 };
 
 // All globe pin images are now stored as optimized .webp (256px, ~10KB each)
