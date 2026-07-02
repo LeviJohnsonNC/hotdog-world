@@ -65,4 +65,33 @@ export interface Hotdog {
   pull_quote?: string | null;
   accent_palette?: { primary?: string; secondary?: string } | null;
   related_slugs?: string[] | null;
+  // Structured, cookable recipe (optional — falls back to prose fields)
+  recipe_meta?: {
+    servings?: number;
+    servings_unit?: string;
+    prep_min?: number;
+    cook_min?: number;
+    rest_min?: number;
+    difficulty?: string;
+    equipment?: string[];
+  } | null;
+  recipe_ingredients?: Array<{
+    id: string;
+    group?: string;
+    name: string;
+    qty?: number | null;
+    unit?: string | null;
+    note?: string | null;
+    optional?: boolean;
+  }> | null;
+  recipe_steps?: Array<{
+    n?: number;
+    title: string;
+    body: string;
+    duration_min?: number | null;
+    temp?: string | null;
+    uses?: string[];
+    tip?: string | null;
+    pitfall?: string | null;
+  }> | null;
 }
