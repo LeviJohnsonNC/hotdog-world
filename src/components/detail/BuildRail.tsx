@@ -74,14 +74,14 @@ export function BuildRail({ hotdog }: Props) {
 
   const copyShoppingList = async () => {
     const lines = ingredients
-      .map((ing) => `• ${scaledLine(ing, scale)}${ing.note ? ` — ${ing.note}` : ""}`)
+      .map((ing) => `• ${scaledLine(ing, scale)}${ing.note ? ` (${ing.note})` : ""}`)
       .join("\n");
-    const text = `${hotdog.name} — shopping list (serves ${servings})\n\n${lines}`;
+    const text = `${hotdog.name} shopping list (serves ${servings})\n\n${lines}`;
     try {
       await navigator.clipboard.writeText(text);
       toast.success("Shopping list copied");
     } catch {
-      toast.error("Couldn't copy — try again");
+      toast.error("Couldn't copy, try again");
     }
   };
 

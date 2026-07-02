@@ -38,12 +38,14 @@ export function TriviaPostcards({ facts, isRevealed, onReveal, revealedCount }: 
           <div key={i} className="relative postcard-wrap">
             {/* Perforated left edge */}
             <span aria-hidden className="postcard-perf" />
-            {/* Stamp corner */}
-            <span aria-hidden className="postcard-stamp">
-              <span className="postcard-stamp-inner">
-                {String(i + 1).padStart(2, "0")}
+            {/* Stamp corner (hidden once flipped so it doesn't overlap the answer) */}
+            {!isRevealed(i) && (
+              <span aria-hidden className="postcard-stamp">
+                <span className="postcard-stamp-inner">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
               </span>
-            </span>
+            )}
             <FactFlipCard
               fact={fact}
               index={i}
