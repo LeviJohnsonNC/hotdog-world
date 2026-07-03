@@ -52,6 +52,7 @@ export function ExploreMoreCTA({ hotdog, related, onStampClick }: Props) {
                 <Link
                   key={r.id}
                   to={`/hotdog/${r.slug}`}
+                  state={relatedLinkState}
                   className="group block paper-card overflow-hidden hover:-translate-y-1 transition-transform"
                 >
                   {r.image && (
