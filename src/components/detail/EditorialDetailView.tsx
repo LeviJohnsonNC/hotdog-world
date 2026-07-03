@@ -148,7 +148,7 @@ export function EditorialDetailView({ hotdog }: Props) {
         </div>
       </div>
 
-      <MobileActionBar onStampClick={scrollToStamp} />
+      <MobileActionBar onStampClick={scrollToStamp} backTo={backTo} />
     </div>
   );
 }
