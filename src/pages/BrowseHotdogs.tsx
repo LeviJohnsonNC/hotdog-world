@@ -15,7 +15,7 @@ const BrowseHotdogs = () => {
 
   const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
     e.preventDefault();
-    navigate(`/hotdog/${hotdogSlug}`);
+    navigate(`/hotdog/${hotdogSlug}`, { state: { from: '/hotdogs' } });
   };
 
   // Sort alphabetically and filter by search query

@@ -1,4 +1,5 @@
 import { useMemo, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Hotdog } from "@/types/hotdog";
 import { useRevealedFacts } from "@/hooks/useRevealedFacts";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
@@ -23,11 +24,16 @@ interface Props {
 }
 
 export function EditorialDetailView({ hotdog }: Props) {
+  const location = useLocation();
   const { isRevealed, revealFact, revealedIndices } = useRevealedFacts(hotdog.id);
   const { data: allHotdogs = [] } = useHotdogsLight();
   const stampRef = useRef<HTMLDivElement>(null);
 
   const funFacts = hotdog.fun_facts || [];
+
+  // If the user arrived from Browse All, send them back there instead of the globe.
+  const cameFromBrowse = location.state?.from === '/hotdogs';
+  const backTo = cameFromBrowse ? { path: "/hotdogs", label: "Browse All" } : undefined;
 
   // Auto-derive related: explicit list, else shared region/tags
   const related = useMemo<Hotdog[]>(() => {
@@ -74,6 +80,7 @@ export function EditorialDetailView({ hotdog }: Props) {
         revealedCount={revealedIndices.length}
         totalFacts={funFacts.length}
         onStampClick={scrollToStamp}
+        backTo={backTo}
       />
 
       <HeroSection hotdog={hotdog} />
@@ -141,7 +148,7 @@ export function EditorialDetailView({ hotdog }: Props) {
         </div>
       </div>
 
-      <MobileActionBar onStampClick={scrollToStamp} />
+      <MobileActionBar onStampClick={scrollToStamp} backTo={backTo} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Stamp, Globe as GlobeIcon, ArrowRight } from "lucide-react";
 import { Hotdog } from "@/types/hotdog";
 import { getRelatedCaption } from "@/utils/relatedCaptions";
@@ -10,6 +10,10 @@ interface Props {
 }
 
 export function ExploreMoreCTA({ hotdog, related, onStampClick }: Props) {
+  const location = useLocation();
+  const cameFromBrowse = location.state?.from === '/hotdogs';
+  const relatedLinkState = cameFromBrowse ? { from: '/hotdogs' } : undefined;
+
   return (
     <section className="paper-card p-6 md:p-10">
       <div className="text-center mb-8">
@@ -48,6 +52,7 @@ export function ExploreMoreCTA({ hotdog, related, onStampClick }: Props) {
                 <Link
                   key={r.id}
                   to={`/hotdog/${r.slug}`}
+                  state={relatedLinkState}
                   className="group block paper-card overflow-hidden hover:-translate-y-1 transition-transform"
                 >
                   {r.image && (

@@ -8,11 +8,14 @@ interface Props {
   revealedCount: number;
   totalFacts: number;
   onStampClick: () => void;
+  backTo?: { path: string; label: string };
 }
 
-export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampClick }: Props) {
+export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampClick, backTo }: Props) {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
+
+  const destination = backTo ?? { path: "/", label: "Atlas" };
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
@@ -37,11 +40,11 @@ export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampCl
       >
         <div className="max-w-[1180px] mx-auto px-6 h-12 flex items-center justify-between gap-6 text-[hsl(var(--ink))]">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate(destination.path)}
             className="flex items-center gap-1.5 text-[13px] font-medium uppercase tracking-[0.18em] text-[hsl(var(--ink))]/70 hover:text-[hsl(var(--ink))] transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Atlas
+            {destination.label}
           </button>
           <div className="flex-1 min-w-0 text-center flex items-baseline justify-center gap-2 truncate">
             <span className="font-heading font-semibold text-sm truncate">
@@ -70,8 +73,9 @@ export function StickyPassportBar({ hotdog, revealedCount, totalFacts, onStampCl
   );
 }
 
-export function MobileActionBar({ onStampClick }: { onStampClick: () => void }) {
+export function MobileActionBar({ onStampClick, backTo }: { onStampClick: () => void; backTo?: { path: string; label: string } }) {
   const navigate = useNavigate();
+  const destination = backTo ?? { path: "/", label: "Atlas" };
   return (
     <div
       className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t px-4 py-3 flex gap-3 backdrop-blur-md"
@@ -82,11 +86,11 @@ export function MobileActionBar({ onStampClick }: { onStampClick: () => void }) 
       }}
     >
       <button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(destination.path)}
         className="flex-1 flex items-center justify-center gap-2 text-sm font-medium border rounded-md py-2.5 text-[hsl(var(--ink))]"
         style={{ borderColor: "hsl(var(--ink) / 0.25)" }}
       >
-        <ArrowLeft className="h-4 w-4" /> Atlas
+        <ArrowLeft className="h-4 w-4" /> {destination.label}
       </button>
       <button onClick={onStampClick} className="brass-button flex-1 flex items-center justify-center gap-2 text-sm">
         <Stamp className="h-4 w-4" /> Stamp Passport
