@@ -10,6 +10,10 @@ interface Props {
 }
 
 export function ExploreMoreCTA({ hotdog, related, onStampClick }: Props) {
+  const location = useLocation();
+  const cameFromBrowse = location.state?.from === '/hotdogs';
+  const relatedLinkState = cameFromBrowse ? { from: '/hotdogs' } : undefined;
+
   return (
     <section className="paper-card p-6 md:p-10">
       <div className="text-center mb-8">
