@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Stamp, Globe as GlobeIcon, ArrowRight } from "lucide-react";
 import { Hotdog } from "@/types/hotdog";
 import { getRelatedCaption } from "@/utils/relatedCaptions";
