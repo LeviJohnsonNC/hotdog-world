@@ -1,4 +1,5 @@
 import { useMemo, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { Hotdog } from "@/types/hotdog";
 import { useRevealedFacts } from "@/hooks/useRevealedFacts";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
