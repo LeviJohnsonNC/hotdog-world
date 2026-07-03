@@ -78,7 +78,6 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
       className="flip-card-container"
       style={{
         animationDelay: prefersReducedMotion ? "0ms" : `${index * 60}ms`,
-        transform: `rotate(${tilt}deg)`,
       }}
     >
       <button
