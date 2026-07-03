@@ -25,11 +25,11 @@ const parseFactContent = (fact: string): { teaser: string; reveal: string } => {
 
 const handSize = (text: string): string => {
   const len = text.length;
-  if (len < 60) return "text-[26px] leading-[1.15]";
-  if (len < 110) return "text-[22px] leading-[1.2]";
-  if (len < 180) return "text-[19px] leading-[1.25]";
-  if (len < 260) return "text-[17px] leading-[1.3]";
-  return "text-[15px] leading-[1.35]";
+  if (len < 60) return "text-[34px] leading-[1.15]";
+  if (len < 110) return "text-[30px] leading-[1.2]";
+  if (len < 180) return "text-[26px] leading-[1.25]";
+  if (len < 260) return "text-[22px] leading-[1.3]";
+  return "text-[19px] leading-[1.35]";
 };
 
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
