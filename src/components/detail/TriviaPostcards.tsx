@@ -29,35 +29,22 @@ export function TriviaPostcards({ facts, isRevealed, onReveal, revealedCount }: 
           </span>
         </div>
       </div>
-      <p className="text-sm text-[hsl(var(--ink))]/65 mb-6">
-        Tap a postcard to flip it. Each one adds a stamp to your trail.
+      <p className="text-sm text-[hsl(var(--ink))]/65 mb-8">
+        Tap a postcard to flip it over. Each one adds a stamp to your trail.
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {facts.map((fact, i) => (
-          <div key={i} className="relative postcard-wrap">
-            {/* Perforated left edge */}
-            <span aria-hidden className="postcard-perf" />
-            {/* Stamp corner (hidden once flipped so it doesn't overlap the answer) */}
-            {!isRevealed(i) && (
-              <span aria-hidden className="postcard-stamp">
-                <span className="postcard-stamp-inner">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </span>
-            )}
+          <div key={i} className="relative">
             <FactFlipCard
               fact={fact}
               index={i}
               isRevealed={isRevealed(i)}
               onReveal={() => onReveal(i)}
             />
-            {!isRevealed(i) && (
-              <span className="absolute bottom-2 right-3 text-[10px] uppercase tracking-[0.2em] text-[hsl(var(--ink))]/45 font-mono pointer-events-none">
-                Tap to flip
-              </span>
+            {isRevealed(i) && (
+              <span className="discovered-stamp">Discovered</span>
             )}
-            {isRevealed(i) && <span className="discovered-stamp">Discovered</span>}
           </div>
         ))}
       </div>
