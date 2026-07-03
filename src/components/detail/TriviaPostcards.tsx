@@ -43,7 +43,7 @@ export function TriviaPostcards({ facts, isRevealed, onReveal, revealedCount }: 
               onReveal={() => onReveal(i)}
             />
             {isRevealed(i) && (
-              <span className="discovered-stamp absolute -bottom-2 left-3 z-10">Discovered</span>
+              <span className="discovered-stamp">Discovered</span>
             )}
           </div>
         ))}
