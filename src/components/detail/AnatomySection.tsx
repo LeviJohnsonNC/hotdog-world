@@ -13,6 +13,14 @@ const ANATOMY_ILLUSTRATIONS = new Set([
   "aussie-dog",
   "bangkok-spicy-street-dog",
   "boerewors-roll",
+  "bombay-hot-dog",
+  "cachorro-quente-paulista",
+  "chapli-kebab-dog",
+  "chicago-style-hot-dog",
+  "completo",
+  "coney-island-hot-dog",
+  "currywurst",
+  "dagwood-dog",
 ]);
 
 // Rotating palette for the numbered layer dots so the list still reads as a
