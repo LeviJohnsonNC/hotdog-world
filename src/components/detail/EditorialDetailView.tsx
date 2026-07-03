@@ -80,6 +80,7 @@ export function EditorialDetailView({ hotdog }: Props) {
         revealedCount={revealedIndices.length}
         totalFacts={funFacts.length}
         onStampClick={scrollToStamp}
+        backTo={backTo}
       />
 
       <HeroSection hotdog={hotdog} />
