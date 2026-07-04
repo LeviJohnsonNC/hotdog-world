@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "hotdog-world-mcp",
+      "version": "0.1.0",
+      "title": "Hotdog World"
+    },
+    "tools": [
+      {
+        "name": "list_hotdogs",
+        "title": "List hotdogs",
+        "description": "List hotdogs in the Hotdog World catalog. Returns name, slug, city, country, and short description. Use `limit` (default 50) to page results.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 200,
+              "description": "Max hotdogs to return (default 50, max 200)."
+            },
+            "country": {
+              "type": "string",
+              "description": "Optional country filter (case-insensitive substring)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_hotdog",
+        "title": "Get hotdog",
+        "description": "Get the full details for one hotdog by slug: ingredients, instructions, origin story, nutrition, trivia, and flavor profile.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Hotdog slug, e.g. 'chicago-style-hot-dog'."
+            }
+          },
+          "required": [
+            "slug"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_hotdogs",
+        "title": "Search hotdogs",
+        "description": "Search hotdogs by keyword across name, city, country, and description. Returns matching hotdogs with slug and short description.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Search term, e.g. 'mustard', 'Tokyo', 'spicy'."
+            },
+            "limit": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 100,
+              "description": "Max results (default 20)."
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
