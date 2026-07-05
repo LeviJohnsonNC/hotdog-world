@@ -177,6 +177,20 @@ const BrowseHotdogs = () => {
           </p>
         )}
 
+        {pantryOnly && !pantryEmpty && filteredHotdogs.length === 0 && (
+          <div className="mb-6 rounded-xl border border-dashed border-mustard/50 bg-mustard/5 p-6 text-center">
+            <p className="font-heading text-lg text-foreground mb-1">
+              Nothing fully matches your pantry — yet.
+            </p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Open your pantry to see hotdogs that are only 1–2 items away.
+            </p>
+            <Link to="/pantry">
+              <Button size="sm">Open pantry</Button>
+            </Link>
+          </div>
+        )}
+
         {/* Hotdog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredHotdogs.map((hotdog) => {
