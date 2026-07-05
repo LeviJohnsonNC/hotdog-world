@@ -113,7 +113,12 @@ const BrowseHotdogs = () => {
             </p>
           </div>
           
-          <div className="w-24" /> {/* Spacer for centering */}
+          <Link to="/pantry">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ChefHat className="h-4 w-4 text-mustard" />
+              <span className="hidden sm:inline">My Pantry</span>
+            </Button>
+          </Link>
         </div>
       </header>
 
