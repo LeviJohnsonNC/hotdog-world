@@ -13,9 +13,31 @@ import { usePantry, canMakeHotdog, missingCount } from "@/hooks/usePantry";
 
 const BrowseHotdogs = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: hotdogs = [], isLoading } = useHotdogsLight();
+  const { pantry, isSignedIn } = usePantry();
   const siteUrl = window.location.origin;
   const [searchQuery, setSearchQuery] = useState("");
+  const [pantryOnly, setPantryOnly] = useState(searchParams.get("filter") === "pantry");
+
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    if (pantryOnly) next.set("filter", "pantry");
+    else next.delete("filter");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pantryOnly]);
+
+  const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
+    e.preventDefault();
+    navigate(`/hotdog/${hotdogSlug}`, { state: { from: '/hotdogs' } });
+  };
+
+  const pantryEmpty = pantry.ingredient_ids.length === 0 && pantry.equipment_ids.length === 0;
+  const readyCount = useMemo(
+    () => hotdogs.filter((h) => canMakeHotdog(h, pantry)).length,
+    [hotdogs, pantry]
+  );
 
   const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
     e.preventDefault();
