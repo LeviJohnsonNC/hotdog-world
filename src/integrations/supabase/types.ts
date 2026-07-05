@@ -58,6 +58,8 @@ export type Database = {
           accent_palette: Json | null
           anatomy: Json | null
           calories: number | null
+          canonical_equipment_ids: string[]
+          canonical_ingredient_ids: string[]
           carbs_fiber_g: number | null
           carbs_sugars_g: number | null
           carbs_total_g: number | null
@@ -105,6 +107,8 @@ export type Database = {
           accent_palette?: Json | null
           anatomy?: Json | null
           calories?: number | null
+          canonical_equipment_ids?: string[]
+          canonical_ingredient_ids?: string[]
           carbs_fiber_g?: number | null
           carbs_sugars_g?: number | null
           carbs_total_g?: number | null
@@ -152,6 +156,8 @@ export type Database = {
           accent_palette?: Json | null
           anatomy?: Json | null
           calories?: number | null
+          canonical_equipment_ids?: string[]
+          canonical_ingredient_ids?: string[]
           carbs_fiber_g?: number | null
           carbs_sugars_g?: number | null
           carbs_total_g?: number | null
@@ -217,6 +223,30 @@ export type Database = {
           fact_index?: number
           hotdog_id?: string
           id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_pantry: {
+        Row: {
+          created_at: string
+          equipment_ids: string[]
+          ingredient_ids: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          equipment_ids?: string[]
+          ingredient_ids?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          equipment_ids?: string[]
+          ingredient_ids?: string[]
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
