@@ -48,7 +48,7 @@ There are **no tests** in this repo — no `test` script, no Vitest/Jest config,
 - `src/pages/` — one file per route (see `src/App.tsx` for the route table)
 - `src/components/` — feature components at the root; `ui/` = shadcn primitives; `detail/`, `passport/`, `leaderboard/`, `recipe/` = feature-scoped
 - `src/contexts/` — `AuthContext`, `UserProgressContext` (stamps, revealed facts, visited hotdogs, trivia clicks, anon→user migration)
-- `src/hooks/` — React Query hooks (`useHotdogs`, `useHotdogsLight`, `useHotdogDetail`, `usePantry`, `useStamps`, `useVisitedHotdogs`, `useRevealedFacts`, `useTriviaBadges`, `useFTUX`, `useOnboardingNudges`, `useOnlineStatus`, `useReducedMotion`, `useRetryableOperation`, `useSound`)
+- `src/hooks/` — React Query hooks (`useHotdogsLight`, `useHotdogDetail`, `usePantry`, `useStamps`, `useVisitedHotdogs`, `useRevealedFacts`, `useTriviaBadges`, `useFTUX`, `useOnboardingNudges`, `useOnlineStatus`, `useReducedMotion`, `useRetryableOperation`, `useSound`)
 - `src/utils/` — pure logic: `badgeCalculator`, `badgeConfig`, `levelBadgeConfig`, `rankLadder`, `spiderGraphCalculator`, `passportHelpers`, `stampStorage`, `dataMigration`, `imageMapping`, `imageCompression`, `callsign`, `relatedCaptions`, `seoOverrides`
 - `src/data/pantryTaxonomy.ts` — canonical ingredient/equipment lists + starter kit
 - `src/types/` — `hotdog.ts`, `passport.ts`

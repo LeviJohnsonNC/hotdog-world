@@ -34,18 +34,34 @@ const BrowseHotdogs = () => {
   };
 
   const pantryEmpty = pantry.ingredient_ids.length === 0 && pantry.equipment_ids.length === 0;
-  const readyCount = useMemo(
-    () => hotdogs.filter((h) => canMakeHotdog(h, pantry)).length,
-    [hotdogs, pantry]
-  );
 
+  // Compute each hotdog's pantry match once per pantry change, instead of
+  // twice per card on every render (search keystrokes included)
+  const pantryMatchById = useMemo(() => {
+    const map = new Map<string, { ready: boolean; oneAway: boolean }>();
+    for (const h of hotdogs) {
+      const ready = !pantryEmpty && canMakeHotdog(h, pantry);
+      const oneAway =
+        !pantryEmpty && !ready && missingCount(h, pantry).total === 1;
+      map.set(h.id, { ready, oneAway });
+    }
+    return map;
+  }, [hotdogs, pantry, pantryEmpty]);
+
+  const readyCount = useMemo(() => {
+    let n = 0;
+    pantryMatchById.forEach((m) => {
+      if (m.ready) n++;
+    });
+    return n;
+  }, [pantryMatchById]);
 
   // Sort alphabetically and filter by search query + pantry filter
   const filteredHotdogs = useMemo(() => {
     let list = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
 
     if (pantryOnly && !pantryEmpty) {
-      list = list.filter((h) => canMakeHotdog(h, pantry));
+      list = list.filter((h) => pantryMatchById.get(h.id)?.ready);
     }
 
     if (searchQuery.trim()) {
@@ -58,7 +74,7 @@ const BrowseHotdogs = () => {
     }
 
     return list;
-  }, [hotdogs, searchQuery, pantryOnly, pantryEmpty, pantry]);
+  }, [hotdogs, searchQuery, pantryOnly, pantryEmpty, pantryMatchById]);
 
   if (isLoading) {
     return (
@@ -194,9 +210,9 @@ const BrowseHotdogs = () => {
         {/* Hotdog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredHotdogs.map((hotdog) => {
-            const ready = !pantryEmpty && canMakeHotdog(hotdog, pantry);
-            const miss = !pantryEmpty && !ready ? missingCount(hotdog, pantry) : null;
-            const oneAway = !!(miss && miss.total === 1);
+            const match = pantryMatchById.get(hotdog.id);
+            const ready = !!match?.ready;
+            const oneAway = !!match?.oneAway;
             return (
               <a
                 key={hotdog.id}

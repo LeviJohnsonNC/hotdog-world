@@ -29,7 +29,7 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
   useEffect(() => {
     const triviaCount = getTriviaClickCount();
     if (triviaCount >= 1 && !hasShownFirstTriviaBadgeToast()) {
-      setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         toast({
           title: "🎉 New Badge Earned: Curious Clicker",
           description: "Tap to view your badges",
@@ -45,6 +45,7 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
         });
         markFirstTriviaBadgeToastShown();
       }, 800);
+      return () => clearTimeout(timeoutId);
     }
   }, [getTriviaClickCount, hasShownFirstTriviaBadgeToast, markFirstTriviaBadgeToastShown, navigate]);
 
@@ -60,13 +61,13 @@ export const OnboardingNudge = ({ isFirstVisit, isNewVisit, visitCount }: Onboar
       if (hasTriggeredRef.current) return;
       hasTriggeredRef.current = true;
 
-      console.log('Onboarding nudge triggered:', { isFirstVisit, visitCount });
+      if (import.meta.env.DEV) console.log('Onboarding nudge triggered:', { isFirstVisit, visitCount });
 
       // First visit - show "Passport Opened" badge toast
       if (isFirstVisit) {
         const alreadyShown = localStorage.getItem(STORAGE_KEYS.FIRST_BADGE) === 'true';
         if (!alreadyShown) {
-          console.log('Showing first badge toast');
+          if (import.meta.env.DEV) console.log('Showing first badge toast');
           toast({
             title: "🎉 New Badge Earned: Passport Opened",
             description: "Tap to view your Passport",

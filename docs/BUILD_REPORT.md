@@ -124,7 +124,7 @@ Notable DB functions (SECURITY DEFINER, `search_path=public`):
 - `set_updated_at()` — generic updated_at trigger helper.
 
 Client state:
-- **Server state** → React Query hooks (`useHotdogs`, `useHotdogsLight`, `useHotdogDetail`, `usePantry`, `useStamps`, `useVisitedHotdogs`, `useRevealedFacts`, `useTriviaBadges`).
+- **Server state** → React Query hooks (`useHotdogsLight`, `useHotdogDetail`, `usePantry`, `useStamps`, `useVisitedHotdogs`, `useRevealedFacts`, `useTriviaBadges`).
 - **Global user state** → `UserProgressContext` (562 lines) centralizes stamps, revealed facts, visits, trivia clicks, migration status.
 - **Auth** → `AuthContext` wraps `supabase.auth` (sign in / sign up / sign out, session listener).
 - **Local-only**: FTUX flag, anon stamps/pantry in localStorage (see `src/utils/stampStorage.ts`, `src/hooks/usePantry.ts`).

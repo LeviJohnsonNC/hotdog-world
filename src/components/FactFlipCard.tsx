@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Sparkles } from "lucide-react";
 import { useTriviaBadges } from "@/hooks/useTriviaBadges";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface FactFlipCardProps {
   fact: string;
@@ -35,20 +36,19 @@ const handSize = (text: string): string => {
 export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(isRevealed);
   const [showSparkle, setShowSparkle] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const sparkleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { incrementTriviaClick } = useTriviaBadges();
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mq.matches);
-    const h = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-    mq.addEventListener("change", h);
-    return () => mq.removeEventListener("change", h);
-  }, []);
 
   useEffect(() => {
     setIsFlipped(isRevealed);
   }, [isRevealed]);
+
+  useEffect(() => {
+    return () => {
+      if (sparkleTimerRef.current) clearTimeout(sparkleTimerRef.current);
+    };
+  }, []);
 
   const handleFlip = () => {
     if (isFlipped || isRevealed) return;
@@ -56,7 +56,8 @@ export function FactFlipCard({ fact, index, isRevealed, onReveal }: FactFlipCard
     incrementTriviaClick();
     setIsFlipped(true);
     setShowSparkle(true);
-    setTimeout(() => setShowSparkle(false), 1000);
+    if (sparkleTimerRef.current) clearTimeout(sparkleTimerRef.current);
+    sparkleTimerRef.current = setTimeout(() => setShowSparkle(false), 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
