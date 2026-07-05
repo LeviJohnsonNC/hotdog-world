@@ -1,11 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, ChefHat, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useState, useMemo, useEffect } from "react";
+import { usePantry, canMakeHotdog, missingCount } from "@/hooks/usePantry";
 
 const BrowseHotdogs = () => {
   const navigate = useNavigate();
