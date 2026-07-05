@@ -200,6 +200,13 @@ const Index = () => {
             >
               Browse All
             </a>
+            <a
+              href="/pantry"
+              onClick={(e) => { e.preventDefault(); navigate("/pantry"); }}
+              className="px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs md:text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 border border-white/10"
+            >
+              Pantry
+            </a>
             {user && (
               <a
                 href="/settings"
