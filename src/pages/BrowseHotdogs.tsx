@@ -1,38 +1,64 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, ChefHat, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useMemo } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useState, useMemo, useEffect } from "react";
+import { usePantry, canMakeHotdog, missingCount } from "@/hooks/usePantry";
 
 const BrowseHotdogs = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: hotdogs = [], isLoading } = useHotdogsLight();
+  const { pantry, isSignedIn } = usePantry();
   const siteUrl = window.location.origin;
   const [searchQuery, setSearchQuery] = useState("");
+  const [pantryOnly, setPantryOnly] = useState(searchParams.get("filter") === "pantry");
+
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    if (pantryOnly) next.set("filter", "pantry");
+    else next.delete("filter");
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pantryOnly]);
 
   const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
     e.preventDefault();
     navigate(`/hotdog/${hotdogSlug}`, { state: { from: '/hotdogs' } });
   };
 
-  // Sort alphabetically and filter by search query
+  const pantryEmpty = pantry.ingredient_ids.length === 0 && pantry.equipment_ids.length === 0;
+  const readyCount = useMemo(
+    () => hotdogs.filter((h) => canMakeHotdog(h, pantry)).length,
+    [hotdogs, pantry]
+  );
+
+
+  // Sort alphabetically and filter by search query + pantry filter
   const filteredHotdogs = useMemo(() => {
-    const sorted = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
-    
-    if (!searchQuery.trim()) {
-      return sorted;
+    let list = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
+
+    if (pantryOnly && !pantryEmpty) {
+      list = list.filter((h) => canMakeHotdog(h, pantry));
     }
-    
-    const query = searchQuery.toLowerCase();
-    return sorted.filter((hotdog) => {
-      const nameMatch = hotdog.name.toLowerCase().includes(query);
-      const locationMatch = `${hotdog.city}, ${hotdog.country}`.toLowerCase().includes(query);
-      return nameMatch || locationMatch;
-    });
-  }, [hotdogs, searchQuery]);
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      list = list.filter((hotdog) => {
+        const nameMatch = hotdog.name.toLowerCase().includes(query);
+        const locationMatch = `${hotdog.city}, ${hotdog.country}`.toLowerCase().includes(query);
+        return nameMatch || locationMatch;
+      });
+    }
+
+    return list;
+  }, [hotdogs, searchQuery, pantryOnly, pantryEmpty, pantry]);
 
   if (isLoading) {
     return (
@@ -87,13 +113,18 @@ const BrowseHotdogs = () => {
             </p>
           </div>
           
-          <div className="w-24" /> {/* Spacer for centering */}
+          <Link to="/pantry">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ChefHat className="h-4 w-4 text-mustard" />
+              <span className="hidden sm:inline">My Pantry</span>
+            </Button>
+          </Link>
         </div>
       </header>
 
-      {/* Search Bar */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="relative max-w-md">
+      {/* Search + pantry filter */}
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
@@ -103,7 +134,38 @@ const BrowseHotdogs = () => {
             className="pl-10 bg-card border-border focus:border-primary shadow-sm"
           />
         </div>
+
+        <div className="flex items-center gap-3 bg-card/70 border border-border/60 rounded-full px-4 py-2 shadow-sm">
+          <ChefHat className="h-4 w-4 text-mustard" />
+          <Label htmlFor="pantry-only" className="text-sm cursor-pointer select-none">
+            Only what I can make
+            {!pantryEmpty && (
+              <span className="ml-2 text-xs text-muted-foreground tabular-nums">
+                ({readyCount} ready)
+              </span>
+            )}
+          </Label>
+          <Switch
+            id="pantry-only"
+            checked={pantryOnly}
+            onCheckedChange={setPantryOnly}
+            disabled={pantryEmpty}
+          />
+        </div>
       </div>
+
+      {pantryOnly && pantryEmpty && (
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="rounded-lg border border-dashed border-mustard/50 bg-mustard/5 p-4 text-sm text-foreground/80 flex items-center justify-between gap-3">
+            <span>
+              Your pantry is empty. {isSignedIn ? "" : "Sign in and "}Check off what's in your kitchen to filter.
+            </span>
+            <Link to="/pantry">
+              <Button size="sm" variant="outline">Open pantry</Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -115,35 +177,68 @@ const BrowseHotdogs = () => {
           </p>
         )}
 
+        {pantryOnly && !pantryEmpty && filteredHotdogs.length === 0 && (
+          <div className="mb-6 rounded-xl border border-dashed border-mustard/50 bg-mustard/5 p-6 text-center">
+            <p className="font-heading text-lg text-foreground mb-1">
+              Nothing fully matches your pantry — yet.
+            </p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Open your pantry to see hotdogs that are only 1–2 items away.
+            </p>
+            <Link to="/pantry">
+              <Button size="sm">Open pantry</Button>
+            </Link>
+          </div>
+        )}
+
         {/* Hotdog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredHotdogs.map((hotdog) => (
-            <a
-              key={hotdog.id}
-              href={`/hotdog/${hotdog.slug}`}
-              onClick={(e) => handleHotdogClick(e, hotdog.slug)}
-              className="group block"
-            >
-              <Card className="overflow-hidden bg-card/40 backdrop-blur-sm border-border/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl h-full">
-                <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={hotdog.image}
-                    alt={`${hotdog.name} from ${hotdog.city}, ${hotdog.country}`}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-4">
-                  <h2 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {hotdog.name}
-                  </h2>
-                  <p className="text-sm text-foreground/60">
-                    {hotdog.city}, {hotdog.country}
-                  </p>
-                </div>
-              </Card>
-            </a>
-          ))}
+          {filteredHotdogs.map((hotdog) => {
+            const ready = !pantryEmpty && canMakeHotdog(hotdog, pantry);
+            const miss = !pantryEmpty && !ready ? missingCount(hotdog, pantry) : null;
+            const oneAway = !!(miss && miss.total === 1);
+            return (
+              <a
+                key={hotdog.id}
+                href={`/hotdog/${hotdog.slug}`}
+                onClick={(e) => handleHotdogClick(e, hotdog.slug)}
+                className="group block"
+              >
+                <Card className="relative overflow-hidden bg-card/40 backdrop-blur-sm border-border/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl h-full">
+                  {ready && (
+                    <Badge className="absolute top-3 right-3 z-10 bg-mustard text-background dark:text-foreground border-mustard shadow-md gap-1">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                      Ready to cook
+                    </Badge>
+                  )}
+                  {oneAway && (
+                    <Badge
+                      variant="outline"
+                      className="absolute top-3 right-3 z-10 bg-background/90 backdrop-blur border-mustard/60 text-foreground shadow-sm"
+                    >
+                      1 away
+                    </Badge>
+                  )}
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <img
+                      src={hotdog.image}
+                      alt={`${hotdog.name} from ${hotdog.city}, ${hotdog.country}`}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h2 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                      {hotdog.name}
+                    </h2>
+                    <p className="text-sm text-foreground/60">
+                      {hotdog.city}, {hotdog.country}
+                    </p>
+                  </div>
+                </Card>
+              </a>
+            );
+          })}
         </div>
       </main>
 
@@ -170,6 +265,16 @@ const BrowseHotdogs = () => {
               className="text-foreground/70 hover:text-primary transition-colors"
             >
               Browse All
+            </a>
+            <a
+              href="/pantry"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/pantry");
+              }}
+              className="text-foreground/70 hover:text-primary transition-colors"
+            >
+              Pantry
             </a>
             <a
               href="/passport"

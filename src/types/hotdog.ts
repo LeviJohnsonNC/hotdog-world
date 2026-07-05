@@ -30,6 +30,9 @@ export interface Hotdog {
   // Badge-related categorization
   tags?: string[];
   region?: string;
+  // Normalized IDs for pantry matching
+  canonical_ingredient_ids?: string[];
+  canonical_equipment_ids?: string[];
   // Detailed nutrition information
   fat_total_g?: number;
   fat_saturated_g?: number;
