@@ -253,6 +253,16 @@ const BrowseHotdogs = () => {
               Browse All
             </a>
             <a
+              href="/pantry"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/pantry");
+              }}
+              className="text-foreground/70 hover:text-primary transition-colors"
+            >
+              Pantry
+            </a>
+            <a
               href="/passport"
               onClick={(e) => {
                 e.preventDefault();
