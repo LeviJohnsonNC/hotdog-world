@@ -39,12 +39,8 @@ const BrowseHotdogs = () => {
     [hotdogs, pantry]
   );
 
-  const handleHotdogClick = (e: React.MouseEvent<HTMLAnchorElement>, hotdogSlug: string) => {
-    e.preventDefault();
-    navigate(`/hotdog/${hotdogSlug}`, { state: { from: '/hotdogs' } });
-  };
 
-  // Sort alphabetically and filter by search query
+  // Sort alphabetically and filter by search query + pantry filter
   const filteredHotdogs = useMemo(() => {
     const sorted = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
     
