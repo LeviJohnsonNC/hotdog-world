@@ -12,6 +12,7 @@ import { handleQueryError, getRetryConfig } from "@/lib/queryErrorHandler";
 import Index from "./pages/Index";
 import HotdogDetail from "./pages/HotdogDetail";
 import BrowseHotdogs from "./pages/BrowseHotdogs";
+import Pantry from "./pages/Pantry";
 import Passport from "./pages/Passport";
 import Leaderboard from "./pages/Leaderboard";
 import AccountSettings from "./pages/AccountSettings";
