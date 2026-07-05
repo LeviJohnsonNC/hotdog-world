@@ -342,7 +342,7 @@ export default function Pantry() {
                         <button
                           key={id}
                           onClick={() => toggleEquipment(id)}
-                          className="text-[11px] px-2 py-0.5 rounded-full border border-dashed border-mustard/60 text-mustard-foreground bg-mustard/5 hover:bg-mustard/15 transition-colors inline-flex items-center gap-1"
+                          className="text-[11px] px-2 py-0.5 rounded-full border border-dashed border-mustard/60 text-background dark:text-foreground bg-mustard/5 hover:bg-mustard/15 transition-colors inline-flex items-center gap-1"
                         >
                           <Plus className="h-3 w-3" />
                           {findEquipmentLabel(id)}
@@ -425,7 +425,7 @@ function IngredientChip({
       className={cn(
         "group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-all duration-150 active:scale-95",
         checked
-          ? "bg-mustard text-mustard-foreground border-mustard shadow-sm"
+          ? "bg-mustard text-background dark:text-foreground border-mustard shadow-sm"
           : "bg-background/60 text-foreground/80 border-border hover:border-mustard/60 hover:bg-mustard/10"
       )}
     >
