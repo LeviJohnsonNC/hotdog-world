@@ -129,7 +129,7 @@ export function useHotdogsLight() {
     queryFn: async () => {
       const { data: hotdogs, error } = await supabase
         .from("hotdogs")
-        .select("id, slug, name, city, country, description, latitude, longitude, tags, region, ingredients, calories");
+        .select("id, slug, name, city, country, description, latitude, longitude, tags, region, ingredients, calories, canonical_ingredient_ids, canonical_equipment_ids");
 
       if (error) throw error;
       if (!hotdogs) return [];
@@ -153,6 +153,8 @@ export function useHotdogsLight() {
           region: hotdog.region || undefined,
           ingredients: hotdog.ingredients as any,
           calories: hotdog.calories || undefined,
+          canonical_ingredient_ids: (hotdog as any).canonical_ingredient_ids || [],
+          canonical_equipment_ids: (hotdog as any).canonical_equipment_ids || [],
         };
       });
 
