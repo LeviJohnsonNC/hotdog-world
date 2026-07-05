@@ -122,9 +122,9 @@ const BrowseHotdogs = () => {
         </div>
       </header>
 
-      {/* Search Bar */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="relative max-w-md">
+      {/* Search + pantry filter */}
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
@@ -134,7 +134,38 @@ const BrowseHotdogs = () => {
             className="pl-10 bg-card border-border focus:border-primary shadow-sm"
           />
         </div>
+
+        <div className="flex items-center gap-3 bg-card/70 border border-border/60 rounded-full px-4 py-2 shadow-sm">
+          <ChefHat className="h-4 w-4 text-mustard" />
+          <Label htmlFor="pantry-only" className="text-sm cursor-pointer select-none">
+            Only what I can make
+            {!pantryEmpty && (
+              <span className="ml-2 text-xs text-muted-foreground tabular-nums">
+                ({readyCount} ready)
+              </span>
+            )}
+          </Label>
+          <Switch
+            id="pantry-only"
+            checked={pantryOnly}
+            onCheckedChange={setPantryOnly}
+            disabled={pantryEmpty}
+          />
+        </div>
       </div>
+
+      {pantryOnly && pantryEmpty && (
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="rounded-lg border border-dashed border-mustard/50 bg-mustard/5 p-4 text-sm text-foreground/80 flex items-center justify-between gap-3">
+            <span>
+              Your pantry is empty. {isSignedIn ? "" : "Sign in and "}Check off what's in your kitchen to filter.
+            </span>
+            <Link to="/pantry">
+              <Button size="sm" variant="outline">Open pantry</Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
