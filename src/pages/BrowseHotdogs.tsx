@@ -179,33 +179,52 @@ const BrowseHotdogs = () => {
 
         {/* Hotdog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredHotdogs.map((hotdog) => (
-            <a
-              key={hotdog.id}
-              href={`/hotdog/${hotdog.slug}`}
-              onClick={(e) => handleHotdogClick(e, hotdog.slug)}
-              className="group block"
-            >
-              <Card className="overflow-hidden bg-card/40 backdrop-blur-sm border-border/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl h-full">
-                <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  <img
-                    src={hotdog.image}
-                    alt={`${hotdog.name} from ${hotdog.city}, ${hotdog.country}`}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-4">
-                  <h2 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {hotdog.name}
-                  </h2>
-                  <p className="text-sm text-foreground/60">
-                    {hotdog.city}, {hotdog.country}
-                  </p>
-                </div>
-              </Card>
-            </a>
-          ))}
+          {filteredHotdogs.map((hotdog) => {
+            const ready = !pantryEmpty && canMakeHotdog(hotdog, pantry);
+            const miss = !pantryEmpty && !ready ? missingCount(hotdog, pantry) : null;
+            const oneAway = !!(miss && miss.total === 1);
+            return (
+              <a
+                key={hotdog.id}
+                href={`/hotdog/${hotdog.slug}`}
+                onClick={(e) => handleHotdogClick(e, hotdog.slug)}
+                className="group block"
+              >
+                <Card className="relative overflow-hidden bg-card/40 backdrop-blur-sm border-border/30 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:shadow-xl h-full">
+                  {ready && (
+                    <Badge className="absolute top-3 right-3 z-10 bg-mustard text-background dark:text-foreground border-mustard shadow-md gap-1">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                      Ready to cook
+                    </Badge>
+                  )}
+                  {oneAway && (
+                    <Badge
+                      variant="outline"
+                      className="absolute top-3 right-3 z-10 bg-background/90 backdrop-blur border-mustard/60 text-foreground shadow-sm"
+                    >
+                      1 away
+                    </Badge>
+                  )}
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <img
+                      src={hotdog.image}
+                      alt={`${hotdog.name} from ${hotdog.city}, ${hotdog.country}`}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h2 className="font-heading text-xl font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                      {hotdog.name}
+                    </h2>
+                    <p className="text-sm text-foreground/60">
+                      {hotdog.city}, {hotdog.country}
+                    </p>
+                  </div>
+                </Card>
+              </a>
+            );
+          })}
         </div>
       </main>
 
