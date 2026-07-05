@@ -42,19 +42,23 @@ const BrowseHotdogs = () => {
 
   // Sort alphabetically and filter by search query + pantry filter
   const filteredHotdogs = useMemo(() => {
-    const sorted = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
-    
-    if (!searchQuery.trim()) {
-      return sorted;
+    let list = [...hotdogs].sort((a, b) => a.name.localeCompare(b.name));
+
+    if (pantryOnly && !pantryEmpty) {
+      list = list.filter((h) => canMakeHotdog(h, pantry));
     }
-    
-    const query = searchQuery.toLowerCase();
-    return sorted.filter((hotdog) => {
-      const nameMatch = hotdog.name.toLowerCase().includes(query);
-      const locationMatch = `${hotdog.city}, ${hotdog.country}`.toLowerCase().includes(query);
-      return nameMatch || locationMatch;
-    });
-  }, [hotdogs, searchQuery]);
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      list = list.filter((hotdog) => {
+        const nameMatch = hotdog.name.toLowerCase().includes(query);
+        const locationMatch = `${hotdog.city}, ${hotdog.country}`.toLowerCase().includes(query);
+        return nameMatch || locationMatch;
+      });
+    }
+
+    return list;
+  }, [hotdogs, searchQuery, pantryOnly, pantryEmpty, pantry]);
 
   if (isLoading) {
     return (
