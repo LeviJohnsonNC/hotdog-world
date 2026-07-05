@@ -1,7 +1,7 @@
-import { Suspense, useRef, useState, useMemo, useEffect } from "react";
+import { Suspense, lazy, useRef, useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Globe, GlobeHandle } from "@/components/Globe";
+import type { GlobeHandle } from "@/components/Globe";
 import { LoadingGlobe } from "@/components/LoadingGlobe";
 import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +10,11 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import passportIcon from "@/assets/passport-icon.png";
 import leaderboardIcon from "@/assets/leaderboard-icon.png";
 
+// Lazy-load the globe so three.js/@react-three/* stay out of the entry bundle.
+// The existing <Suspense fallback={<LoadingGlobe />}> covers the chunk load.
+const Globe = lazy(() =>
+  import("@/components/Globe").then((m) => ({ default: m.Globe }))
+);
 
 const Index = () => {
   const navigate = useNavigate();
@@ -18,9 +23,17 @@ const Index = () => {
   const prefersReducedMotion = useReducedMotion();
   const { ftuxPhase, markFTUXComplete, shouldShowFTUX } = useFTUX(prefersReducedMotion);
   const globeRef = useRef<GlobeHandle>(null);
+  const spinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  // Don't leave the spin-reset timer running after unmount
+  useEffect(() => {
+    return () => {
+      if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
+    };
+  }, []);
 
   // Pulse ALL hotdogs during FTUX
   const ftuxPulsingPins = useMemo(() => {
@@ -43,8 +56,11 @@ const Index = () => {
     setIsSpinning(true);
     setCanSpin(false);
     globeRef.current?.spinToHotdog(randomHotdog.slug);
-    setTimeout(() => setIsSpinning(false), 5000);
-    setTimeout(() => setCanSpin(true), 5000);
+    if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
+    spinTimerRef.current = setTimeout(() => {
+      setIsSpinning(false);
+      setCanSpin(true);
+    }, 5000);
   };
 
   const siteUrl = typeof window !== "undefined" ? window.location.origin : "";

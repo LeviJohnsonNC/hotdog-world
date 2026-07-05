@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { useRef, useState, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
@@ -45,6 +45,10 @@ const SPIN_DURATION = 5.2; // seconds (+2s for more rotations)
 const ZOOM_DURATION = 2.0; // seconds
 const MAX_TOTAL = 8.0; // safety net
 
+// Stable default so an omitted prop doesn't produce a new Set every render.
+// Never mutate this.
+const EMPTY_PIN_SET = new Set<string>();
+
 function Earth({ 
   hotdogs,
   onHotdogClick,
@@ -65,11 +69,20 @@ function Earth({
   controlsRef,
   playZoomSound,
   enableAutoRotation = true,
-  ftuxPulsingPins = new Set(),
+  ftuxPulsingPins = EMPTY_PIN_SET,
   ftuxPhase = 'complete'
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
+
+  // Precompute pulse order once per FTUX set instead of Array.from().indexOf()
+  // per pin per render (O(n²) across ~60 pins)
+  const pulseIndexById = useMemo(() => {
+    const map = new Map<string, number>();
+    let i = 0;
+    ftuxPulsingPins.forEach((id) => map.set(id, i++));
+    return map;
+  }, [ftuxPulsingPins]);
 
   // Cinematic dolly-in on mount
   const introStartRef = useRef<number>(performance.now());
@@ -239,10 +252,10 @@ function Earth({
 
       
       {/* Hotdogs - disable clicks during spin */}
-      {hotdogs.map((hotdog, index) => {
+      {hotdogs.map((hotdog) => {
         // Pulse ALL hotdogs during entire FTUX (except 'loading' and 'complete')
         const shouldPulse = ftuxPulsingPins.has(hotdog.id) && ftuxPhase !== 'complete' && ftuxPhase !== 'loading';
-        const pulseIndex = Array.from(ftuxPulsingPins).indexOf(hotdog.id);
+        const pulseIndex = pulseIndexById.get(hotdog.id) ?? -1;
         const pulseDelay = pulseIndex >= 0 ? pulseIndex * 150 : 0; // Rapid-fire stagger: 150ms between each
         
         // Subtle intro stagger — short, no lat-based delay
@@ -276,7 +289,7 @@ interface GlobeProps {
   ftuxPhase?: string;
 }
 
-export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogClick, enableAutoRotation = true, ftuxPulsingPins = new Set(), ftuxPhase = 'complete' }, ref) => {
+export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogClick, enableAutoRotation = true, ftuxPulsingPins = EMPTY_PIN_SET, ftuxPhase = 'complete' }, ref) => {
   const [isInteracting, setIsInteracting] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [targetHotdog, setTargetHotdog] = useState<Hotdog | null>(null);
@@ -400,15 +413,6 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
     }
   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
   return (
     <div className="w-full h-full">
       <Canvas
@@ -502,3 +506,5 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
     </div>
   );
 });
+
+Globe.displayName = "Globe";

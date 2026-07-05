@@ -36,7 +36,7 @@ export const useRecordHotdogVisit = (hotdogId: string | undefined) => {
     if (hotdogId) {
       recordVisit(hotdogId).then(({ isNewVisit, visitCount }) => {
         const isFirstVisit = visitCount === 1;
-        console.log('Visit recorded:', { hotdogId, isNewVisit, isFirstVisit, visitCount });
+        if (import.meta.env.DEV) console.log('Visit recorded:', { hotdogId, isNewVisit, isFirstVisit, visitCount });
         setVisitInfo({ isFirstVisit, isNewVisit, visitCount });
       });
     }

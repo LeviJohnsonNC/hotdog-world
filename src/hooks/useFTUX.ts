@@ -1,49 +1,85 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const FTUX_STORAGE_KEY = 'hasSeenFTUX';
 
 type FTUXPhase = 'loading' | 'static' | 'rotating' | 'pulsing' | 'hinting' | 'complete';
 
+const debug = (...args: unknown[]) => {
+  if (import.meta.env.DEV) console.log(...args);
+};
+
 export const useFTUX = (prefersReducedMotion: boolean) => {
   // Check localStorage synchronously to avoid flash
   const [hasSeenFTUX, setHasSeenFTUX] = useState(() => {
-    return localStorage.getItem(FTUX_STORAGE_KEY) === 'true';
+    try {
+      return localStorage.getItem(FTUX_STORAGE_KEY) === 'true';
+    } catch {
+      return true; // storage unavailable — skip FTUX rather than replay forever
+    }
   });
   const [ftuxPhase, setFTUXPhase] = useState<FTUXPhase>('complete');
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearTimers = () => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+  };
+
+  const persistSeen = () => {
+    try {
+      localStorage.setItem(FTUX_STORAGE_KEY, 'true');
+    } catch {
+      /* ignore — worst case FTUX replays next visit */
+    }
+  };
 
   useEffect(() => {
     if (!hasSeenFTUX && !prefersReducedMotion) {
       setFTUXPhase('loading');
-      
+
       // Choreographed timeline
-      console.log('FTUX: Starting sequence');
-      setTimeout(() => {
+      debug('FTUX: Starting sequence');
+      const schedule = (fn: () => void, ms: number) => {
+        timersRef.current.push(setTimeout(fn, ms));
+      };
+      schedule(() => {
         setFTUXPhase('static');
-        console.log('FTUX: Phase = static');
+        debug('FTUX: Phase = static');
       }, 50);
-      setTimeout(() => {
+      schedule(() => {
         setFTUXPhase('rotating');
-        console.log('FTUX: Phase = rotating');
+        debug('FTUX: Phase = rotating');
       }, 400);
-      setTimeout(() => {
+      schedule(() => {
         setFTUXPhase('pulsing');
-        console.log('FTUX: Phase = pulsing (pins start pulsing)');
+        debug('FTUX: Phase = pulsing (pins start pulsing)');
       }, 600);
-      setTimeout(() => {
+      schedule(() => {
         setFTUXPhase('hinting');
-        console.log('FTUX: Phase = hinting');
+        debug('FTUX: Phase = hinting');
       }, 1400); // Show hint after pins finish pulsing (600ms + 800ms = 1400ms)
-      setTimeout(() => {
+      schedule(() => {
+        timersRef.current = []; // sequence finished — nothing left to cancel
         setFTUXPhase('complete');
-        localStorage.setItem(FTUX_STORAGE_KEY, 'true');
+        persistSeen();
         setHasSeenFTUX(true);
-        console.log('FTUX: Phase = complete, saved to localStorage');
+        debug('FTUX: Phase = complete, saved to localStorage');
       }, 4900); // Hint stays for 3500ms (1400ms + 3500ms = 4900ms)
+
+      return () => {
+        // Unmounting mid-sequence: stop the timers and record FTUX as seen —
+        // the orphan timers previously did this several seconds later anyway.
+        if (timersRef.current.length > 0) {
+          clearTimers();
+          persistSeen();
+        }
+      };
     }
   }, [hasSeenFTUX, prefersReducedMotion]);
 
   const markFTUXComplete = useCallback(() => {
-    localStorage.setItem(FTUX_STORAGE_KEY, 'true');
+    clearTimers(); // don't let queued phase changes resurrect the sequence
+    persistSeen();
     setHasSeenFTUX(true);
     setFTUXPhase('complete');
   }, []);
