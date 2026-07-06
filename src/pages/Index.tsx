@@ -66,7 +66,7 @@ const Index = () => {
   const siteUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#0a1420]">
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-[#0a1420]">
       <Helmet>
         <title>Hot Dog World — A World Map of Hot Dog Styles</title>
         <meta
@@ -181,7 +181,7 @@ const Index = () => {
 
       {/* Hero CTA — primary first-touch action */}
       {!hasInteracted && !isLoading && (
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-24 md:bottom-28 z-20 flex flex-col items-center gap-2 animate-fade-in">
+        <div className="pointer-events-none fixed left-1/2 -translate-x-1/2 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] md:bottom-[calc(env(safe-area-inset-bottom)+6rem)] z-20 flex flex-col items-center gap-2 animate-fade-in">
           <button
             onClick={handleSpinClick}
             disabled={isSpinning || !hotdogs.length || !canSpin}
@@ -206,7 +206,7 @@ const Index = () => {
       )}
 
       {/* Bottom nav — slim glass */}
-      <div className="fixed bottom-0 left-0 right-0 z-10 bg-black/30 backdrop-blur-xl border-t border-white/10">
+      <div className="fixed bottom-0 left-0 right-0 z-10 bg-black/30 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)]">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-2 md:py-2.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <a
