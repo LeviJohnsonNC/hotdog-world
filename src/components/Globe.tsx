@@ -460,10 +460,10 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      // Short pause after release so drift resumes promptly
+      // Longer pause after release so the globe doesn't snap back into auto-spin
       timeoutRef.current = setTimeout(() => {
         setIsInteracting(false);
-      }, 1500);
+      }, 5000);
     }
   };
 

@@ -1,46 +1,37 @@
-# Fix "Spin the Globe" overlap on iPhone Safari
+## Two small, scoped tweaks to the globe
 
-## Root cause
+### 1. Hover jitter on hotdog pins
 
-The home page mixes two viewport reference systems that only agree in a chromeless preview:
+**Diagnosis**
+When you hover a pin, two independent scale bumps stack on top of each other:
 
-- Bottom nav: `fixed bottom-0` → iOS Safari anchors this to the **visible (small) viewport**, above the URL bar.
-- Spin CTA: `absolute bottom-24` inside an `h-screen` (`100vh`) container → anchored to the **large viewport**, which extends *behind* Safari's URL bar.
+- `src/components/HotdogPin.tsx` (line 64): the whole pin group springs to `1.18×`.
+- `src/components/HotdogModel.tsx` (line 91): the sprite's own `baseScale` jumps from `0.18` → `0.24`.
 
-When Safari's bottom URL bar is visible, the nav slides up into the CTA's space and the two collide. The tagline ("or click any pin to explore 60+ regional styles") gets clipped by the nav for the same reason.
+Combined, the sprite (and therefore its pointer hitbox) grows ~1.57× the instant `hovered` becomes true. If your cursor was near the original pin's edge, the enlarged sprite moves *under* the cursor for one frame — but then the spring/edge-fade math or a neighbouring pin can steal the pointer, `onPointerOut` fires, the sprite shrinks, the cursor is inside again, `onPointerOver` fires… classic hover feedback loop. That's the "sweet spot" feeling: only cursor positions that stay inside *both* the small and large hitboxes are stable.
 
-Neither element uses `env(safe-area-inset-bottom)`, so on iPhones with a home indicator the nav also sits flush against it.
+**Fix**
+Keep the pin's hitbox size constant on hover so `onPointerOver`/`onPointerOut` can't ping-pong. The warm glow sprite already conveys the hover state; we let it do the work.
 
-## Fix (scoped to `src/pages/Index.tsx`)
+- `src/components/HotdogPin.tsx`: remove the hover branch in the `useFrame` scale spring. Keep intro scale-in and FTUX pulse exactly as they are; the group just stays at `introScale × 1` when not pulsing.
+- `src/components/HotdogModel.tsx`: make `baseScale` a constant (`0.18`) instead of `hovered ? 0.24 : 0.18`. Slightly boost the hover glow so the affordance still reads — bump the target opacity from `0.85` to `1.0` and the `glowScale` factor from `0.34` to `0.42`. Everything else (edge fade, backface culling, renderOrder) is unchanged.
 
-Three small, deterministic changes — no design exploration needed:
+Net effect: identical visuals on non-hover; on hover you get the same warm halo (a touch stronger) with zero geometric jitter and no cursor sweet spot.
 
-1. **Use the dynamic viewport unit for the page shell**
-   - `h-screen` → `h-[100dvh]` on the root `<div>` so the container matches the actually-visible viewport on iOS, not the theoretical max.
+### 2. Auto-rotation resumes too quickly after a manual drag
 
-2. **Anchor the Spin CTA to the same reference as the nav, with a safe-area-aware offset**
-   - Change the CTA wrapper from `absolute … bottom-24 md:bottom-28` to `fixed … bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] md:bottom-[calc(env(safe-area-inset-bottom)+6rem)]`.
-   - That guarantees the CTA sits a fixed distance above the nav bar regardless of whether Safari's URL bar is showing, and clears the home indicator on notch devices.
+**Diagnosis**
+`src/components/Globe.tsx` line 464: `handleInteractionEnd` sets a `1500` ms timeout before clearing `isInteracting`, which is what gates the idle auto-spin in the `Earth` `useFrame` (line 282).
 
-3. **Give the bottom nav home-indicator breathing room**
-   - Add `pb-[env(safe-area-inset-bottom)]` to the fixed nav container so its buttons don't crowd the iOS home indicator.
-   - Keep the existing `py-2 md:py-2.5` on the inner row; the safe-area padding is added on the outer bar.
+**Fix**
+Change that single timeout value from `1500` to `5000`. No other logic changes — the spin-to-hotdog flow uses `isSpinning`, not `isInteracting`, so it's unaffected. FTUX and reduced-motion paths already have their own guards.
 
-## Why this is the right fix (vs alternatives)
+### Files touched
 
-- Simply increasing `bottom-24` → `bottom-36` would patch the visual on iOS but push the CTA too high on Android/desktop.
-- Making the nav non-fixed would change scroll behavior on other pages and break the glass-nav pattern.
-- `100dvh` + `env(safe-area-inset-bottom)` is the standard iOS Safari fix and degrades cleanly on browsers that don't support them (they fall back to `100vh` / `0px`).
+- `src/components/HotdogPin.tsx` — remove hover scale in the frame loop only.
+- `src/components/HotdogModel.tsx` — constant `baseScale`, slightly punchier glow on hover.
+- `src/components/Globe.tsx` — `1500` → `5000` in `handleInteractionEnd`.
 
-## Verification checklist
+### Explicitly NOT changed
 
-- Lovable mobile preview: layout unchanged (CTA still ~1 row above nav, caption fully visible).
-- iOS Safari with URL bar visible: CTA sits clearly above nav, caption not clipped.
-- iOS Safari after scroll (URL bar collapsed): CTA stays anchored to nav (no jump).
-- Notch iPhone: nav buttons don't touch the home indicator.
-- Desktop: no visual change (safe-area insets resolve to `0px`).
-
-## Out of scope
-
-- No changes to nav content, CTA styling, or the glass cards.
-- No changes to other routes — only `src/pages/Index.tsx` is touched.
+- Pin visuals when idle, intro scale-in, FTUX pulse, backface culling, edge fade, tooltip, click behaviour, spin/zoom physics, controls, auto-rotation speed, or the FTUX auto-rotation gate.

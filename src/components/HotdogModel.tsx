@@ -61,7 +61,7 @@ export function HotdogModel({ hovered, imageUrl, position }: HotdogModelProps) {
     if (glow) {
       glow.visible = isVisible;
       const mat = glow.material as THREE.SpriteMaterial;
-      const target = isVisible && hovered ? 0.85 * edgeFade : 0;
+      const target = isVisible && hovered ? 1.0 * edgeFade : 0;
       mat.opacity += (target - mat.opacity) * 0.15;
     }
 
@@ -88,9 +88,9 @@ export function HotdogModel({ hovered, imageUrl, position }: HotdogModelProps) {
     setEdgeFade(fade);
   });
   
-  const baseScale = hovered ? 0.24 : 0.18;
+  const baseScale = 0.18;
   const adjustedScale = baseScale * edgeFade;
-  const glowScale = 0.34 * edgeFade;
+  const glowScale = 0.42 * edgeFade;
 
   return (
     <>
