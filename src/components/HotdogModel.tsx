@@ -88,9 +88,9 @@ export function HotdogModel({ hovered, imageUrl, position }: HotdogModelProps) {
     setEdgeFade(fade);
   });
   
-  const baseScale = hovered ? 0.24 : 0.18;
+  const baseScale = 0.18;
   const adjustedScale = baseScale * edgeFade;
-  const glowScale = 0.34 * edgeFade;
+  const glowScale = 0.42 * edgeFade;
 
   return (
     <>
