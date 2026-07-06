@@ -7,6 +7,8 @@ import { useHotdogsLight } from "@/hooks/useHotdogsLight";
 import { useAuth } from "@/contexts/AuthContext";
 import { useFTUX } from "@/hooks/useFTUX";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { isWebGLAvailable } from "@/lib/webglSupport";
+import { vibrate } from "@/lib/haptics";
 import passportIcon from "@/assets/passport-icon.png";
 import leaderboardIcon from "@/assets/leaderboard-icon.png";
 
@@ -27,6 +29,7 @@ const Index = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [canSpin, setCanSpin] = useState(true);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [webglOk] = useState(() => isWebGLAvailable());
 
   // Don't leave the spin-reset timer running after unmount
   useEffect(() => {
@@ -49,6 +52,7 @@ const Index = () => {
 
   const handleSpinClick = () => {
     if (!hotdogs.length || isSpinning || !canSpin) return;
+    vibrate(10);
     markFTUXComplete();
     setHasInteracted(true);
     const randomIndex = Math.floor(Math.random() * hotdogs.length);
@@ -112,7 +116,43 @@ const Index = () => {
 
       {/* Globe canvas — full bleed */}
       <div className="absolute inset-0">
-        {isLoading ? (
+        {!webglOk ? (
+          /* Static hero for browsers without WebGL — links keep the page useful */
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-[hsl(var(--midnight-navy))] to-[#0a1420]">
+            <div className="text-center px-6 max-w-md">
+              <span className="text-6xl block mb-6" aria-hidden>🌭</span>
+              <p className="text-white/85 text-lg font-heading mb-2">
+                Your browser can't show the 3D globe
+              </p>
+              <p className="text-white/55 text-sm mb-6">
+                The atlas still works — browse every hot dog the classic way.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a
+                  href="/hotdogs"
+                  onClick={(e) => { e.preventDefault(); navigate("/hotdogs"); }}
+                  className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium border border-white/15 transition-colors"
+                >
+                  Browse All Hotdogs
+                </a>
+                <a
+                  href="/passport"
+                  onClick={(e) => { e.preventDefault(); navigate("/passport"); }}
+                  className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium border border-white/15 transition-colors"
+                >
+                  My Passport
+                </a>
+                <a
+                  href="/leaderboard"
+                  onClick={(e) => { e.preventDefault(); navigate("/leaderboard"); }}
+                  className="px-5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-sm font-medium border border-white/15 transition-colors"
+                >
+                  Leaderboard
+                </a>
+              </div>
+            </div>
+          </div>
+        ) : isLoading ? (
           <LoadingGlobe />
         ) : (
           <Suspense fallback={<LoadingGlobe />}>
@@ -179,8 +219,20 @@ const Index = () => {
         </a>
       </div>
 
+      {/* FTUX drag affordance — appears during the 'hinting' beat only.
+          animate-fade-in goes on the inner div: its keyframe sets `transform`,
+          which would stomp the -translate-x-1/2 centering on the wrapper. */}
+      {ftuxPhase === 'hinting' && !hasInteracted && webglOk && (
+        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-44 md:bottom-48 z-20">
+          <div className="animate-fade-in flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-xl border border-white/15 text-white/80 text-xs md:text-sm font-medium shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]">
+            <span className="drag-hint-nudge inline-block" aria-hidden>⟷</span>
+            Drag to explore the globe
+          </div>
+        </div>
+      )}
+
       {/* Hero CTA — primary first-touch action */}
-      {!hasInteracted && !isLoading && (
+      {!hasInteracted && !isLoading && webglOk && (
         <div className="pointer-events-none fixed left-1/2 -translate-x-1/2 bottom-[calc(env(safe-area-inset-bottom)+5.5rem)] md:bottom-[calc(env(safe-area-inset-bottom)+6rem)] z-20 flex flex-col items-center gap-2 animate-fade-in">
           <button
             onClick={handleSpinClick}

@@ -181,9 +181,18 @@ All colors MUST be HSL.
     animation: cta-pulse-glow 2.4s ease-in-out infinite;
   }
 
+  @keyframes drag-hint-nudge {
+    0%, 100% { transform: translateX(-4px); }
+    50%      { transform: translateX(4px); }
+  }
+  .drag-hint-nudge {
+    animation: drag-hint-nudge 1.6s ease-in-out infinite;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-fade-in-down,
-    .cta-pulse { animation: none !important; }
+    .cta-pulse,
+    .drag-hint-nudge { animation: none !important; }
   }
 
 }
