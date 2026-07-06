@@ -274,21 +274,7 @@ export type Database = {
       }
     }
     Views: {
-      public_profiles: {
-        Row: {
-          display_name: string | null
-          user_id: string | null
-        }
-        Insert: {
-          display_name?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          display_name?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       generate_unique_display_name: { Args: never; Returns: string }
