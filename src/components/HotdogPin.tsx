@@ -60,11 +60,9 @@ export function HotdogPin({
       return;
     }
 
-    // Hover spring (relative to intro scale)
-    const target = hovered ? 1.18 : 1;
-    const currentRel = g.scale.x / Math.max(introScale, 0.001);
-    const next = currentRel + (target - currentRel) * 0.18;
-    g.scale.setScalar(introScale * next);
+    // Keep the pin's hitbox size constant so hover can't ping-pong.
+    // Hover affordance is handled entirely by the glow sprite in HotdogModel.
+    g.scale.setScalar(introScale);
   });
 
   return (
