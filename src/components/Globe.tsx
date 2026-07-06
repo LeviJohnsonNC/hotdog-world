@@ -1,13 +1,17 @@
 import { useRef, useState, useEffect, useMemo, forwardRef, useImperativeHandle } from "react";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Sphere } from "@react-three/drei";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
+import { Atmosphere } from "./globe/Atmosphere";
+import { CloudLayer } from "./globe/CloudLayer";
+import { ParallaxGroup } from "./globe/ParallaxGroup";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSound } from "@/hooks/useSound";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 
 type AnimationPhase = "idle" | "spinning" | "zooming";
@@ -34,6 +38,7 @@ interface EarthProps {
   enableAutoRotation?: boolean;
   ftuxPulsingPins?: Set<string>;
   ftuxPhase?: string;
+  prefersReducedMotion: boolean;
 }
 
 // Easing function for zoom
@@ -48,6 +53,65 @@ const MAX_TOTAL = 8.0; // safety net
 // Stable default so an omitted prop doesn't produce a new Set every render.
 // Never mutate this.
 const EMPTY_PIN_SET = new Set<string>();
+
+// Standard equirectangular texture setup shared by every earth map
+function configureEarthTexture(t: THREE.Texture) {
+  t.wrapS = THREE.RepeatWrapping;
+  t.wrapT = THREE.ClampToEdgeWrapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+// Mobile keeps the original light-style 1920 map and skips the bump map
+// download entirely (useLoader can't be conditional, hence two components).
+function EarthSurfaceMobile() {
+  const colorMap = useLoader(THREE.TextureLoader, "/textures/earth-map.webp");
+  useMemo(() => configureEarthTexture(colorMap), [colorMap]);
+  return <meshStandardMaterial map={colorMap} roughness={0.78} metalness={0.02} />;
+}
+
+// Desktop: Blue Marble 1920 for first paint (preloaded in index.html), with a
+// background upgrade to the 3840 version once decoded — same source imagery,
+// so the swap is invisible except for the added sharpness. Bump map adds
+// terrain relief under the warm key light.
+function EarthSurfaceDesktop() {
+  const [colorMap, bumpMap] = useLoader(THREE.TextureLoader, [
+    "/textures/earth-day-1920.webp",
+    "/textures/earth-bump.jpg",
+  ]);
+  useMemo(() => configureEarthTexture(colorMap), [colorMap]);
+  const [hiResMap, setHiResMap] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    let disposed = false;
+    new THREE.TextureLoader()
+      .loadAsync("/textures/earth-day-3840.webp")
+      .then((t) => {
+        if (disposed) {
+          t.dispose();
+          return;
+        }
+        setHiResMap(configureEarthTexture(t));
+      })
+      .catch(() => {
+        /* silent — the 1920 map stays */
+      });
+    return () => {
+      disposed = true;
+    };
+  }, []);
+
+  return (
+    <meshStandardMaterial
+      map={hiResMap ?? colorMap}
+      bumpMap={bumpMap}
+      bumpScale={0.045}
+      roughness={0.78}
+      metalness={0.02}
+    />
+  );
+}
 
 function Earth({ 
   hotdogs,
@@ -70,7 +134,8 @@ function Earth({
   playZoomSound,
   enableAutoRotation = true,
   ftuxPulsingPins = EMPTY_PIN_SET,
-  ftuxPhase = 'complete'
+  ftuxPhase = 'complete',
+  prefersReducedMotion
 }: EarthProps) {
   const isMobile = useIsMobile();
   const { camera } = useThree();
@@ -93,21 +158,19 @@ function Earth({
   const idleTiltRef = useRef<number>((Math.random() * 2 - 1) * 0.0008);
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      // No dolly-in: start at the final framing
+      camera.position.set(0, 0, introEndZRef.current);
+      camera.lookAt(0, 0, 0);
+      introDoneRef.current = true;
+      return;
+    }
     // Set starting camera position for dolly-in
     camera.position.set(0, 0.6, introStartZRef.current);
     camera.lookAt(0, 0, 0);
     introStartRef.current = performance.now();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Load optimized Earth texture (152KB WebP — preloaded in index.html)
-  const colorMap = useLoader(THREE.TextureLoader, '/textures/earth-map.webp');
-
-  // Standard texture configuration for equirectangular projection
-  colorMap.wrapS = THREE.RepeatWrapping;
-  colorMap.wrapT = THREE.ClampToEdgeWrapping;
-  colorMap.colorSpace = THREE.SRGBColorSpace;
-  colorMap.anisotropy = 8;
 
 
   useFrame((state, delta) => {
@@ -216,7 +279,7 @@ function Earth({
     }
     
     // IDLE PHASE: Slow majestic auto-rotation (only if enabled)
-    else if (enableAutoRotation && !isInteracting && !isSpinning) {
+    else if (enableAutoRotation && !prefersReducedMotion && !isInteracting && !isSpinning) {
       earthGroupRef.current.rotation.y -= 0.0018;
       earthGroupRef.current.rotation.x += idleTiltRef.current;
       // Clamp tilt so it doesn't drift indefinitely
@@ -231,26 +294,16 @@ function Earth({
     <group ref={earthGroupRef}>
       {/* Main Earth sphere */}
       <Sphere args={[2, sphereDetail, sphereDetail]}>
-        <meshStandardMaterial
-          map={colorMap}
-          roughness={0.78}
-          metalness={0.02}
-        />
+        {isMobile ? <EarthSurfaceMobile /> : <EarthSurfaceDesktop />}
       </Sphere>
 
-      {/* Subtle atmosphere — single thin backside layer, barely there */}
-      <Sphere args={[2.06, 48, 48]}>
-        <meshBasicMaterial
-          color="#7fb8ff"
-          transparent
-          opacity={0.10}
-          side={THREE.BackSide}
-          depthWrite={false}
-        />
-      </Sphere>
+      {/* Fresnel limb glow + outer halo */}
+      <Atmosphere />
+
+      {/* Drifting procedural clouds — desktop only */}
+      {!isMobile && <CloudLayer prefersReducedMotion={prefersReducedMotion} />}
 
 
-      
       {/* Hotdogs - disable clicks during spin */}
       {hotdogs.map((hotdog) => {
         // Pulse ALL hotdogs during entire FTUX (except 'loading' and 'complete')
@@ -297,7 +350,8 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
   const controlsRef = useRef<any>(null);
   const earthGroupRef = useRef<THREE.Group>(null);
   const isMobile = useIsMobile();
-  
+  const prefersReducedMotion = useReducedMotion();
+
   // Sound effects
   const playSpinSound = useSound('/sounds/spin.mp3', 0.15);
   const playZoomSound = useSound('/sounds/zoom.mp3', 0.15);
@@ -417,6 +471,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
     <div className="w-full h-full">
       <Canvas
         camera={{ position: [0, 0, cameraZ], fov: 50, near: 0.01 }}
+        dpr={isMobile ? [1, 1.75] : [1, 2]}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -429,12 +484,12 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
         <fog attach="fog" args={["#0a1420", 11, 22]} />
 
         {/* Cinematic three-point lighting */}
-        <ambientLight intensity={0.35} color="#9ec8ff" />
+        <ambientLight intensity={0.30} color="#9ec8ff" />
         {/* Warm key (sun) */}
         <directionalLight
           position={[6, 3, 5]}
-          intensity={2.4}
-          color="#fff1d6"
+          intensity={2.6}
+          color="#ffedc9"
         />
         {/* Cool fill */}
         <directionalLight
@@ -449,8 +504,14 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           color="#aee0ff"
         />
 
-        {/* Starfield background */}
-        <Stars />
+        {/* Starfield background — pointer parallax on desktop only */}
+        {isMobile || prefersReducedMotion ? (
+          <Stars prefersReducedMotion={prefersReducedMotion} />
+        ) : (
+          <ParallaxGroup>
+            <Stars prefersReducedMotion={prefersReducedMotion} />
+          </ParallaxGroup>
+        )}
 
         <Earth
           hotdogs={hotdogs}
@@ -474,6 +535,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           enableAutoRotation={enableAutoRotation}
           ftuxPulsingPins={ftuxPulsingPins}
           ftuxPhase={ftuxPhase}
+          prefersReducedMotion={prefersReducedMotion}
         />
 
         <OrbitControls
@@ -491,7 +553,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
           enabled={!isSpinning}
         />
 
-        {/* Postprocessing — whisper of bloom on warm highlights only */}
+        {/* Postprocessing — whisper of bloom on warm highlights, radial vignette */}
         {!isMobile && (
           <EffectComposer multisampling={0}>
             <Bloom
@@ -500,6 +562,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
               luminanceSmoothing={0.2}
               mipmapBlur
             />
+            <Vignette eskil={false} offset={0.28} darkness={0.55} />
           </EffectComposer>
         )}
       </Canvas>

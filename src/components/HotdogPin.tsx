@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { Group } from "three";
 import { Hotdog } from "@/types/hotdog";
 import { HotdogModel } from "./HotdogModel";
+import { vibrate } from "@/lib/haptics";
 
 interface HotdogPinProps {
   position: [number, number, number];
@@ -72,6 +73,7 @@ export function HotdogPin({
       position={position}
       onClick={(e) => {
         e.stopPropagation();
+        vibrate(10);
         onClick();
       }}
       onPointerOver={(e) => {

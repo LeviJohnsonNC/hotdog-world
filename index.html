@@ -41,8 +41,10 @@
     <meta name="twitter:image" content="/og-image.png" />
     <meta name="twitter:image:alt" content="Hotdogs Around the World - A globe with hot dog location pins" />
     
-    <!-- Preload critical 3D globe texture -->
-    <link rel="preload" as="image" href="/textures/earth-map.webp" fetchpriority="high" />
+    <!-- Preload critical 3D globe texture (per breakpoint; the 3840 desktop
+         upgrade is intentionally NOT preloaded — it loads in the background) -->
+    <link rel="preload" as="image" href="/textures/earth-map.webp" fetchpriority="high" crossorigin="anonymous" media="(max-width: 767px)" />
+    <link rel="preload" as="image" href="/textures/earth-day-1920.webp" fetchpriority="high" crossorigin="anonymous" media="(min-width: 768px)" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
