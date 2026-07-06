@@ -29,6 +29,14 @@ const ANATOMY_ILLUSTRATIONS = new Set([
   "khanom-tokaio-hot-dog-crepe",
   "kielbasa-roll",
   "korean-corn-dog",
+  "kuuma-koira",
+  "lima-street-dog",
+  "london-gourmet-dog",
+  "merguez-dog",
+  "michigan-hot-dog",
+  "mishkaki-hot-dog",
+  "montreal-steamie",
+  "new-york-style-hot-dog",
 ]);
 
 // Rotating palette for the numbered layer dots so the list still reads as a
