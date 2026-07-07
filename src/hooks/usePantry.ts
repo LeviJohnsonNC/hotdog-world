@@ -174,6 +174,22 @@ export function usePantry() {
   };
 }
 
+/** True when the pantry (owned raws) satisfies a derived prep-item. */
+function derivedSatisfied(
+  id: string,
+  ownedIngredients: Set<string>,
+  ownedEquipment: Set<string>
+): boolean {
+  const def = DERIVED_INGREDIENTS[id];
+  if (!def) return false;
+  const rawsOk = def.ingredients.every((i) => ownedIngredients.has(i));
+  const eqOk =
+    !def.equipmentAny ||
+    def.equipmentAny.length === 0 ||
+    def.equipmentAny.some((e) => ownedEquipment.has(e));
+  return rawsOk && eqOk;
+}
+
 /** Returns true when the pantry covers every required ingredient AND equipment. */
 export function canMakeHotdog(
   hotdog: { canonical_ingredient_ids?: string[]; canonical_equipment_ids?: string[] },
@@ -181,10 +197,14 @@ export function canMakeHotdog(
 ): boolean {
   const ings = hotdog.canonical_ingredient_ids ?? [];
   const eqs = hotdog.canonical_equipment_ids ?? [];
-  if (ings.length === 0) return false; // guard against unpopulated rows
+  if (ings.length === 0) return false;
   const ownedI = new Set(pantry.ingredient_ids);
   const ownedE = new Set(pantry.equipment_ids);
-  return ings.every((i) => ownedI.has(i)) && eqs.every((e) => ownedE.has(e));
+  return (
+    ings.every(
+      (i) => ownedI.has(i) || derivedSatisfied(i, ownedI, ownedE)
+    ) && eqs.every((e) => ownedE.has(e))
+  );
 }
 
 /** How many items are missing from the pantry to make this hotdog. */
@@ -195,7 +215,7 @@ export function missingCount(
   const ownedI = new Set(pantry.ingredient_ids);
   const ownedE = new Set(pantry.equipment_ids);
   const missingIngredients = (hotdog.canonical_ingredient_ids ?? []).filter(
-    (i) => !ownedI.has(i)
+    (i) => !ownedI.has(i) && !derivedSatisfied(i, ownedI, ownedE)
   );
   const missingEquipment = (hotdog.canonical_equipment_ids ?? []).filter(
     (e) => !ownedE.has(e)
