@@ -190,3 +190,13 @@ export const EQUIPMENT_CATEGORY_LABELS: Record<EquipmentCategory,string> = { coo
 
 export const STARTER_KIT_INGREDIENTS = ["beef_frankfurter", "hot_dog_bun", "yellow_mustard", "ketchup", "mayonnaise", "yellow_onion", "sweet_relish"];
 export const STARTER_KIT_EQUIPMENT = ["skillet", "saucepan", "grill"];
+
+// Prep items that are derived from raw ingredients + cookware, not stocked in pantry.
+// If a hotdog requires one of these IDs, the user "has" it when they own all `ingredients`
+// AND at least one item from `equipmentAny` (if specified).
+export const DERIVED_INGREDIENTS: Record<string, { label: string; ingredients: string[]; equipmentAny?: string[] }> = {
+  grilled_onions_and_peppers: { label: "Grilled onions & peppers", ingredients: ["yellow_onion", "bell_pepper"], equipmentAny: ["grill", "skillet", "grill_pan"] },
+  mashed_potatoes:            { label: "Mashed potatoes",          ingredients: ["potato"],                       equipmentAny: ["saucepan", "large_pot"] },
+  eggwash:                    { label: "Egg wash",                 ingredients: ["egg"] },
+  beef_chili:                 { label: "Beef chili",                ingredients: ["beef", "canned_tomatoes", "chili_powder"], equipmentAny: ["saucepan", "skillet", "large_pot"] },
+};

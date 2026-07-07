@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   STARTER_KIT_INGREDIENTS,
   STARTER_KIT_EQUIPMENT,
+  DERIVED_INGREDIENTS,
 } from "@/data/pantryTaxonomy";
 
 export interface PantryState {
