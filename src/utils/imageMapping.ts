@@ -122,6 +122,7 @@ export const slugToGlobeImageMap: Record<string, string> = {
   "khanom-tokiao-hot-dog-crepe": "khanom.png",
   "tunnbrodsrulle": "tunnbrodsrulle-globe-v2.webp",
   "tunnbrödsrulle": "tunnbrodsrulle-globe-v2.webp",
+  "sosis-bandari": "sosis.webp",
 };
 
 // All globe pin images are now stored as optimized .webp (256px, ~10KB each)
