@@ -24,7 +24,7 @@ export const INGREDIENTS: PantryItem[] = [
   { id: "banana_ketchup", label: "Banana ketchup", category: "sauces" },
   { id: "beef", label: "Ground beef", category: "protein" },
   { id: "beef_broth", label: "Beef broth", category: "sauces" },
-  { id: "beef_chili", label: "Beef chili (hot dog style)", category: "sauces" },
+  
   { id: "beef_frankfurter", label: "Beef frankfurter / hot dog", category: "protein" },
   { id: "beef_lamb_cubes", label: "Beef or lamb cubes", category: "protein" },
   { id: "beef_sausage", label: "Thick beef sausage", category: "protein" },
@@ -63,7 +63,7 @@ export const INGREDIENTS: PantryItem[] = [
   { id: "dill", label: "Fresh dill", category: "produce" },
   { id: "dill_pickle", label: "Dill pickle", category: "sauces" },
   { id: "egg", label: "Egg", category: "dairy" },
-  { id: "eggwash", label: "Egg wash", category: "sauces" },
+  
   { id: "english_mustard", label: "English mustard", category: "sauces" },
   { id: "evaporated_milk", label: "Evaporated milk", category: "dairy" },
   { id: "finnish_mustard", label: "Finnish sweet mustard (sinappi)", category: "sauces" },
@@ -72,7 +72,7 @@ export const INGREDIENTS: PantryItem[] = [
   { id: "garlic_sauce", label: "Salsa de ajo (garlic sauce)", category: "sauces" },
   { id: "ginger", label: "Ginger", category: "produce" },
   { id: "green_papaya", label: "Green papaya", category: "produce" },
-  { id: "grilled_onions_and_peppers", label: "Grilled onions & peppers", category: "produce" },
+  
   { id: "grillimakkara_sausage", label: "Finnish grillimakkara", category: "protein" },
   { id: "guasacaca", label: "Guasacaca sauce", category: "sauces" },
   { id: "harissa", label: "Harissa", category: "sauces" },
@@ -92,7 +92,7 @@ export const INGREDIENTS: PantryItem[] = [
   { id: "lettuce", label: "Shredded lettuce", category: "produce" },
   { id: "lime", label: "Lime", category: "produce" },
   { id: "lompe", label: "Lompe (potato flatbread)", category: "bread" },
-  { id: "mashed_potatoes", label: "Mashed potatoes", category: "produce" },
+  
   { id: "mayonnaise", label: "Mayonnaise", category: "sauces" },
   { id: "merguez", label: "Merguez sausage", category: "protein" },
   { id: "milk", label: "Milk", category: "dairy" },
