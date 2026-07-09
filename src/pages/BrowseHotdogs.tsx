@@ -144,6 +144,7 @@ const BrowseHotdogs = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
+            aria-label="Search hotdogs by name or location"
             placeholder="Search by name or location..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

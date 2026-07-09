@@ -305,9 +305,9 @@ What makes this hot dog distinctive is its perfect blend of local ingredients an
           <div className="mb-12">
             <div className="flex items-center gap-3 mb-6">
               <ShoppingBasket className="h-6 w-6 text-mustard" />
-              <h3 className="font-display text-3xl tracking-wide text-poppy">
+              <h2 className="font-display text-3xl tracking-wide text-poppy">
                 INGREDIENTS
-              </h3>
+              </h2>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8 md:gap-12">

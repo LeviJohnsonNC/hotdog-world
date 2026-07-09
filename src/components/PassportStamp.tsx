@@ -317,6 +317,7 @@ export function PassportStamp({ hotdogId, hotdogName }: PassportStampProps) {
                       type="button"
                       onClick={() => tried && fileInputRef.current?.click()}
                       disabled={!tried}
+                      aria-label="Add a photo of your hotdog experience"
                       className="w-24 h-24 rounded-full border-4 border-dashed border-mustard/50 hover:border-mustard transition-colors flex items-center justify-center bg-background/50 hover:bg-background group disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       <Camera className="h-8 w-8 text-muted-foreground group-hover:text-mustard transition-colors" />
