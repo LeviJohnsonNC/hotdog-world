@@ -12,23 +12,28 @@ import { useToast } from '@/hooks/use-toast';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
-  
+
   const [signUpEmail, setSignUpEmail] = useState('');
   const [signUpDisplayName, setSignUpDisplayName] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
 
+  // Sanitize next: only same-origin relative paths allowed
+  const rawNext = searchParams.get('next');
+  const nextPath = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
+
   // Redirect if already authenticated
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate(nextPath, { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, nextPath]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
