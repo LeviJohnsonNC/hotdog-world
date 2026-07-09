@@ -25,6 +25,7 @@ const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 const Auth = lazy(() => import("./pages/Auth"));
 const PopulateMetadata = lazy(() => import("./pages/PopulateMetadata"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
