@@ -65,6 +65,13 @@ Deno.serve(async (req) => {
     xml += '  </url>\n';
 
     xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}/pantry</loc>\n`;
+    xml += `    <lastmod>${currentDate}</lastmod>\n`;
+    xml += '    <changefreq>monthly</changefreq>\n';
+    xml += '    <priority>0.6</priority>\n';
+    xml += '  </url>\n';
+
+    xml += '  <url>\n';
     xml += `    <loc>${baseUrl}/leaderboard</loc>\n`;
     xml += `    <lastmod>${currentDate}</lastmod>\n`;
     xml += '    <changefreq>daily</changefreq>\n';
@@ -76,6 +83,13 @@ Deno.serve(async (req) => {
     xml += `    <lastmod>${currentDate}</lastmod>\n`;
     xml += '    <changefreq>monthly</changefreq>\n';
     xml += '    <priority>0.4</priority>\n';
+    xml += '  </url>\n';
+
+    xml += '  <url>\n';
+    xml += `    <loc>${baseUrl}/admin/populate-metadata</loc>\n`;
+    xml += `    <lastmod>${currentDate}</lastmod>\n`;
+    xml += '    <changefreq>monthly</changefreq>\n';
+    xml += '    <priority>0.3</priority>\n';
     xml += '  </url>\n';
 
     // Add hotdog detail pages with slugs
