@@ -69,6 +69,7 @@ const App = () => (
                     <Route path="/settings" element={<AccountSettings />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/admin/populate-metadata" element={<PopulateMetadata />} />
+                    <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
