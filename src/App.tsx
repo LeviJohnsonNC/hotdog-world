@@ -25,6 +25,7 @@ const AccountSettings = lazy(() => import("./pages/AccountSettings"));
 const Auth = lazy(() => import("./pages/Auth"));
 const PopulateMetadata = lazy(() => import("./pages/PopulateMetadata"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,6 +69,7 @@ const App = () => (
                     <Route path="/settings" element={<AccountSettings />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/admin/populate-metadata" element={<PopulateMetadata />} />
+                    <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

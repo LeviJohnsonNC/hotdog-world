@@ -3,7 +3,7 @@
 // supabase function: mcp
 // Bundled from src/lib/mcp/index.ts by @lovable.dev/mcp-js.
 // src/lib/mcp/index.ts
-import { defineMcp } from "npm:@lovable.dev/mcp-js@0.20.0";
+import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.20.0";
 
 // src/lib/mcp/tools/list-hotdogs.ts
 import { createClient } from "npm:@supabase/supabase-js@^2.76.1";
@@ -87,11 +87,16 @@ var search_hotdogs_default = defineTool3({
 });
 
 // src/lib/mcp/index.ts
+var projectRef = "yjpohmmrjuphbjjgvyhv";
 var mcp_default = defineMcp({
   name: "hotdog-world-mcp",
   title: "Hotdog World",
   version: "0.1.0",
   instructions: "Tools for exploring the Hotdog World catalog \u2014 a curated atlas of hotdogs from around the globe. Use `search_hotdogs` to find hotdogs by keyword, `list_hotdogs` to browse (optionally by country), and `get_hotdog` to fetch full recipe, origin, nutrition, and trivia for a specific slug.",
+  auth: auth.oauth.issuer({
+    issuer: `https://${projectRef}.supabase.co/auth/v1`,
+    acceptedAudiences: "authenticated"
+  }),
   tools: [list_hotdogs_default, get_hotdog_default, search_hotdogs_default]
 });
 
