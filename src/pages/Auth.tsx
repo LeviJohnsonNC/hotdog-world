@@ -52,7 +52,7 @@ const Auth = () => {
         title: "Welcome back!",
         description: "You've successfully signed in."
       });
-      navigate('/');
+      navigate(nextPath, { replace: true });
     }
     
     setIsLoading(false);
@@ -95,7 +95,7 @@ const Auth = () => {
         title: "Account created!",
         description: "You've successfully signed up and are now signed in."
       });
-      navigate('/');
+      navigate(nextPath, { replace: true });
     }
     
     setIsLoading(false);
