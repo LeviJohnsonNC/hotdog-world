@@ -29,9 +29,9 @@ export function StepsSection({ hotdog }: Props) {
           {completed} / {steps.length} done
         </span>
       </div>
-      <h3 className="font-heading text-2xl md:text-3xl text-[hsl(var(--ink))] leading-tight">
+      <h2 className="font-heading text-2xl md:text-3xl text-[hsl(var(--ink))] leading-tight">
         Follow the vendor
-      </h3>
+      </h2>
 
       {/* Progress bar */}
       <div
@@ -86,13 +86,13 @@ export function StepsSection({ hotdog }: Props) {
                 </button>
 
                 <div className="min-w-0 flex-1">
-                  <h4
+                  <h3
                     className={`font-heading text-xl md:text-2xl leading-tight text-[hsl(var(--ink))] ${
                       isDone ? "line-through opacity-60" : ""
                     }`}
                   >
                     {s.title}
-                  </h4>
+                  </h3>
 
                   {/* Meta chips */}
                   <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-[hsl(var(--ink))]/70">

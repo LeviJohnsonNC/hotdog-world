@@ -60,7 +60,7 @@ export function OriginTimelineSection({ hotdog }: Props) {
   return (
     <section className="paper-card p-6 md:p-10">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-3">
-        <div className="stamp-label">Origin Story</div>
+        <h2 className="stamp-label">Origin Story</h2>
         <span className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/60">
           Provenance
         </span>

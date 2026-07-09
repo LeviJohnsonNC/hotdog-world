@@ -96,9 +96,9 @@ export function BuildRail({ hotdog }: Props) {
           Vendor recipe
         </span>
       </div>
-      <h3 className="font-heading text-2xl md:text-[26px] leading-tight text-[hsl(var(--ink))]">
+      <h2 className="font-heading text-2xl md:text-[26px] leading-tight text-[hsl(var(--ink))]">
         Shop &amp; prep
-      </h3>
+      </h2>
 
       {/* Meta strip */}
       {meta && (

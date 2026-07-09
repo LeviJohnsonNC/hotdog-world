@@ -26,7 +26,7 @@ export function FlavorProfileCard({ flavorProfile }: Props) {
   return (
     <section className="paper-card p-6 md:p-8">
       <div className="flex items-center justify-between mb-5">
-        <div className="stamp-label">At a Glance</div>
+        <h2 className="stamp-label">At a Glance</h2>
         <div className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/60">
           Flavor profile · 1–5
         </div>

@@ -22,7 +22,7 @@ export function InstructionsSection({ instructions }: Props) {
   return (
     <section className="paper-card p-6 md:p-10">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <div className="stamp-label">The Build, Step by Step</div>
+        <h2 className="stamp-label">The Build, Step by Step</h2>
         <span className="text-[11px] uppercase tracking-[0.18em] text-[hsl(var(--ink))]/60">
           {instructions.length} steps
         </span>
