@@ -77,7 +77,7 @@ export function AnatomySection({ anatomy, whyItWorks, slug, name }: Props) {
 
   return (
     <section className="paper-card p-6 md:p-10">
-      <div className="stamp-label mb-6">Anatomy of the Dog</div>
+      <h2 className="stamp-label mb-6">Anatomy of the Dog</h2>
 
       <div className={hasIllustration ? "grid gap-8 md:grid-cols-[1fr_1.25fr] md:items-start" : ""}>
         <div className={hasIllustration ? "max-w-[52ch]" : "max-w-[52ch]"}>

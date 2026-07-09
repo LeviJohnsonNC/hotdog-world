@@ -37,7 +37,7 @@ export function MethodAndSoulSection({ body, pullQuote }: Props) {
         style={{ background: "hsl(var(--cilantro))" }}
       />
       <div className="pl-3">
-        <div className="stamp-label mb-6">Method &amp; Soul</div>
+        <h2 className="stamp-label mb-6">Method &amp; Soul</h2>
 
         {quote && (
           <blockquote

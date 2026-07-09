@@ -11,7 +11,7 @@ export function TriviaPostcards({ facts, isRevealed, onReveal, revealedCount }: 
   return (
     <section className="paper-card p-6 md:p-10">
       <div className="flex items-center justify-between mb-3 flex-wrap gap-3">
-        <div className="stamp-label">Postcards from the Cart</div>
+        <h2 className="stamp-label">Postcards from the Cart</h2>
         <div className="flex items-center gap-2">
           {facts.map((_, i) => (
             <span
