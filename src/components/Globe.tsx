@@ -298,6 +298,9 @@ function Earth({
         {isMobile ? <EarthSurfaceMobile /> : <EarthSurfaceDesktop />}
       </Sphere>
 
+      {/* Nighttime city lights — desktop only, rotates with terrain */}
+      {!isMobile && <NightLights />}
+
       {/* Fresnel limb glow + outer halo */}
       <Atmosphere />
 
