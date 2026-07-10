@@ -43,12 +43,12 @@ const limbFragment = /* glsl */ `
     float fresnel = pow(1.0 - clamp(dot(vNormal, vViewDir), 0.0, 1.0), uPower);
     float sunDot = dot(normalize(vWorldNormal), normalize(uSunDir));
     // 1.0 = full day, 0.0 = terminator, -1.0 = full night
-    float day   = smoothstep(0.05, 0.55, sunDot);
-    float night = smoothstep(0.05, 0.55, -sunDot);
+    float day   = smoothstep(-0.05, 0.35, sunDot);
+    float night = smoothstep(-0.05, 0.35, -sunDot);
     float term  = 1.0 - day - night;
     vec3 tint = uDayColor * day + uTerminatorColor * term + uNightColor * night;
     // Slight boost at the terminator so the sunset ring reads clearly.
-    float intensity = uIntensity * (1.0 + term * 0.4);
+    float intensity = uIntensity * (1.0 + term * 0.15);
     gl_FragColor = vec4(tint, fresnel * intensity);
   }
 `;
