@@ -1,51 +1,55 @@
-## Goal
+# Make Night Lights Visible
 
-The Pantry lists items like "Grilled onions & peppers", "Mashed potatoes", "Egg wash", "Beef chili", "Pulled pork" — these aren't raw ingredients you'd stock, they're prep steps. Remove them from the pantry UI and satisfy them automatically when the user owns the raw components (plus the required cooking equipment).
+## Why nothing looks different
 
-Shelf-stable "prep" items (crispy fried onions, roasted red peppers, coleslaw, pickled cabbage/cucumber, sauerkraut, remoulade, etc.) stay as-is — those are commonly bought jarred/canned.
+The `NightLights` shell is rendering — it's just landing in a place you can't see and at an intensity you can't perceive.
 
-## Items to convert to derived (prep → raws)
+- **Sun placement:** `SUN_POSITION = (6, 3, 5)` puts the sun on the same side as the default camera (front-right-top). The visible hemisphere is almost entirely "day," so the terminator sits near the left limb and everything past it — the actual night side — is on the back of the globe. Only a thin crescent of night is ever on-screen at rest.
+- **Shader is too shy:** `smoothstep(0.55, 0.85, fbm) * smoothstep(0.62, 0.95, fbm) * landness * night * 1.35` produces very sparse dots at very low alpha. Additively blended over a nearly-black night surface, they read as noise, not cities.
 
-| Prep ID | Derived from |
-|---|---|
-| `grilled_onions_and_peppers` | `yellow_onion` + `bell_pepper` + equipment `grill` or `skillet` |
-| `mashed_potatoes` | `potato` + equipment `saucepan` or `large_pot` |
-| `eggwash` | `egg` |
-| `beef_chili` | `beef` + `canned_tomatoes` + `chili_powder` + equipment `saucepan` or `skillet` |
-| `pulled_pork` | (no raw pork in taxonomy) — treat as always-derived from equipment `oven` or `large_pot` + at least one protein owned → **safer**: leave as pantry item for now, flag in report |
+## Fix
 
-For `pulled_pork` there's no raw pork ingredient in the taxonomy, so it can't cleanly derive. I'll leave it in the pantry (it's a one-off) and note it — happy to add a `pork_shoulder` raw ingredient if you'd rather.
+### 1. Shift the sun so the terminator sweeps across the visible face
 
-## Implementation
+Edit `src/components/globe/sunDirection.ts` to move the sun to the side/back instead of behind the camera. Target roughly one third of the visible hemisphere in shadow — enough to show a real night arc with a warm terminator, but not so much that day-side detail is lost.
 
-### 1. `src/data/pantryTaxonomy.ts`
-- Remove the 4 derivable entries (`grilled_onions_and_peppers`, `mashed_potatoes`, `eggwash`, `beef_chili`) from the exported `INGREDIENTS` array so they disappear from Pantry UI.
-- Add a new export:
-  ```ts
-  export const DERIVED_INGREDIENTS: Record<string, { ingredients: string[]; equipmentAny?: string[] }> = {
-    grilled_onions_and_peppers: { ingredients: ["yellow_onion","bell_pepper"], equipmentAny: ["grill","skillet","grill_pan"] },
-    mashed_potatoes:            { ingredients: ["potato"],                       equipmentAny: ["saucepan","large_pot"] },
-    eggwash:                    { ingredients: ["egg"] },
-    beef_chili:                 { ingredients: ["beef","canned_tomatoes","chili_powder"], equipmentAny: ["saucepan","skillet","large_pot"] },
-  };
-  ```
+```ts
+export const SUN_POSITION = new THREE.Vector3(-4, 2.5, 3.5);
+```
 
-### 2. `src/hooks/usePantry.ts`
-Update `canMakeHotdog` and `missingCount` so that when a hotdog requires a derived ID, it counts as owned if all its raw ingredients are owned AND at least one item from `equipmentAny` is owned. Missing raw pieces bubble up into `missingIngredients` under the derived label (so the UI still tells the user *why* they can't make it).
+Then update the matching `<directionalLight position={[6, 3, 5]}>` in `Globe.tsx` (line 494) to `position={[-4, 2.5, 3.5]}` so the real scene lighting stays coherent with the shader uniform. Leave the two fill lights at lines 499 and 505 as-is — they're rim/back fill and don't reference the sun.
 
-No schema/DB changes — hotdogs keep their existing `canonical_ingredient_ids`; we just reinterpret a small allow-list of them client-side.
+This single change also makes the *terminator glow* work from Step 1 pay off (you'll actually see the warm gold band).
 
-### 3. Cleanup pass
-- If a user already saved one of the 4 removed IDs in their pantry (localStorage or `user_pantry.ingredient_ids`), it's harmless — the ID just no longer appears in the UI. No migration needed.
+### 2. Loosen the city-lights shader so the lit strip reads clearly
 
-## Not doing
+In `src/components/globe/NightLights.tsx`:
 
-- Not touching hotdog recipe data (`canonical_ingredient_ids` on hotdogs stays untouched).
-- Not touching the recipe display in `BuildSection` — the recipe still shows "grilled onions & peppers" as written; only the pantry checklist is simplified.
-- Not touching shelf-stable prep (crispy fried onions, roasted red peppers, coleslaw, pickles, sauerkraut, remoulade, etc.) per your "pragmatic" choice.
+- Drop the cluster/sparkle thresholds so more pixels qualify:
+  - `smoothstep(0.55, 0.85, ...)` → `smoothstep(0.35, 0.75, ...)`
+  - `smoothstep(0.62, 0.95, ...)` → `smoothstep(0.45, 0.90, ...)`
+- Widen the night ramp so lights fade in earlier (closer to the terminator, where they read best):
+  - `smoothstep(0.15, -0.15, ndl)` → `smoothstep(0.25, -0.05, ndl)`
+- Bump `uIntensity` from `1.35` → `2.6`.
+- Nudge `uLightColor` slightly warmer/brighter: `#ffd28a` → `#ffdca0`.
 
-## Verification
+These are all uniforms/constants — no structural change, still one draw call, still zero extra network cost.
 
-- Run `npm run build` after the change.
-- Manually open `/pantry` and confirm the 4 items are gone.
-- Open a hotdog that uses e.g. `grilled_onions_and_peppers` (Sonora / Danger Dog) and confirm that owning `yellow_onion` + `bell_pepper` + a grill/skillet marks it as makeable.
+### 3. Verify visibly
+
+After the change, at rest the globe should show:
+- A clear day hemisphere (Africa/Americas well lit as before).
+- A warm terminator arc curving down through the visible face.
+- Faint but recognizable clusters of golden pinpricks on the night side of visible landmasses (eastern Africa/Europe edge in the second screenshot's framing).
+
+If clusters still look like fog, we tighten `smoothstep(0.55, 0.9, fbm * 0.6)` on sparkle to reintroduce point-like sparkle before shipping.
+
+## Scope guardrails
+
+- No changes to pin projection, spin/zoom, FTUX, mobile globe, or any data/backend code.
+- Only `sunDirection.ts`, one `directionalLight` position in `Globe.tsx`, and `NightLights.tsx` are touched.
+- Atmosphere shader from Step 1 automatically re-tints because it reads the same `SUN_DIRECTION` — nothing to change there.
+
+## Out of scope
+
+Ocean specular (Step 3), aurora, shooting stars, pin upgrades, post-processing, continent labels, audio bed — all still queued for later steps.

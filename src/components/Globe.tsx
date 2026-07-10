@@ -491,7 +491,7 @@ export const Globe = forwardRef<GlobeHandle, GlobeProps>(({ hotdogs, onHotdogCli
         <ambientLight intensity={0.30} color="#9ec8ff" />
         {/* Warm key (sun) */}
         <directionalLight
-          position={[6, 3, 5]}
+          position={[-4, 2.5, 3.5]}
           intensity={2.6}
           color="#ffedc9"
         />
