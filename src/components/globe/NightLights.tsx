@@ -107,8 +107,8 @@ export function NightLights() {
       uniforms: {
         uMap: { value: map },
         uSunDir: { value: SUN_DIRECTION.clone() },
-        uLightColor: { value: new THREE.Color("#ffdca0") },
-        uIntensity: { value: 2.6 },
+        uLightColor: { value: new THREE.Color("#fff2c8") },
+        uIntensity: { value: 4.5 },
       },
       transparent: true,
       depthWrite: false,
@@ -118,8 +118,8 @@ export function NightLights() {
   }, [map]);
 
   return (
-    <mesh material={material} renderOrder={3} raycast={noRaycast}>
-      <sphereGeometry args={[2.004, 64, 64]} />
+    <mesh material={material} renderOrder={4} raycast={noRaycast}>
+      <sphereGeometry args={[2.006, 64, 64]} />
     </mesh>
   );
 }
