@@ -96,7 +96,7 @@ export function Atmosphere() {
           uDayColor: { value: new THREE.Color(0.42, 0.72, 1.05) },
           uTerminatorColor: { value: new THREE.Color(1.0, 0.72, 0.42) },
           uNightColor: { value: new THREE.Color(0.18, 0.32, 0.62) },
-          uIntensity: { value: 0.95 },
+          uIntensity: { value: 0.55 },
           uPower: { value: 3.0 },
         },
         transparent: true,
