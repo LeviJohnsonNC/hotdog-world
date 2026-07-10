@@ -8,6 +8,7 @@ import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
 import { Atmosphere } from "./globe/Atmosphere";
 import { CloudLayer } from "./globe/CloudLayer";
+import { NightLights } from "./globe/NightLights";
 import { ParallaxGroup } from "./globe/ParallaxGroup";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSound } from "@/hooks/useSound";
