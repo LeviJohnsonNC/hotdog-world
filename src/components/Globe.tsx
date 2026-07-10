@@ -8,6 +8,7 @@ import { HotdogPin } from "./HotdogPin";
 import { Stars } from "./Stars";
 import { Atmosphere } from "./globe/Atmosphere";
 import { CloudLayer } from "./globe/CloudLayer";
+import { NightLights } from "./globe/NightLights";
 import { ParallaxGroup } from "./globe/ParallaxGroup";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSound } from "@/hooks/useSound";
@@ -296,6 +297,9 @@ function Earth({
       <Sphere args={[2, sphereDetail, sphereDetail]}>
         {isMobile ? <EarthSurfaceMobile /> : <EarthSurfaceDesktop />}
       </Sphere>
+
+      {/* Nighttime city lights — desktop only, rotates with terrain */}
+      {!isMobile && <NightLights />}
 
       {/* Fresnel limb glow + outer halo */}
       <Atmosphere />
