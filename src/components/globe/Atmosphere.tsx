@@ -43,12 +43,12 @@ const limbFragment = /* glsl */ `
     float fresnel = pow(1.0 - clamp(dot(vNormal, vViewDir), 0.0, 1.0), uPower);
     float sunDot = dot(normalize(vWorldNormal), normalize(uSunDir));
     // 1.0 = full day, 0.0 = terminator, -1.0 = full night
-    float day   = smoothstep(0.05, 0.55, sunDot);
-    float night = smoothstep(0.05, 0.55, -sunDot);
+    float day   = smoothstep(-0.05, 0.35, sunDot);
+    float night = smoothstep(-0.05, 0.35, -sunDot);
     float term  = 1.0 - day - night;
     vec3 tint = uDayColor * day + uTerminatorColor * term + uNightColor * night;
     // Slight boost at the terminator so the sunset ring reads clearly.
-    float intensity = uIntensity * (1.0 + term * 0.4);
+    float intensity = uIntensity * (1.0 + term * 0.15);
     gl_FragColor = vec4(tint, fresnel * intensity);
   }
 `;
@@ -96,7 +96,7 @@ export function Atmosphere() {
           uDayColor: { value: new THREE.Color(0.42, 0.72, 1.05) },
           uTerminatorColor: { value: new THREE.Color(1.0, 0.72, 0.42) },
           uNightColor: { value: new THREE.Color(0.18, 0.32, 0.62) },
-          uIntensity: { value: 0.95 },
+          uIntensity: { value: 0.55 },
           uPower: { value: 3.0 },
         },
         transparent: true,
@@ -115,11 +115,11 @@ export function Atmosphere() {
         uniforms: {
           uSunDir: { value: SUN_DIRECTION.clone() },
           uDayColor: { value: new THREE.Color(0.32, 0.58, 1.0) },
-          uTerminatorColor: { value: new THREE.Color(1.0, 0.65, 0.38) },
+          uTerminatorColor: { value: new THREE.Color(0.95, 0.62, 0.42) },
           uNightColor: { value: new THREE.Color(0.12, 0.22, 0.5) },
-          uIntensity: { value: 0.6 },
-          uBias: { value: 0.68 },
-          uFalloff: { value: 4.5 },
+          uIntensity: { value: 0.28 },
+          uBias: { value: 0.80 },
+          uFalloff: { value: 6.5 },
         },
         transparent: true,
         depthWrite: false,

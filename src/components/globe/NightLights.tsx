@@ -77,13 +77,13 @@ const nightFragment = /* glsl */ `
     // Pseudo-city density: two octaves of noise at different frequencies —
     // large clusters gated by fine sparkle so isolated pixels light up.
     vec3 p = vec3(vUv * 220.0, 0.0);
-    float cluster = smoothstep(0.35, 0.75, fbm(p * 0.05));
-    float sparkle = smoothstep(0.45, 0.90, fbm(p * 0.6));
-    float density = cluster * sparkle;
+    float cluster = smoothstep(0.25, 0.70, fbm(p * 0.05));
+    float sparkle = smoothstep(0.35, 0.85, fbm(p * 0.6));
+    float density = cluster * sparkle + 0.15 * cluster;
 
     // Night mask with soft terminator ramp
     float ndl = dot(normalize(vWorldNormal), normalize(uSunDir));
-    float night = smoothstep(0.25, -0.05, ndl);
+    float night = smoothstep(0.30, -0.02, ndl);
 
     float alpha = landness * density * night * uIntensity;
     gl_FragColor = vec4(uLightColor * alpha, alpha);
@@ -107,8 +107,8 @@ export function NightLights() {
       uniforms: {
         uMap: { value: map },
         uSunDir: { value: SUN_DIRECTION.clone() },
-        uLightColor: { value: new THREE.Color("#ffdca0") },
-        uIntensity: { value: 2.6 },
+        uLightColor: { value: new THREE.Color("#fff2c8") },
+        uIntensity: { value: 4.5 },
       },
       transparent: true,
       depthWrite: false,
@@ -118,8 +118,8 @@ export function NightLights() {
   }, [map]);
 
   return (
-    <mesh material={material} renderOrder={3} raycast={noRaycast}>
-      <sphereGeometry args={[2.004, 64, 64]} />
+    <mesh material={material} renderOrder={4} raycast={noRaycast}>
+      <sphereGeometry args={[2.006, 64, 64]} />
     </mesh>
   );
 }
