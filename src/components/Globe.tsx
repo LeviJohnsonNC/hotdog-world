@@ -84,6 +84,14 @@ function EarthSurfaceDesktop() {
   useMemo(() => configureEarthTexture(colorMap), [colorMap]);
   const [hiResMap, setHiResMap] = useState<THREE.Texture | null>(null);
 
+  // Derive an ocean-specular roughness map from the day texture (oceans
+  // slick, land matte). Regenerated when the hi-res map lands so specular
+  // continents match.
+  const roughnessMap = useMemo(
+    () => createOceanRoughnessMap(hiResMap ?? colorMap),
+    [colorMap, hiResMap]
+  );
+
   useEffect(() => {
     let disposed = false;
     new THREE.TextureLoader()
@@ -108,11 +116,14 @@ function EarthSurfaceDesktop() {
       map={hiResMap ?? colorMap}
       bumpMap={bumpMap}
       bumpScale={0.045}
-      roughness={0.78}
-      metalness={0.02}
+      roughnessMap={roughnessMap ?? undefined}
+      roughness={roughnessMap ? 1.0 : 0.78}
+      metalness={0.05}
+      envMapIntensity={1.0}
     />
   );
 }
+
 
 function Earth({ 
   hotdogs,
